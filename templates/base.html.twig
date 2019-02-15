@@ -3,7 +3,17 @@
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
+        {% block stylesheets %}
+        
+            <link rel="stylesheet" href="{{asset('css/formularz.css')}}" media="screen" />
+            <link rel="stylesheet" href="{{asset('css/bootstrap.min.css')}}" media="screen" />
+            <link rel="stylesheet" href="{{asset('css/bootstrap-override.css')}}" media="screen" />
+            <link rel="stylesheet" href="{{asset('css/bootstrap-responsive.min.css')}}" media="screen" />
+            <link rel="stylesheet" href="{{asset('css/flexslider.css')}}" media="screen" />
+            <link rel="stylesheet" href="{{asset('css/styles.css')}}" media="screen" />
+            <link rel="stylesheet" href="{{asset('css/w3.css')}}" media="screen" />
+        
+        {% endblock %}
     </head>
     <body>
         {% block body %}{% endblock %}
