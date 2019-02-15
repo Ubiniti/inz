@@ -11,7 +11,9 @@
         {{ form_row(registrationForm.country) }}
         {{ form_row(registrationForm.birthDate) }}
         {{ form_row(registrationForm.plainPassword) }}
-
+        {{ form_row(registrationForm.termsAccepted) }}
+        
+        <br>
         <button class="btn">Register</button>
     {{ form_end(registrationForm) }}
 {% endblock %}

@@ -13,6 +13,8 @@ use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Validator\Constraints\IsTrue;
 
 class RegistrationFormType extends AbstractType {
 
@@ -58,7 +60,13 @@ class RegistrationFormType extends AbstractType {
                     'options' => array('attr' => array('class' => 'password-field')),
                     'required' => true,
                     'first_options' => array('label' => 'Password'),
-                    'second_options' => array('label' => 'Repeat Password')));
+                    'second_options' => array('label' => 'Repeat Password')))
+                ->add('termsAccepted', CheckboxType::class, [
+                    'mapped' => false,
+                    'constraints' => new IsTrue(),
+                ])
+
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver) {
