@@ -47,7 +47,6 @@ class User implements UserInterface
      *      minMessage = "Your username must be at least {{ limit }} characters long",
      *      maxMessage = "Your username cannot be longer than {{ limit }} characters"
      * )
-     * @Assert\NotBlank
      */
     private $password;
 
@@ -65,7 +64,6 @@ class User implements UserInterface
      * @ORM\Column(type="date")
      * @Assert\DateTime
      * @var string A "Y-m-d" formatted value
-     * @Assert\NotBlank
      */
     private $joinDate;
 
@@ -78,7 +76,6 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="date")
      * @Assert\DateTime
-     * @Assert\NotBlank
      */
     private $birthDate;
 
