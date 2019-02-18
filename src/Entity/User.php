@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -21,6 +22,14 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Assert\Length(
+     *      min = 4,
+     *      max = 30,
+     *      minMessage = "Your username must be at least {{ limit }} characters long",
+     *      maxMessage = "Your username cannot be longer than {{ limit }} characters"
+     * )
+     * @Assert\NotBlank
+     * @Assert\Regex("/^[0-9A-Za-z_-]{4,30}$/", message = "The login '{{ value }}' is not a valid login.")
      */
     private $username;
 
@@ -32,26 +41,44 @@ class User implements UserInterface
     /**
      * @var string The hashed password
      * @ORM\Column(type="string")
+     * * @Assert\Length(
+     *      min = 8,
+     *      max = 4096,
+     *      minMessage = "Your username must be at least {{ limit }} characters long",
+     *      maxMessage = "Your username cannot be longer than {{ limit }} characters"
+     * )
+     * @Assert\NotBlank
      */
     private $password;
 
     /**
      * @ORM\Column(type="string", length=30)
+     * @Assert\Email(
+     *     message = "The email '{{ value }}' is not a valid email.",
+     *     checkMX = true
+     * )
+     * @Assert\NotBlank
      */
     private $email;
 
     /**
      * @ORM\Column(type="date")
+     * @Assert\DateTime
+     * @var string A "Y-m-d" formatted value
+     * @Assert\NotBlank
      */
     private $joinDate;
 
     /**
      * @ORM\Column(type="string", length=30)
+     * @Assert\NotBlank
      */
     private $country;
 
     /**
      * @ORM\Column(type="date")
+     * @Assert\DateTime
+     * @Assert\NotBlank
      */
     private $birthDate;
 
