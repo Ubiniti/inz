@@ -11,6 +11,9 @@
     <div class="example-wrapper">
 
         <h1>Edit your account data</h1>
+        {% if passMatch is defined %}
+            {{ passMatch }}
+            {% endif %}
         {% if errors is defined %}
             {% for error in errors %}
                 <li>{{ error.message }}</li>
@@ -19,13 +22,12 @@
         <br>
         <form method="post" action="{{ path('user_update') }}">
 
-
-            <label for="inputLogin" class="sr-only">Username</label>
+            <label for="username" class="sr-only">Username</label>
             <input type="text" value="{{ user.username }}" name="username" id="inputLogin" class="form-control" placeholder="Username" required autofocus pattern="[0-9A-Za-z_-]{4,30}">
             <label for="email" class="sr-only">Email</label>
             <input type="email" value="{{ user.email }}" name="email" id="email" class="form-control" placeholder="Email address" required>
             <label for="country" class="sr-only">Country</label>
-            <select name="country">
+            <select name="country" required>
                 <option value="">Country...</option>
                 <option value="AF">Afghanistan</option>
                 <option value="AL">Albania</option>
@@ -276,11 +278,12 @@
                 <option value="ZW">Zimbabwe</option>
             </select>
             <br>
-            <label for="birthdate" class="sr-only" >Birthday</label>
+            <label for="birthdate" class="sr-only" >Birthdate</label>
             <input type="date" name="birthdate" value="{{ user.birthDate|date("Y-m-d") }}" required>
-            <label for="inputPassword" class="sr-only">Password</label>
-            <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Password" required>
-
+            <label for="currentPassword" class="sr-only">Current password</label>
+            <input type="password" name="currentPassword" id="currentPassword" class="form-control" placeholder="Current password" required>
+            <label for="newPassword" class="sr-only">New password</label>
+            <input type="password" name="newPassword" id="newPassword" class="form-control" placeholder="New password" required>
             <button class="btn btn-lg btn-primary" type="submit">
                 Update your account
             </button>
