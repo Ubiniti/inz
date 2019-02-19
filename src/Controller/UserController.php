@@ -21,4 +21,19 @@ class UserController extends AbstractController
             'user' => $user, 
         ]);
     }
+    
+    /**
+     * @Route("/edit", name="user_edit")
+     */
+    public function editUser()
+    {
+        
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $user = $this->getUser();
+         
+        return $this->render('user/editUser.html.twig', [
+            'controller_name' => 'UserController',
+            'user' => $user, 
+        ]);
+    }
 }
