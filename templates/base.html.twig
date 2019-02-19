@@ -4,21 +4,47 @@
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
         {% block stylesheets %}
-        
-            <link rel="stylesheet" href="{{asset('css/formularz.css')}}" media="screen" />
-            <link rel="stylesheet" href="{{asset('css/bootstrap.min.css')}}" media="screen" />
+
+            <link rel="stylesheet" href="{{asset('css/formularz.css')}}" media="screen" />            
+            <link rel="stylesheet" href="{{asset('css/bootstrap.css')}}" media="screen" />
+            <link rel="stylesheet" href="{{asset('css/bootstrap-grid.css')}}" media="screen" />
+            <link rel="stylesheet" href="{{asset('css/bootstrap-reboot.css')}}" media="screen" />
             <link rel="stylesheet" href="{{asset('css/bootstrap-override.css')}}" media="screen" />
-            <link rel="stylesheet" href="{{asset('css/bootstrap-responsive.min.css')}}" media="screen" />
+            <link rel="stylesheet" href="{{asset('css/bootstrap-responsive.css')}}" media="screen" />
             <link rel="stylesheet" href="{{asset('css/flexslider.css')}}" media="screen" />
             <link rel="stylesheet" href="{{asset('css/styles.css')}}" media="screen" />
             <link rel="stylesheet" href="{{asset('css/w3.css')}}" media="screen" />
-        
+
         {% endblock %}
     </head>
     <body>
-        {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
-        <footer>MJ Sidor, PPuchacz, symf project</footer> 
-    </body>
-    
+        <nav class="navbar navbar-inverse">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="{{ path('home') }}">Home</a>
+                </div>
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="#">Home</a></li>
+                    <li><a href="#">Page 1</a></li>
+                    <li><a href="#">Page 2</a></li>
+                </ul>
+               {# <form class="navbar-form navbar-left" action="/action_page.php">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search">
+                    </div>
+                    <button type="submit" class="btn btn-default">Submit</button>
+                </form>#}
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="{{ path('app_register') }}"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+                    <li><a href="{{ path('app_login') }}"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                </ul>
+            </div>
+        </nav> 
+        {% block body %}
+
+        {% endblock %}
+    {% block javascripts %}{% endblock %}
+    <footer>MJ Sidor, PPuchacz, symf project</footer> 
+</body>
+
 </html>

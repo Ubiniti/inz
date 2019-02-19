@@ -36,6 +36,9 @@ footer {
     margin:auto;
     width:100%;
     text-align:center;
+    background-color: #b5b5b5;
+    color:white;
+    border-radius: 5px;
 }
 
 body {
