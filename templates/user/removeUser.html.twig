@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ user.username }} - Remove account{% endblock %}
+
+{% block body %}
+    <style>
+        .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+        .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+    </style>
+
+    <div class="example-wrapper">
+
+        {% if passMatch is defined %}
+            {{ passMatch }}
+        {% endif %}
+
+        <h3>Are you sure you want to delete following account: {{ user.username }}?</h3>
+        <form method="post" action="{{ path('user_delete') }}">
+            <label for="currentPassword" class="sr-only">Confirm with your password</label>
+            <input type="password" name="currentPassword" id="currentPassword" class="form-control" placeholder="Current password" required>
+            <button class="btn btn-lg btn-primary" type="submit">
+                Delete your account
+            </button>
+        </form>
+        <h4><a href="{{ path('home') }}">No, take me back</a></h4>
+
+    </div>
+{% endblock %}

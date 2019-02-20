@@ -72,7 +72,8 @@ class UserController extends AbstractController {
 
         $errors = $validator->validate($user);
 
-        if (count($errors) > 0 || !$passwordMatch) {
+        if (count($errors) > 0 || !$passwordMatch)
+        {
 
             return $this->render
                             ('user/editUser.html.twig', [
@@ -81,10 +82,54 @@ class UserController extends AbstractController {
                         'errors' => $errors,
                         'passMatch' => 'Provided password does not match the current password'
             ]);
-        } else {
+        }
+        else
+        {
             $user->setPassword($encoder->encodePassword($user, $credentials['newPassword']));
             $entityManager->flush();
             return $this->redirectToRoute('user');
+        }
+    }
+
+    /**
+     * @Route("/remove", name="user_remove")
+     */
+    public function removeUser() {
+
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $user = $this->getUser();
+
+        return $this->render('user/removeUser.html.twig', [
+                    'controller_name' => 'UserController',
+                    'user' => $user,
+        ]);
+    }
+
+    /**
+     * @Route("/delete", name="user_delete")
+     */
+    public function deleteUser(Request $request, UserPasswordEncoderInterface $encoder) {
+
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $user = $this->getUser();
+
+        $entityManager = $this->getDoctrine()->getManager();
+
+        if ($encoder->isPasswordValid($user, $request->request->get('currentPassword')))
+        {
+            $this->get('security.token_storage')->setToken(null);
+            $this->get('session')->invalidate();
+            $entityManager->remove($user);
+            $entityManager->flush();
+            return $this->redirectToRoute('home');
+        }
+        else
+        {
+            return $this->render('user/removeUser.html.twig', [
+                        'controller_name' => 'UserController',
+                        'user' => $user,
+                        'passMatch' => 'Provided password does not match the current password'
+            ]);
         }
     }
 
