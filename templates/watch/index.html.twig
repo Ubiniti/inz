@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello WatchController!{% endblock %}
+{% block title %}{{ title }} - Playing{% endblock %}
 
 {% block body %}
     <style>
@@ -9,13 +9,13 @@
     </style>
 
     <div class="example-wrapper">
-        <h1>Hello {{ controller_name }}! ✅</h1>
+        <h1>{{ title }}</h1>
 
-        <video width="720" height="480" controls>
-            <source src="movie.mp4" type="video/mp4">
-            <source src="movie.ogg" type="video/ogg">
+        <video width="720" height="480" auttoplay controls>
+            <source src="{{ path }}.mp4" type="video/mp4">
+            <source src="{{ path }}.ogg" type="video/ogg">
             Your browser does not support the video tag.
         </video>
-        
+
     </div>
 {% endblock %}
