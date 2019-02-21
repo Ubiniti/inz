@@ -14,9 +14,9 @@ class WatchController extends AbstractController
     {
         //id = hashed path
         //get full path from DB entry with corresponding id
-        //get title,hashtags,etc. from DB
+        //get title,hashtags,comments,etc. from DB
         
-        $path="grill";
+        $path="video/grill";
         $title="grill";
         
         return $this->render('watch/index.html.twig', [
