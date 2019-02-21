@@ -10,19 +10,24 @@ class WatchController extends AbstractController
     /**
      * @Route("/watch/{id}", name="watch")
      */
-    public function index()
+    public function index($id)
     {
-        //id = hashed path
+        //id = random string generated during upload
         //get full path from DB entry with corresponding id
         //get title,hashtags,comments,etc. from DB
+        //a folder with .mp4 and comments.txt for each video
         
-        $path="video/grill";
         $title="grill";
+        $path="video/".$id."/".$title;
+        
         
         return $this->render('watch/index.html.twig', [
             'controller_name' => 'WatchController',
             'path' => $path,
-            'title' => $title
+            'title' => $title,
+            
         ]);
     }
+    
+    
 }
