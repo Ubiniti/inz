@@ -166,7 +166,8 @@ class Video
             'uploaded' => $this->getUploaded(),
             'views' => $this->getViews(),
             'description' => $this->getDescription(),
-            'duration' => $this->getDuration()
+            'duration' => $this->getDuration(),
+            'category' => $this->getCategory()
         ];
     }
 }
