@@ -20,3 +20,6 @@
 
 # phpstorm config files
 /.idea/
+
+# video files
+/public/video/
