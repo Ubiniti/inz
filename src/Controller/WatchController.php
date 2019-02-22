@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\Video;
+
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -17,14 +19,13 @@ class WatchController extends AbstractController
         //get title,hashtags,comments,etc. from DB
         //a folder with .mp4 and comments.txt for each video
         
-        $title="grill";
-        $path="video/".$id."/".$title;
+        $repository = $this->getDoctrine()->getRepository(Video::class);
+        $video = $repository->findOneBy(['hash' => $id]);
         
         
         return $this->render('watch/index.html.twig', [
             'controller_name' => 'WatchController',
-            'path' => $path,
-            'title' => $title,
+            'video' => $video->toArray()
             
         ]);
     }

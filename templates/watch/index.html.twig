@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ title }} - Playing{% endblock %}
+{% block title %}{{ video.title }} - Playing{% endblock %}
 
 {% block body %}
     <style>
@@ -9,11 +9,11 @@
     </style>
 
     <div class="example-wrapper">
-        <h1>{{ title }}</h1>
+        <h1>{{ video.title }}</h1>
 
         <video width="720" height="480" auttoplay controls>
-            <source src="{{asset(path)}}.mp4" type="video/mp4">
-            <source src="{{asset(path)}}.ogg" type="video/ogg">
+            <source src="{{asset(['video/', video.hash, '.mp4']|join)}}" type="video/mp4">
+            <source src="{{asset(['video/', video.hash, '.ogg']|join)}}" type="video/ogg">
             Your browser does not support the video tag.
         </video>
             <div class="comments">
