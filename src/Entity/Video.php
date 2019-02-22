@@ -19,6 +19,11 @@ class Video
     /**
      * @ORM\Column(type="string", length=255)
      */
+    private $hash;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
     private $title;
 
     /**
@@ -42,16 +47,6 @@ class Video
     private $description;
 
     /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $src;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $thumbnail;
-
-    /**
      * @ORM\Column(type="time")
      */
     private $duration;
@@ -64,6 +59,18 @@ class Video
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getHash(): ?string
+    {
+        return $this->hash;
+    }
+
+    public function setHash(string $hash): self
+    {
+        $this->hash = $hash;
+
+        return $this;
     }
 
     public function getTitle(): ?string
@@ -126,30 +133,6 @@ class Video
         return $this;
     }
 
-    public function getSrc(): ?string
-    {
-        return $this->src;
-    }
-
-    public function setSrc(string $src): self
-    {
-        $this->src = $src;
-
-        return $this;
-    }
-
-    public function getThumbnail(): ?string
-    {
-        return $this->thumbnail;
-    }
-
-    public function setThumbnail(string $thumbnail): self
-    {
-        $this->thumbnail = $thumbnail;
-
-        return $this;
-    }
-
     public function getDuration(): ?\DateTimeInterface
     {
         return $this->duration;
@@ -177,13 +160,12 @@ class Video
     public function toArray()
     {
         return [
+            'hash' => $this->getHash(),
             'title' => $this->getTitle(),
             'author_id' => $this->getAuthorId(),
             'uploaded' => $this->getUploaded(),
             'views' => $this->getViews(),
             'description' => $this->getDescription(),
-            'src' => $this->getSrc(),
-            'thumbinal' => $this->getThumbnail(),
             'duration' => $this->getDuration()
         ];
     }
