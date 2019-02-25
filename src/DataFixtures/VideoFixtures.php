@@ -23,6 +23,8 @@ class VideoFixtures extends Fixture
             $video->setDescription($data[5]);
             $video->setDuration(new \DateTime($data[6]));
             $video->setCategory($data[7]);
+            $video->setThumbsUp($data[8]);
+            $video->setThumbsDown($data[9]);
             
             $manager->persist($video);
         }

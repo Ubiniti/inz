@@ -56,6 +56,16 @@ class Video
      */
     private $category;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $thumbs_up;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $thumbs_down;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -167,7 +177,33 @@ class Video
             'views' => $this->getViews(),
             'description' => $this->getDescription(),
             'duration' => $this->getDuration(),
-            'category' => $this->getCategory()
+            'category' => $this->getCategory(),
+            'thumbs_up' => $this->getThumbsUp(),
+            'thumbs_down' => $this->getThumbsDown()
         ];
+    }
+
+    public function getThumbsUp(): ?int
+    {
+        return $this->thumbs_up;
+    }
+
+    public function setThumbsUp(int $thumbs_up): self
+    {
+        $this->thumbs_up = $thumbs_up;
+
+        return $this;
+    }
+
+    public function getThumbsDown(): ?int
+    {
+        return $this->thumbs_down;
+    }
+
+    public function setThumbsDown(int $thumbs_down): self
+    {
+        $this->thumbs_down = $thumbs_down;
+
+        return $this;
     }
 }
