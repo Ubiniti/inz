@@ -18,10 +18,15 @@ class WatchController extends AbstractController
         //get full path from DB entry with corresponding id
         //get title,hashtags,comments,etc. from DB
         //a folder with .mp4 and comments.txt for each video
-        
-        $repository = $this->getDoctrine()->getRepository(Video::class);
+        $entityManager = $this->getDoctrine()->getManager();
+        $repository = $entityManager->getRepository(Video::class);
+
         $video = $repository->findOneBy(['hash' => $id]);
-        
+        $views = $video->getViews();
+        $video->setViews(++$views);
+
+        $entityManager->persist($video);
+        $entityManager->flush();
         
         return $this->render('watch/index.html.twig', [
             'controller_name' => 'WatchController',

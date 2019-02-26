@@ -6,20 +6,61 @@
     <style>
         .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
         .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+        .com-author {
+            font-size: 15px;
+        }
+        .info-panel {
+            font-size: 25px;
+        }
+        
+        .info-panel button {
+            font-size: 25px;
+        }
     </style>
 
     <div class="example-wrapper">
-        <h1>{{ video.title }}</h1>
-
-        <video width="720" height="480" auttoplay controls>
-            <source src="{{asset(['video/', video.hash, '.mp4']|join)}}" type="video/mp4">
-            <source src="{{asset(['video/', video.hash, '.ogg']|join)}}" type="video/ogg">
-            Your browser does not support the video tag.
-        </video>
-            <div class="comments">
-            <h5>Comments: </h5>
-            
+        
+        <div class="container text-dark">
+            <div class="h3 my-3">{{ video.title }}</div>
+            <div class="container p-1 w-100 d-flex justify-content-between">
+                <a href="#" class="text-dark">author</a>
+                <div class="vid-data">{{video.uploaded|date("d-m-Y")}}</div>
             </div>
+            <video class="embed-responsive embed-responsive-16by9" auttoplay controls>
+                <source src="{{asset(['video/', video.hash, '.mp4']|join)}}" type="video/mp4">
+                <source src="{{asset(['video/', video.hash, '.ogg']|join)}}" type="video/ogg">
+                Your browser does not support the video tag.
+            </video>
+            <div class="info-panel container p-2 w-100 d-flex justify-content-between">
+                <div class="thumbs">
+                    <button class="btn btn-link pr-1"><i class="far fa-thumbs-up text-dark"></i></button> {{video.thumbs_up}}
+                    <button class="btn btn-link pl-4 pr-1"><i class="far fa-thumbs-down text-dark"></i></button> {{video.thumbs_down}}
+                </div>
+                <div class="views">
+                    <i class="fas fa-eye"></i> {{video.views}}
+                </div>
+            </div>
+            <div class="comments my-3">
+                <h5>Comments: </h5>
+                <div class="jumbotron p-3 m-0">
+                    <div class="container">
+                        <a href="#" class="com-author text-dark">example-username</a>
+                        <div class="content">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Porro distinctio neque assumenda sapiente ex magni consequuntur rem voluptate officiis! Dolore quia distinctio explicabo cumque amet iusto. Delectus, nostrum atque. Saepe?</div>
+                    </div>
+                </div>
+                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                    <div class="jumbotron px-3 pt-3 pb-0 m-0 mt-3">
+                        <form action="#" method="POST" class="container">
+                            <label for="newcomment" class="com-author">{{app.user.username}}</label>
+                            <textarea class="form-control" name="newcomment" id="newcomment" rows="3"></textarea>
+                            <div class="d-flex justify-content-end">
+                                <button class="btn" type="submit">Send</button>
+                            </div>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
             
     </div>
 {% endblock %}
