@@ -22,9 +22,9 @@ class Comment
     private $contents;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="string", length=180)
      */
-    private $author_id;
+    private $author_username;
 
     /**
      * @ORM\Column(type="datetime")
@@ -32,19 +32,29 @@ class Comment
     private $added;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", options={"default" : 0})
      */
-    private $likes;
+    private $likes = 0;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", options={"default" : 0})
      */
-    private $dislikes;
+    private $dislikes = 0;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="string", length=32, nullable=true)
      */
-    private $parrent_id;
+    private $parrent_hash;
+
+    /**
+     * @ORM\Column(type="string", length=32, unique=true)
+     */
+    private $hash;
+
+    /**
+     * @ORM\Column(type="string", length=32)
+     */
+    private $video_hash;
 
     public function getId(): ?int
     {
@@ -63,14 +73,14 @@ class Comment
         return $this;
     }
 
-    public function getAuthorId(): ?int
+    public function getAuthorUsername(): ?string
     {
-        return $this->author_id;
+        return $this->author_username;
     }
 
-    public function setAuthorId(int $author_id): self
+    public function setAuthorUsername(string $author_username): self
     {
-        $this->author_id = $author_id;
+        $this->author_username = $author_username;
 
         return $this;
     }
@@ -111,14 +121,71 @@ class Comment
         return $this;
     }
 
-    public function getParrentId(): ?int
+    public function getParrentHash(): ?string
     {
-        return $this->parrent_id;
+        return $this->parrent_hash;
     }
 
-    public function setParrentId(?int $parrent_id): self
+    public function setParrentHash(?string $parrent_hash): self
     {
-        $this->parrent_id = $parrent_id;
+        $this->parrent_hash = $parrent_hash;
+
+        return $this;
+    }
+
+    public function getHash(): ?string
+    {
+        return $this->hash;
+    }
+
+    public function setHash(string $hash): self
+    {
+        $this->hash = $hash;
+
+        return $this;
+    }
+
+    public function toArray()
+    {
+        return [
+            'contents' => $this->getContents(),
+            'author_username' => $this->getAuthorUsername(),
+            'added' => $this->getAdded(),
+            'likes' => $this->getLikes(),
+            'dislikes' => $this->getDislikes(),
+            'parrent_hash' => $this->getParrentHash(),
+            'hash' => $this->getHash(),
+            'video_hash' => $this->getVideoHash()
+        ];
+    }
+
+    public function toEncryptableArray()
+    {
+        return [
+            'author_username' => $this->getAuthorUsername(),
+            'added' => $this->getAdded(),
+            'parrent_hash' => $this->getParrentHash(),
+            'video_hash' => $this->getVideoHash()
+        ];
+    }
+
+    public function generateHash()
+    {
+        $serialized = json_encode($this->toEncryptableArray());
+        $hash = md5($serialized);
+        $this->setHash($hash);
+
+        return $hash;
+    }
+
+    public function getVideoHash(): ?string
+    {
+        return $this->video_hash;
+    }
+
+    public function setVideoHash(string $video_hash): self
+    {
+        $this->video_hash = $video_hash;
 
         return $this;
     }

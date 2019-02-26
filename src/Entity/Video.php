@@ -17,7 +17,7 @@ class Video
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=32, unique=true)
      */
     private $hash;
 
@@ -27,9 +27,9 @@ class Video
     private $title;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="string", length=180)
      */
-    private $author_id;
+    private $author_username;
 
     /**
      * @ORM\Column(type="datetime")
@@ -95,14 +95,14 @@ class Video
         return $this;
     }
 
-    public function getAuthorId(): ?int
+    public function getAuthorUsername(): ?string
     {
-        return $this->author_id;
+        return $this->author_username;
     }
 
-    public function setAuthorId(int $author_id): self
+    public function setAuthorUsername(string $author_username): self
     {
-        $this->author_id = $author_id;
+        $this->author_username = $author_username;
 
         return $this;
     }
@@ -172,7 +172,7 @@ class Video
         return [
             'hash' => $this->getHash(),
             'title' => $this->getTitle(),
-            'author_id' => $this->getAuthorId(),
+            'author_username' => $this->getAuthorUsername(),
             'uploaded' => $this->getUploaded(),
             'views' => $this->getViews(),
             'description' => $this->getDescription(),
@@ -181,6 +181,26 @@ class Video
             'thumbs_up' => $this->getThumbsUp(),
             'thumbs_down' => $this->getThumbsDown()
         ];
+    }
+
+    public function toEncryptableArray()
+    {
+        return [
+            'title' => $this->getTitle(),
+            'author_username' => $this->getAuthorUsername(),
+            'uploaded' => $this->getUploaded(),
+            'duration' => $this->getDuration(),
+            'category' => $this->getCategory(),
+        ];
+    }
+
+    public function generateHash()
+    {
+        $serialized = json_encode($this->toEncryptableArray());
+        $hash = md5($serialized);
+        $this->setHash($hash);
+
+        return $hash;
     }
 
     public function getThumbsUp(): ?int

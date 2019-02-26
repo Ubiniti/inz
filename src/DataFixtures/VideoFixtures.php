@@ -15,16 +15,17 @@ class VideoFixtures extends Fixture
         {
             $data = fgetcsv($file);
             $video = new Video();
-            $video->setHash($data[8]);
             $video->setTitle($data[1]);
-            $video->setAuthorId($data[2]);
-            $video->setUploaded(new \DateTime($data[3]));
-            $video->setViews($data[4]);
-            $video->setDescription($data[5]);
-            $video->setDuration(new \DateTime($data[6]));
-            $video->setCategory($data[7]);
+            $video->setUploaded(new \DateTime($data[2]));
+            $video->setViews($data[3]);
+            $video->setDescription($data[4]);
+            $video->setDuration(new \DateTime($data[5]));
+            $video->setCategory($data[6]);
+            //$video->setHash($data[7]);
             $video->setThumbsUp($data[8]);
             $video->setThumbsDown($data[9]);
+            $video->setAuthorUsername($data[10]);
+            $video->generateHash();
             
             $manager->persist($video);
         }

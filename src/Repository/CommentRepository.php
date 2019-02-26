@@ -19,32 +19,44 @@ class CommentRepository extends ServiceEntityRepository
         parent::__construct($registry, Comment::class);
     }
 
-    // /**
-    //  * @return Comment[] Returns an array of Comment objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * @return Comment[] Returns an array of Comment objects
+     */
+    public function findByParrentHash($hash)
     {
         return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('c.id', 'ASC')
-            ->setMaxResults(10)
+            ->andWhere('c.parrent_hash = :val')
+            ->setParameter('val', $hash)
+            ->orderBy('c.added', 'DESC')
             ->getQuery()
             ->getResult()
         ;
     }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Comment
+    /**
+     * @return Comment[] Returns an array of Comment objects
+     */
+    public function findByVideoHash($hash)
     {
         return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
-            ->setParameter('val', $value)
+            ->andWhere('c.video_hash = :val')
+            ->setParameter('val', $hash)
+            ->orderBy('c.added', 'DESC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    /**
+     * @return Comment Returns Comment object
+     */
+    public function findOneByHash($hash): ?Comment
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.hash = :val')
+            ->setParameter('val', $hash)
             ->getQuery()
             ->getOneOrNullResult()
         ;
     }
-    */
 }

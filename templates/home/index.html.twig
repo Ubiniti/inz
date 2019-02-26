@@ -24,7 +24,7 @@
             {% for video in videos %}
                 <div class="col">
                     <div class="video-thumb mb-3">
-                        <a href="{{ path('watch', {id: video.hash}) }}" class="text-dark">
+                        <a href="{{ path('watch', {video_hash: video.hash}) }}" class="text-dark">
                         <img width="200px" src="{{ asset( ['video/thumbs/', video.hash, '.jpg']|join ) }}"> <br>
                         {{ video.title|slice(0, 55) }}{% if video.title|length > 55 %}...{% endif %}
                         </a>

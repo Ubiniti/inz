@@ -42,17 +42,19 @@
             </div>
             <div class="comments my-3">
                 <h5>Comments: </h5>
-                <div class="jumbotron p-3 m-0">
-                    <div class="container">
-                        <a href="#" class="com-author text-dark">example-username</a>
-                        <div class="content">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Porro distinctio neque assumenda sapiente ex magni consequuntur rem voluptate officiis! Dolore quia distinctio explicabo cumque amet iusto. Delectus, nostrum atque. Saepe?</div>
+                {% for comment in comments %}
+                    <div class="jumbotron p-3 m-0 mb-3">
+                        <div class="container">
+                            <a href="#" class="com-author text-dark">{{comment.author_username}}</a>
+                            <div class="content">{{comment.contents}}</div>
+                        </div>
                     </div>
-                </div>
+                {% endfor %}
                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                     <div class="jumbotron px-3 pt-3 pb-0 m-0 mt-3">
-                        <form action="#" method="POST" class="container">
+                        <form action="{{ path('add_comment', {video_hash: video.hash}) }}" method="POST" class="container">
                             <label for="newcomment" class="com-author">{{app.user.username}}</label>
-                            <textarea class="form-control" name="newcomment" id="newcomment" rows="3"></textarea>
+                            <textarea class="form-control" name="contents" id="contents" rows="3"></textarea>
                             <div class="d-flex justify-content-end">
                                 <button class="btn" type="submit">Send</button>
                             </div>
