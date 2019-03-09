@@ -16,6 +16,32 @@
         .info-panel button {
             font-size: 25px;
         }
+        .avatar {
+            width: 60px;
+            height: 60px;
+        }
+        .user-card {
+            width: 100px;
+        }
+        .com-date {
+            font-size: 14px;
+        }
+        .sub-avatar {
+            width: 45px;
+            height: 45px;
+        }
+        .sub-user-card {
+            width: 60px;
+        }
+        .sub-com-date {
+            font-size: 12px;
+        }
+        .sub-content {
+            font-size: 15px;
+        }
+        .sub-com-author {
+            font-size: 13px;
+        }
     </style>
 
     <div class="example-wrapper">
@@ -26,43 +52,79 @@
                 <a href="#" class="text-dark">author</a>
                 <div class="vid-data">{{video.uploaded|date("d-m-Y")}}</div>
             </div>
-            <video class="embed-responsive embed-responsive-16by9" auttoplay controls>
+            <video id="player" class="embed-responsive embed-responsive-16by9" auttoplay controls data-video-hash="{{video.hash}}">
                 <source src="{{asset(['video/', video.hash, '.mp4']|join)}}" type="video/mp4">
                 <source src="{{asset(['video/', video.hash, '.ogg']|join)}}" type="video/ogg">
                 Your browser does not support the video tag.
             </video>
             <div class="info-panel container p-2 w-100 d-flex justify-content-between">
                 <div class="thumbs">
-                    <button class="btn btn-link pr-1"><i class="far fa-thumbs-up text-dark"></i></button> {{video.thumbs_up}}
-                    <button class="btn btn-link pl-4 pr-1"><i class="far fa-thumbs-down text-dark"></i></button> {{video.thumbs_down}}
+                    <button class="btn btn-link pr-1" id="like_btn"><i class="far fa-thumbs-up text-dark"></i></button> <span id="thumbs_up">{{video.thumbs_up}}</span>
+                    <button class="btn btn-link pl-4 pr-1" id="dislike_btn"><i class="far fa-thumbs-down text-dark"></i></button> <span id="thumbs_down">{{video.thumbs_down}}</span>
                 </div>
                 <div class="views">
                     <i class="fas fa-eye"></i> {{video.views}}
                 </div>
             </div>
-            <div class="comments my-3">
+            <div class="my-3">
                 <h5>Comments: </h5>
+                <!-- _______________ -->
                 {% for comment in comments %}
-                    <div class="jumbotron p-3 m-0 mb-3">
-                        <div class="container">
+                <div class="jumbotron bg-white overflow-hidden py-2 px-0 m-0 mb-2">
+                    <div class="comment d-flex container p-0">
+                        <div class="user-card m-0 mt-3 container text-center">
+                            <div class="avatar container rounded-circle bg-dark"></div>
                             <a href="#" class="com-author text-dark">{{comment.author_username}}</a>
-                            <div class="content">{{comment.contents}}</div>
+                        </div>
+                        <div class="container p-0 m-0">
+                            <div class="com-date m-0 p-0 text-right">{{comment.added|date("d-m-Y")}}</div>
+                            <div class="content">
+                                {{comment.contents}}
+                                <!-- subcomment -->
+                                {# <div class="comment d-flex container p-0">
+                                    <div class="sub-user-card m-0 mt-3 container text-center pl-0 pr-2 mr-2">
+                                        <div class="sub-avatar container rounded-circle bg-dark"></div>
+                                        <a href="#" class="sub-com-author text-dark">kowalski</a>
+                                    </div>
+                                    <div class="container p-0 m-0">
+                                        <div class="sub-com-date m-0 p-0 text-right">3 mar 2017</div>
+                                        <div class="sub-content">Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores, odit repudiandae vel ducimus nulla, quas eum fugiat consequatur adipisci dolorum perferendis non in exercitationem magnam voluptatum, dolor esse rem possimus?
+                                        </div>
+                                    </div>
+                                </div> #}
+                                <!-- end subcomment -->
+                            </div>
                         </div>
                     </div>
+                </div>
                 {% endfor %}
                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                    <div class="jumbotron px-3 pt-3 pb-0 m-0 mt-3">
-                        <form action="{{ path('add_comment', {video_hash: video.hash}) }}" method="POST" class="container">
-                            <label for="newcomment" class="com-author">{{app.user.username}}</label>
-                            <textarea class="form-control" name="contents" id="contents" rows="3"></textarea>
-                            <div class="d-flex justify-content-end">
-                                <button class="btn" type="submit">Send</button>
+                <div class="jumbotron bg-white overflow-hidden py-2 px-0 m-0 mb-2">
+                    <div class="comment d-flex container p-0">
+                        <div class="user-card m-0 mt-3 container text-center pt-3">
+                            <div class="avatar container rounded-circle bg-dark"></div>
+                            <a href="#" class="com-author text-dark">{{app.user.username}}</a>
+                        </div>
+                        <div class="container p-0 m-0">
+                            <div class="content">
+                            <form action="{{ path('add_comment', {video_hash: video.hash}) }}" method="POST" class="container">
+                                <label for="newcomment" class="com-author pb-0 mb-1">New comment:</label>
+                                <textarea class="form-control" name="contents" id="contents" rows="3"></textarea>
+                                <div class="d-flex justify-content-end">
+                                    <button class="btn" type="submit">Send</button>
+                                </div>
+                            </form>
                             </div>
-                        </form>
+                        </div>
                     </div>
+                </div>
                 {% endif %}
             </div>
         </div>
             
     </div>
+{% endblock %}
+
+{% block javascripts %}
+<script src="{{asset('js/video_rate.js')}}"></script>
 {% endblock %}

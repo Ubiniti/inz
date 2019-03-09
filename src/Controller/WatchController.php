@@ -7,6 +7,9 @@ use App\Entity\Comment;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use App\Entity\VideoRate;
 
 class WatchController extends AbstractController
 {
@@ -43,6 +46,55 @@ class WatchController extends AbstractController
             'comments' => $comments_data
         ]);
     }
-    
+
+    /**
+     * @Route("/watch/{video_hash}/rate", methods={"POST"}, name="rate_video")
+     */
+    public function rate($video_hash, Request $request)
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $user = $this->getUser();
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $videoRateRepo = $entityManager->getRepository(VideoRate::class);
+
+        $rate = $request->request->get('rate');
+
+        $existingRate = $videoRateRepo->findOneByViewer($video_hash, $user->getUsername());
+
+        if($existingRate)
+        {
+            $existingRate->setRate($rate);
+            $entityManager->persist($existingRate);
+        }
+        else
+        {
+            $videoRate = new VideoRate();
+            $videoRate->setVideoHash($video_hash);
+            $videoRate->setViewerUsername($user->getUsername());
+            $videoRate->setRate($rate);
+            $entityManager->persist($videoRate);
+        }
+
+        $entityManager->flush();
+
+        return $this->redirectToRoute('get_video_rate', [
+            'video_hash' => $video_hash,
+            'positive' => $rate
+        ]);
+    }
+
+    /**
+     * @Route("/watch/{video_hash}/rate/{positive}", methods={"GET"}, name="get_video_rate")
+     */
+    public function getRate($video_hash, $positive)
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+        $videoRateRepo = $entityManager->getRepository(VideoRate::class);
+
+        $count = $videoRateRepo->countRate($video_hash, $positive);
+
+        return new Response($count);
+    }
     
 }
