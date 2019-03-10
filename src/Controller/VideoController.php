@@ -11,10 +11,10 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class WatchController extends AbstractController
+class VideoController extends AbstractController
 {
     /**
-     * @Route("/watch/{video_hash}", name="watch")
+     * @Route("/video/{video_hash}", name="watch")
      */
     public function index($video_hash)
     {
@@ -46,8 +46,8 @@ class WatchController extends AbstractController
             }
         }
 
-        return $this->render('watch/index.html.twig', [
-            'controller_name' => 'WatchController',
+        return $this->render('video/index.html.twig', [
+            'controller_name' => 'VideoController',
             'video' => $video,
             'thumbs_up' => $thumbs_up,
             'thumbs_down' => $thumbs_down,
@@ -57,7 +57,7 @@ class WatchController extends AbstractController
     }
 
     /**
-     * @Route("/watch/{video_hash}/rate", methods={"POST"}, name="rate_video")
+     * @Route("/video/{video_hash}/rate", methods={"POST"}, name="rate_video")
      */
     public function rate($video_hash, Request $request)
     {
@@ -94,7 +94,7 @@ class WatchController extends AbstractController
     }
 
     /**
-     * @Route("/watch/{video_hash}/rate", methods={"GET"}, name="get_video_rate")
+     * @Route("/video/{video_hash}/rate", methods={"GET"}, name="get_video_rate")
      */
     public function getRate($video_hash)
     {

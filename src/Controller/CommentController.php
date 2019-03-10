@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class CommentController extends AbstractController
 {
     /**
-     * @Route("/watch/{video_hash}/comment", methods={"POST"}, name="add_comment")
+     * @Route("/video/{video_hash}/comment", methods={"POST"}, name="add_comment")
      */
     public function add($video_hash, Request $request)
     {
