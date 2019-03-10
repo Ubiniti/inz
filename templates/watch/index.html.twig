@@ -58,9 +58,23 @@
                 Your browser does not support the video tag.
             </video>
             <div class="info-panel container p-2 w-100 d-flex justify-content-between">
-                <div class="thumbs">
-                    <button class="btn btn-link pr-1" id="like_btn"><i class="far fa-thumbs-up text-dark"></i></button> <span id="thumbs_up">{{video.thumbs_up}}</span>
-                    <button class="btn btn-link pl-4 pr-1" id="dislike_btn"><i class="far fa-thumbs-down text-dark"></i></button> <span id="thumbs_down">{{video.thumbs_down}}</span>
+                <div id="thumbs-container" data-action="{{path('rate_video', {video_hash:video.hash})}}">
+                    <button class="btn btn-link pr-1" id="like_btn">
+                        {% if user_rate is defined and user_rate == 1 %}
+                        <i class="fas fa-thumbs-up text-dark"></i>
+                        {% else %}
+                        <i class="far fa-thumbs-up text-dark"></i>
+                        {% endif %}
+                    </button>
+                    <span id="thumbs_up">{{thumbs_up}}</span>
+                    <button class="btn btn-link pl-4 pr-1" id="dislike_btn">
+                        {% if user_rate is defined and user_rate == 0 %}
+                        <i class="fas fa-thumbs-down text-dark"></i>
+                        {% else %}
+                        <i class="far fa-thumbs-down text-dark"></i>
+                        {% endif %}
+                    </button>
+                    <span id="thumbs_down">{{thumbs_down}}</span>
                 </div>
                 <div class="views">
                     <i class="fas fa-eye"></i> {{video.views}}

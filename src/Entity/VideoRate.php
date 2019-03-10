@@ -9,6 +9,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class VideoRate
 {
+    public const UP = 1;
+    public const DOWN = 0;
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()

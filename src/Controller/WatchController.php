@@ -3,13 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\Video;
+use App\Entity\VideoRate;
 use App\Entity\Comment;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Entity\VideoRate;
 
 class WatchController extends AbstractController
 {
@@ -18,12 +18,11 @@ class WatchController extends AbstractController
      */
     public function index($video_hash)
     {
-        //id = random string generated during upload
-        //get full path from DB entry with corresponding id
-        //get title,hashtags,comments,etc. from DB
-        //a folder with .mp4 and comments.txt for each video
+        $user = $this->getUser();
+        
         $entityManager = $this->getDoctrine()->getManager();
         $videoRepo = $entityManager->getRepository(Video::class);
+        $videoRateRepo = $entityManager->getRepository(VideoRate::class);
         $commentRepo = $entityManager->getRepository(Comment::class);
 
         $video = $videoRepo->findOneBy(['hash' => $video_hash]);
@@ -39,10 +38,25 @@ class WatchController extends AbstractController
         {
             $comments_data[$i] = $comments[$i]->toArray();
         }
+
+        $thumbs_up = $videoRateRepo->countRate($video_hash, VideoRate::UP);
+        $thumbs_down = $videoRateRepo->countRate($video_hash, VideoRate::DOWN);
         
+        $rate = NULL;
+
+        if($user) {
+            $videoRate = $videoRateRepo->findOneByViewer($video_hash, $user->getUsername());
+            if($videoRate) {
+                $rate = $videoRate->getRate();
+            }
+        }
+
         return $this->render('watch/index.html.twig', [
             'controller_name' => 'WatchController',
             'video' => $video->toArray(),
+            'thumbs_up' => $thumbs_up,
+            'thumbs_down' => $thumbs_down,
+            'user_rate' => $rate,
             'comments' => $comments_data
         ]);
     }
@@ -85,16 +99,23 @@ class WatchController extends AbstractController
     }
 
     /**
-     * @Route("/watch/{video_hash}/rate/{positive}", methods={"GET"}, name="get_video_rate")
+     * @Route("/watch/{video_hash}/rate", methods={"GET"}, name="get_video_rate")
      */
-    public function getRate($video_hash, $positive)
+    public function getRate($video_hash)
     {
         $entityManager = $this->getDoctrine()->getManager();
         $videoRateRepo = $entityManager->getRepository(VideoRate::class);
 
-        $count = $videoRateRepo->countRate($video_hash, $positive);
+        $countThumbsUp = $videoRateRepo->countRate($video_hash, VideoRate::UP);
+        $countThumbsDown = $videoRateRepo->countRate($video_hash, VideoRate::DOWN);
 
-        return new Response($count);
+        $rate = [
+            "up" => $countThumbsUp,
+            "down" => $countThumbsDown];
+
+        $result = json_encode($rate);
+
+        return new Response($result);
     }
     
 }
