@@ -33,11 +33,6 @@ class WatchController extends AbstractController
         $entityManager->flush();
 
         $comments = $commentRepo->findByVideoHash($video_hash);
-        $comments_data = array();
-        for($i = 0; $i < count($comments); $i++)
-        {
-            $comments_data[$i] = $comments[$i]->toArray();
-        }
 
         $thumbs_up = $videoRateRepo->countRate($video_hash, VideoRate::UP);
         $thumbs_down = $videoRateRepo->countRate($video_hash, VideoRate::DOWN);
@@ -53,11 +48,11 @@ class WatchController extends AbstractController
 
         return $this->render('watch/index.html.twig', [
             'controller_name' => 'WatchController',
-            'video' => $video->toArray(),
+            'video' => $video,
             'thumbs_up' => $thumbs_up,
             'thumbs_down' => $thumbs_down,
             'user_rate' => $rate,
-            'comments' => $comments_data
+            'comments' => $comments
         ]);
     }
 

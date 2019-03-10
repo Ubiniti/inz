@@ -145,20 +145,6 @@ class Comment
         return $this;
     }
 
-    public function toArray()
-    {
-        return [
-            'contents' => $this->getContents(),
-            'author_username' => $this->getAuthorUsername(),
-            'added' => $this->getAdded(),
-            'likes' => $this->getLikes(),
-            'dislikes' => $this->getDislikes(),
-            'parrent_hash' => $this->getParrentHash(),
-            'hash' => $this->getHash(),
-            'video_hash' => $this->getVideoHash()
-        ];
-    }
-
     public function toEncryptableArray()
     {
         return [

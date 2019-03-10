@@ -167,22 +167,6 @@ class Video
         return $this;
     }
 
-    public function toArray()
-    {
-        return [
-            'hash' => $this->getHash(),
-            'title' => $this->getTitle(),
-            'author_username' => $this->getAuthorUsername(),
-            'uploaded' => $this->getUploaded(),
-            'views' => $this->getViews(),
-            'description' => $this->getDescription(),
-            'duration' => $this->getDuration(),
-            'category' => $this->getCategory(),
-            'thumbs_up' => $this->getThumbsUp(),
-            'thumbs_down' => $this->getThumbsDown()
-        ];
-    }
-
     public function toEncryptableArray()
     {
         return [
