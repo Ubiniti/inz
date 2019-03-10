@@ -14,6 +14,8 @@ class CommentFixtures extends Fixture
         while(! feof($file))
         {
             $data = fgetcsv($file);
+            if(empty($data))
+                break;
             $comment = new Comment();
             
             $comment->setContents($data[1]);

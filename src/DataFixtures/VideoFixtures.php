@@ -14,6 +14,8 @@ class VideoFixtures extends Fixture
         while(! feof($file))
         {
             $data = fgetcsv($file);
+            if(empty($data))
+                break;
             $video = new Video();
             $video->setTitle($data[1]);
             $video->setUploaded(new \DateTime($data[2]));

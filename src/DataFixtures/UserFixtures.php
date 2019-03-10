@@ -14,6 +14,8 @@ class UserFixtures extends Fixture
         while(! feof($file))
         {
             $data = fgetcsv($file);
+            if(empty($data))
+                break;
             $user = new User();
             $user->setUsername($data[1]);
             $user->setRoles(array($data[2]));
