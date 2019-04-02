@@ -1,5 +1,5 @@
 # Team Project
-#### Piotr Puchacz | Michał Sidor
+#### Piotr Puchacz | Michał J. Sidor
 
 ### Steps required to run project on your local machine
 
