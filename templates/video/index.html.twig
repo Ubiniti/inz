@@ -59,22 +59,22 @@
             </video>
             <div class="info-panel container p-2 w-100 d-flex justify-content-between">
                 <div id="thumbs-container" data-action="{{path('rate_video', {video_hash:video.hash})}}">
-                    <button class="btn btn-link pr-1" id="like_btn">
+                    <button class="btn btn-light px-4" id="like_btn">
                         {% if user_rate is defined and user_rate is not null and user_rate == 1 %}
                         <i class="fas fa-thumbs-up text-dark"></i>
                         {% else %}
                         <i class="far fa-thumbs-up text-dark"></i>
                         {% endif %}
+                        <span id="thumbs_up" class="text-dark">{{thumbs_up}}</span>
                     </button>
-                    <span id="thumbs_up">{{thumbs_up}}</span>
-                    <button class="btn btn-link pl-4 pr-1" id="dislike_btn">
+                    <button class="btn btn-light px-4" id="dislike_btn">
                         {% if user_rate is defined and user_rate is not null and user_rate == 0 %}
                         <i class="fas fa-thumbs-down text-dark"></i>
                         {% else %}
                         <i class="far fa-thumbs-down text-dark"></i>
                         {% endif %}
+                        <span id="thumbs_down" class="text-dark">{{thumbs_down}}</span>
                     </button>
-                    <span id="thumbs_down">{{thumbs_down}}</span>
                 </div>
                 <div class="views">
                     <i class="fas fa-eye"></i> {{video.views}}
