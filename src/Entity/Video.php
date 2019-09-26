@@ -2,7 +2,10 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\VideoRepository")
@@ -47,7 +50,7 @@ class Video
     private $description;
 
     /**
-     * @ORM\Column(type="time")
+     * @ORM\Column(type="integer")
      */
     private $duration;
 
@@ -55,6 +58,31 @@ class Video
      * @ORM\Column(type="string", length=255)
      */
     private $category;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\VideoRate", mappedBy="video", orphanRemoval=true)
+     */
+    private $rates;
+
+    /**
+     * @ORM\OneToMany(
+     *     targetEntity="App\Entity\Comment",
+     *     mappedBy="video",
+     *     orphanRemoval=true,
+     *     cascade={"persist","remove"}
+     *     )
+     */
+    private $comments;
+
+    public function __construct()
+    {
+        $this->uploaded = new \DateTimeImmutable();
+        $this->views = 0;
+        $this->description = '';
+        $this->category = '';
+        $this->rates = new ArrayCollection();
+        $this->comments = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -133,12 +161,12 @@ class Video
         return $this;
     }
 
-    public function getDuration(): ?\DateTimeInterface
+    public function getDuration(): ?int
     {
         return $this->duration;
     }
 
-    public function setDuration(\DateTimeInterface $duration): self
+    public function setDuration(int $duration): self
     {
         $this->duration = $duration;
 
@@ -175,5 +203,78 @@ class Video
         $this->setHash($hash);
 
         return $hash;
+    }
+
+    /**
+     * @return Collection|VideoRate[]
+     */
+    public function getRates(): Collection
+    {
+        return $this->rates;
+    }
+
+    public function addRate(VideoRate $rate): self
+    {
+        if (!$this->rates->contains($rate)) {
+            $rate->setVideo($this);
+            $this->rates[] = $rate;
+        }
+
+        return $this;
+    }
+
+    public function removeRate(VideoRate $rate): self
+    {
+        if ($this->rates->contains($rate)) {
+            $this->rates->removeElement($rate);
+            if ($rate->getVideo() === $this) {
+                $rate->setVideo(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Comment[]
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comment $comment): self
+    {
+        if (!$this->comments->contains($comment)) {
+            $comment->setVideo($this);
+            $this->comments[] = $comment;
+        }
+
+        return $this;
+    }
+
+    public function comment(string $message, UserInterface $user): self
+    {
+        $comment = (new Comment())
+            ->setContents($message)
+            ->setAuthorUsername($user->getUsername())
+            ->setAdded(new \DateTime());
+
+        $this->addComment($comment);
+
+        return $this;
+    }
+
+    public function removeComment(Comment $comment): self
+    {
+        if ($this->comments->contains($comment)) {
+            $this->comments->removeElement($comment);
+            // set the owning side to null (unless already changed)
+            if ($comment->getVideo() === $this) {
+                $comment->setVideo(null);
+            }
+        }
+
+        return $this;
     }
 }

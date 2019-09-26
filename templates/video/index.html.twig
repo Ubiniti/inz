@@ -53,12 +53,11 @@
                 <div class="vid-data">{{video.uploaded|date("d-m-Y")}}</div>
             </div>
             <video id="player" class="embed-responsive embed-responsive-16by9" auttoplay controls data-video-hash="{{video.hash}}">
-                <source src="{{asset(['video/', video.hash, '.mp4']|join)}}" type="video/mp4">
-                <source src="{{asset(['video/', video.hash, '.ogg']|join)}}" type="video/ogg">
+                <source src="{{ asset(['uploads/', video.hash, '.mp4']|join)}}" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
             <div class="info-panel container p-2 w-100 d-flex justify-content-between">
-                <div id="thumbs-container" data-action="{{path('rate_video', {video_hash:video.hash})}}">
+                <div id="thumbs-container" data-action="{{path('video_rate', {video_hash:video.hash})}}">
                     <button class="btn btn-light px-4" id="like_btn">
                         {% if user_rate is defined and user_rate is not null and user_rate == 1 %}
                         <i class="fas fa-thumbs-up text-dark"></i>
@@ -123,7 +122,7 @@
                             <div class="content">
                             <form action="{{ path('add_comment', {video_hash: video.hash}) }}" method="POST" class="container">
                                 <label for="newcomment" class="com-author pb-0 mb-1">New comment:</label>
-                                <textarea class="form-control" name="contents" id="contents" rows="3"></textarea>
+                                <textarea class="form-control" name="message" id="message" rows="3"></textarea>
                                 <div class="d-flex justify-content-end">
                                     <button class="btn" type="submit">Send</button>
                                 </div>

@@ -32,29 +32,10 @@ class Comment
     private $added;
 
     /**
-     * @ORM\Column(type="integer", options={"default" : 0})
+     * @ORM\ManyToOne(targetEntity="App\Entity\Video", inversedBy="comments")
+     * @ORM\JoinColumn(nullable=false)
      */
-    private $likes = 0;
-
-    /**
-     * @ORM\Column(type="integer", options={"default" : 0})
-     */
-    private $dislikes = 0;
-
-    /**
-     * @ORM\Column(type="string", length=32, nullable=true)
-     */
-    private $parrent_hash;
-
-    /**
-     * @ORM\Column(type="string", length=32, unique=true)
-     */
-    private $hash;
-
-    /**
-     * @ORM\Column(type="string", length=32)
-     */
-    private $video_hash;
+    private $video;
 
     public function getId(): ?int
     {
@@ -97,81 +78,14 @@ class Comment
         return $this;
     }
 
-    public function getLikes(): ?int
+    public function getVideo(): ?Video
     {
-        return $this->likes;
+        return $this->video;
     }
 
-    public function setLikes(int $likes): self
+    public function setVideo(?Video $video): self
     {
-        $this->likes = $likes;
-
-        return $this;
-    }
-
-    public function getDislikes(): ?int
-    {
-        return $this->dislikes;
-    }
-
-    public function setDislikes(int $dislikes): self
-    {
-        $this->dislikes = $dislikes;
-
-        return $this;
-    }
-
-    public function getParrentHash(): ?string
-    {
-        return $this->parrent_hash;
-    }
-
-    public function setParrentHash(?string $parrent_hash): self
-    {
-        $this->parrent_hash = $parrent_hash;
-
-        return $this;
-    }
-
-    public function getHash(): ?string
-    {
-        return $this->hash;
-    }
-
-    public function setHash(string $hash): self
-    {
-        $this->hash = $hash;
-
-        return $this;
-    }
-
-    public function toEncryptableArray()
-    {
-        return [
-            'author_username' => $this->getAuthorUsername(),
-            'added' => $this->getAdded(),
-            'parrent_hash' => $this->getParrentHash(),
-            'video_hash' => $this->getVideoHash()
-        ];
-    }
-
-    public function generateHash()
-    {
-        $serialized = json_encode($this->toEncryptableArray());
-        $hash = md5($serialized);
-        $this->setHash($hash);
-
-        return $hash;
-    }
-
-    public function getVideoHash(): ?string
-    {
-        return $this->video_hash;
-    }
-
-    public function setVideoHash(string $video_hash): self
-    {
-        $this->video_hash = $video_hash;
+        $this->video = $video;
 
         return $this;
     }

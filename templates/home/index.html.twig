@@ -24,17 +24,12 @@
             {% for video in videos %}
                 <div class="col">
                     <div class="video-thumb mb-3">
-                        <a href="{{ path('watch', {video_hash: video.hash}) }}" class="text-dark">
-                        <img width="200px" src="{{ asset( ['video/thumbs/', video.hash, '.jpg']|join ) }}"> <br>
+                        <a href="{{ path('video_watch', {video_hash: video.hash}) }}" class="text-dark">
+                        <img width="200px" src="{{ asset( ['uploads/thumbs/', video.hash, '.jpg']|join ) }}"> <br>
                         {{ video.title|slice(0, 55) }}{% if video.title|length > 55 %}...{% endif %}
                         </a>
                     </div>
                 </div>
-                {# {{ video.author_id }} <br>
-                {{ video.uploaded|date("m/d/Y") }} <br>
-                {{ video.views }} <br>
-                {{ video.description }} <br>
-                {{ video.duration|date('H:i:s') }} <br> #}
             {% endfor %}
         </div>
     </div>

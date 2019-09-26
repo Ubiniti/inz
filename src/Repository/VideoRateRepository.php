@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Video;
 use App\Entity\VideoRate;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
@@ -34,45 +35,16 @@ class VideoRateRepository extends ServiceEntityRepository
         ;
     }
 
-    public function countRate($video_hash, $positive)
+    public function countRate(Video $video, $rate)
     {
-        return $this->createQueryBuilder('l')
-            ->andWhere('l.video_hash = :hash')
-            ->andWhere('l.rate = :rate')
-            ->setParameter('hash', $video_hash)
-            ->setParameter('rate', $positive)
-            ->select('COUNT(l.viewer_username) AS likes')
+        return $this->createQueryBuilder('vr')
+            ->andWhere('vr.video = :video')
+            ->andWhere('vr.rate = :rate')
+            ->setParameter('video', $video)
+            ->setParameter('rate', $rate)
+            ->select('COUNT(vr.author) AS result')
             ->getQuery()
             ->getSingleScalarResult()
         ;
     }
-
-    // /**
-    //  * @return VideoRate[] Returns an array of VideoRate objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('v')
-            ->andWhere('v.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('v.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?VideoRate
-    {
-        return $this->createQueryBuilder('v')
-            ->andWhere('v.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

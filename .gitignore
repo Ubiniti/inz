@@ -23,4 +23,7 @@
 /.idea/
 
 # video files
-/public/assets/video/
+/public/assets/
+
+# test controller
+/src/Controller/TestController.php
