@@ -52,8 +52,8 @@
                 <a href="#" class="text-dark">author</a>
                 <div class="vid-data">{{video.uploaded|date("d-m-Y")}}</div>
             </div>
-            <video id="player" class="embed-responsive embed-responsive-16by9" auttoplay controls data-video-hash="{{video.hash}}">
-                <source src="{{ asset(['uploads/', video.hash, '.mp4']|join)}}" type="video/mp4">
+            <video id="player" class="embed-responsive embed-responsive-16by9" autoplay controls data-video-hash="{{video.hash}}">
+                <source src="{{ asset([uploads_dir, '/', video.hash, '.mp4']|join)}}" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
             <div class="info-panel container p-2 w-100 d-flex justify-content-between">

@@ -12,9 +12,11 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 class VideoUploader
 {
-    const DEFAULT_PATH = '/public/uploads/';
+    const DEFAULT_UPLOAD_DIR = '/uploads';
+    const THUMBS_DIR = '/thumbs';
+    const PUBLIC_DIR = '/public';
     const THUMB_FORMAT = 'jpg';
-    const THUMB_FRAME_TIME = '10.0';
+    const THUMB_FRAME_TIME = 10.0;
 
     private $uploadsPath;
 
@@ -35,7 +37,7 @@ class VideoUploader
 
     public function __construct(UserGetter $userGetter, EntityManagerInterface $em, KernelInterface $kernel)
     {
-        $this->uploadsPath = $_ENV['UPLOADS_FOLDER'];
+        $this->uploadsPath = self::PUBLIC_DIR.$_ENV['UPLOADS_DIR'];
         $this->userGetter = $userGetter;
         $this->em = $em;
         $this->kernel = $kernel;
@@ -58,21 +60,20 @@ class VideoUploader
             mkdir($thumbnailsPath);
         }
 
+        $thumbnailFilePath = $thumbnailsPath . $hash . '.' . self::THUMB_FORMAT;
+        $thumbnailFile = $dto->getThumbnail();
+
+        if ($thumbnailFile) {
+            $thumbnailTmpPath = $thumbnailFile->getPathname();
+            $thumbnailExt = $thumbnailFile->getClientOriginalExtension();
+            copy($thumbnailTmpPath, $thumbnailsPath . $hash . '.' .$thumbnailExt);
+        } else {
+            $this->saveFrameFromVideo($tmpPath, $thumbnailFilePath, self::THUMB_FRAME_TIME);
+        }
+
         copy($tmpPath, $uploadsPath . $hash . '.' .$ext);
 
-        $ffprobe = FFProbe::create();
-        $format = $ffprobe
-            ->format($tmpPath);
-
-        $duration = $format->get('duration');
-
-        $ffmpeg = FFMpeg::create();
-        $videoFile = $ffmpeg->open($tmpPath);
-
-        $thumbFilePath = $thumbnailsPath . $hash . '.' . self::THUMB_FORMAT;
-        $videoFile
-            ->frame(TimeCode::fromSeconds(self::THUMB_FRAME_TIME))
-            ->save($thumbFilePath);
+        $duration = $this->getVideoFileProperty('duration', $tmpPath);
 
         $video = new Video();
         $video
@@ -88,16 +89,39 @@ class VideoUploader
         $this->em->flush();
     }
 
+    private function getVideoFileProperty(string $name, string $path)
+    {
+        $ffprobe = FFProbe::create();
+        $format = $ffprobe
+            ->format($path);
+
+        $value = $format->get($name);
+
+        return $value;
+    }
+
+    private function saveFrameFromVideo(string $sourcePath, string $targetPath, float $time)
+    {
+        $ffmpeg = FFMpeg::create();
+        $videoFile = $ffmpeg->open($sourcePath);
+
+        $videoFile
+            ->frame(TimeCode::fromSeconds($time))
+            ->save($targetPath);
+    }
+
     private function getUploadsPath()
     {
         $projectDir = $this->kernel->getProjectDir();
         $slash = substr($this->uploadsPath, -1) === '/' ? '' : '/';
 
-        return $this->uploadsPath !== null ? $projectDir . $this->uploadsPath . $slash : self::DEFAULT_PATH;
+        return $this->uploadsPath !== null
+            ? $projectDir . $this->uploadsPath . $slash
+            : self::DEFAULT_UPLOAD_DIR;
     }
 
     private function getTemplatesPath()
     {
-        return $this->getUploadsPath() . 'thumbs/';
+        return $this->getUploadsPath() . self::THUMBS_DIR . '/';
     }
 }

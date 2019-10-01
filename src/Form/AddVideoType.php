@@ -19,6 +19,7 @@ class AddVideoType extends AbstractType
             ->add('title', TextType::class)
             ->add('description', TextareaType::class)
             ->add('file', FileType::class)
+            ->add('thumbnail', FileType::class)
             ->add('submit', SubmitType::class)
         ;
     }

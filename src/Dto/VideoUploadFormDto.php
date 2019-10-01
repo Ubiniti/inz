@@ -24,6 +24,11 @@ class VideoUploadFormDto
      */
     private $file;
 
+    /**
+     * @var ?UploadedFile
+     */
+    private $thumbnail;
+
     public function getTitle(): ?string
     {
         return $this->title;
@@ -56,6 +61,18 @@ class VideoUploadFormDto
     public function setFile(UploadedFile $file): self
     {
         $this->file = $file;
+
+        return $this;
+    }
+
+    public function getThumbnail(): ?UploadedFile
+    {
+        return $this->thumbnail;
+    }
+
+    public function setThumbnail(?UploadedFile $thumbnail): self
+    {
+        $this->thumbnail = $thumbnail;
 
         return $this;
     }
