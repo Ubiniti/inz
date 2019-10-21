@@ -25,7 +25,6 @@ class SearchController extends AbstractController {
         $videos = $this->getDoctrine()->getManager()->getRepository(Video::class)->findByFilter($filter);
 
         return $this->render('home/index.html.twig', [
-            'controller_name' => 'HomeController',
             'videos' => $videos
         ]);
     }
