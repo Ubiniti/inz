@@ -2,9 +2,11 @@
 
 namespace App\Form;
 
-use App\Entity\User;
+use App\Dto\RegistrationDto;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -20,15 +22,35 @@ class RegistrationFormType extends AbstractType {
 
     public function buildForm(FormBuilderInterface $builder, array $options) {
         $builder
-                ->add('username')                
-                ->add('email', EmailType::class)
-                ->add('country', CountryType::class)
-                ->add('birthDate', DateType::class, [
-                    'widget' => 'single_text',
+                ->add('username', TextType::class, [
+                    'label' => false,
+                    'attr' => [
+                        'placeholder' => 'Nazwa użytkownika'
+                    ],
                 ])
-                ->add('plainPassword', RepeatedType::class, array(
+                ->add('email', EmailType::class, [
+                    'label' => false,
+                    'attr' => [
+                        'placeholder' => 'Email'
+                    ],
+                ])
+                ->add('country', CountryType::class, [
+                    'label' => false,
+                    'attr' => [
+                        'placeholder' => 'Kraj'
+                    ]
+                ])
+                ->add('birthday', DateType::class, [
+                    'widget' => 'single_text',
+                    'label' => false,
+                    'attr' => [
+                        'placeholder' => 'Data urodzenia'
+                    ],
+                ])
+                ->add('plainPassword', RepeatedType::class, [
                     'type' => PasswordType::class,
-                    'mapped' => false,
+                    'mapped' => true,
+                    'label' => false,
                     'constraints' => [
                         new NotBlank([
                             'message' => 'Please enter a password',
@@ -43,19 +65,25 @@ class RegistrationFormType extends AbstractType {
                     'invalid_message' => 'The password fields must match.',
                     'options' => array('attr' => array('class' => 'password-field')),
                     'required' => true,
-                    'first_options' => array('label' => 'Password'),
-                    'second_options' => array('label' => 'Repeat Password')))
+                    'first_options' => ['label' => false, 'attr' => ['placeholder' => 'Hasło']],
+                    'second_options' => ['label' => false, 'attr' => ['placeholder' => 'Powtórz hasło']]
+                ])
+                ->add('avatar', FileType::class, [
+                    'label' => false,
+                    'attr' => [
+                        'placeholder' => 'Wybierz avatar'
+                    ]
+                ])
                 ->add('termsAccepted', CheckboxType::class, [
                     'mapped' => false,
+                    'label' => 'Akceputję warunki korzystania z serwisu',
                     'constraints' => new IsTrue(),
-                ])
-
-        ;
+                ]);
     }
 
     public function configureOptions(OptionsResolver $resolver) {
         $resolver->setDefaults([
-            'data_class' => User::class,
+            'data_class' => RegistrationDto::class,
         ]);
     }
 

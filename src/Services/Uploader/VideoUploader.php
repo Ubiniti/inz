@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Uploader;
 
 use App\Dto\VideoUploadFormDto;
 use App\Entity\Video;
+use App\Services\UserGetter;
 use Doctrine\ORM\EntityManagerInterface;
 use FFMpeg\Coordinate\TimeCode;
 use FFMpeg\FFMpeg;
@@ -50,7 +51,7 @@ class VideoUploader
         $ext = $dto->getFile()->getClientOriginalExtension();
         $hash = md5(uniqid());
         $uploadsPath = $this->getUploadsPath();
-        $thumbnailsPath = $this->getTemplatesPath();
+        $thumbnailsPath = $this->getThumbnailsPath();
 
         if (!is_dir($uploadsPath)) {
             mkdir($uploadsPath);
@@ -120,7 +121,7 @@ class VideoUploader
             : self::DEFAULT_UPLOAD_DIR;
     }
 
-    private function getTemplatesPath()
+    private function getThumbnailsPath()
     {
         return $this->getUploadsPath() . self::THUMBS_DIR . '/';
     }

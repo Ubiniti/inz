@@ -1,9 +1,11 @@
 .reg-form-container {
-    margin: 60px;
+    margin: auto;
     margin-top: 40px;
+    width: 500px;
 }
 
 .reg-form-container h1 {
+    text-align: center;
     padding-bottom: 10px;
     border-bottom: solid 1px #ccc;
     margin-bottom: 30px;

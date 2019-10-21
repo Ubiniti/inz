@@ -2,8 +2,11 @@
 
 namespace App\Entity;
 
+use App\Dto\RegistrationDto;
+use App\Services\Uploader\AvatarUploader;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -77,7 +80,31 @@ class User implements UserInterface
      * @ORM\Column(type="date")
      * @Assert\DateTime
      */
-    private $birthDate;
+    private $birthday;
+
+    /**
+     * @ORM\Column(type="string", length=32, nullable=true)
+     */
+    private $avatar;
+
+    public static function createFromDto(
+        RegistrationDto $dto,
+        UserPasswordEncoderInterface $encoder,
+        AvatarUploader $uploader
+    ): self {
+        $self = new self();
+        $self->username = $dto->getUsername();
+        $self->password = $encoder->encodePassword($self, $dto->getPlainPassword());
+        $self->email = $dto->getEmail();
+        $self->country = $dto->getCountry();
+        $self->birthday = $dto->getBirthday();
+        $self->joinDate = new \DateTimeImmutable();
+        if ($self->avatar) {
+            $self->avatar = $uploader->saveAvatar($dto->getAvatar());
+        }
+
+        return $self;
+    }
 
     public function getId(): ?int
     {
@@ -164,12 +191,12 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getJoinDate(): ?\DateTimeInterface
+    public function getJoinDate(): string
     {
         return $this->joinDate;
     }
 
-    public function setJoinDate(\DateTimeInterface $joinDate): self
+    public function setJoinDate(string $joinDate): self
     {
         $this->joinDate = $joinDate;
 
@@ -188,14 +215,26 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getBirthDate(): ?\DateTimeInterface
+    public function getBirthday(): ?\DateTimeInterface
     {
-        return $this->birthDate;
+        return $this->birthday;
     }
 
-    public function setBirthDate(\DateTimeInterface $birthDate): self
+    public function setBirthday(\DateTimeInterface $birthday): self
     {
-        $this->birthDate = $birthDate;
+        $this->birthday = $birthday;
+
+        return $this;
+    }
+
+    public function getAvatar(): string
+    {
+        return $this->avatar;
+    }
+
+    public function setAvatar(string $avatar): self
+    {
+        $this->avatar = $avatar;
 
         return $this;
     }

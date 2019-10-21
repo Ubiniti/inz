@@ -11,7 +11,7 @@ use App\Repository\CommentRepository;
 use App\Repository\VideoRateRepository;
 use App\Repository\VideoRepository;
 use App\Services\VideoManager;
-use App\Services\VideoUploader;
+use App\Services\Uploader\VideoUploader;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
