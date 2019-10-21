@@ -19,7 +19,7 @@ class VideoRepository extends ServiceEntityRepository
         parent::__construct($registry, Video::class);
     }
 
-    public function findByFilter(String $filter)
+    public function findByFilter(string $filter)
     {
         $qb = $this->createQueryBuilder('v')
             ->where("v.title LIKE '%" . $filter . "%'")

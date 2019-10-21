@@ -21,7 +21,7 @@ class SearchController extends AbstractController {
         } catch (\Exception $exception) {
             $filter = '';
         }
-//        dd($filter);
+
         $videos = $this->getDoctrine()->getManager()->getRepository(Video::class)->findByFilter($filter);
 
         return $this->render('home/index.html.twig', [
