@@ -54,11 +54,11 @@ class VideoUploader
         $thumbnailsPath = $this->getThumbnailsPath();
 
         if (!is_dir($uploadsPath)) {
-            mkdir($uploadsPath);
+            mkdir($uploadsPath, 0777, true);
         }
 
         if (!is_dir($thumbnailsPath)) {
-            mkdir($thumbnailsPath);
+            mkdir($thumbnailsPath, 0777, true);
         }
 
         $thumbnailFilePath = $thumbnailsPath . $hash . '.' . self::THUMB_FORMAT;
