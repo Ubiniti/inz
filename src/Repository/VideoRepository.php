@@ -4,7 +4,6 @@ namespace App\Repository;
 
 use App\Entity\Video;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -20,11 +19,10 @@ class VideoRepository extends ServiceEntityRepository
         parent::__construct($registry, Video::class);
     }
 
-    public function findByFilter(String $filter = '')
+    public function findByFilter(String $filter)
     {
         $qb = $this->createQueryBuilder('v')
-            ->where('v.title LIKE :filter')
-            ->setParameter('filter', $filter)
+            ->where("v.title LIKE '%" . $filter . "%'")
             ->orderBy('v.title');
 
         return $qb->getQuery()->getResult();

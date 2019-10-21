@@ -15,9 +15,13 @@ class SearchController extends AbstractController {
     public function search(Request $request) {
 
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-        dd($request);
-        $filter = 'taki film';
-//        dd($request);
+
+        try {
+            $filter = $request->query->get('search');
+        } catch (\Exception $exception) {
+            $filter = '';
+        }
+//        dd($filter);
         $videos = $this->getDoctrine()->getManager()->getRepository(Video::class)->findByFilter($filter);
 
         return $this->render('home/index.html.twig', [
