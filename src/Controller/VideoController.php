@@ -20,7 +20,7 @@ use Symfony\Component\Security\Core\Security;
 
 /**
  * @Route("/video", name="app_video_")
-*/
+ */
 class VideoController extends AbstractController
 {
     /**
@@ -52,7 +52,8 @@ class VideoController extends AbstractController
         CommentRepository $commentRepository,
         VideoManager $videoManager,
         Security $security
-    ) {
+    )
+    {
         $this->videoRepository = $videoRepository;
         $this->videoRateRepository = $videoRateRepository;
         $this->commentRepository = $commentRepository;
@@ -68,19 +69,59 @@ class VideoController extends AbstractController
         $user = $this->security->getUser();
 
         $video = $this->videoRepository->findOneBy(['hash' => $video_hash]);
+
+        if ($video->getPrice() > 0) {
+
+            return $this->redirectToRoute('app_video_watch_paid', ['video_hash' => $video_hash]);
+        }
+
         $comments = $this->commentRepository->findBy(['video' => $video]);
 
         $this->videoManager->incrementViews($video);
 
         $thumbs_up = $this->videoRateRepository->countRate($video, VideoRate::UP);
         $thumbs_down = $this->videoRateRepository->countRate($video, VideoRate::DOWN);
-        
+
         $rate = null;
 
-        if($user) {
+        if ($user) {
             $videoRate = $this->videoRateRepository->findOneBy(['video' => $video, 'author' => $user]);
 
-            if($videoRate) {
+            if ($videoRate) {
+                $rate = $videoRate->getRate();
+            }
+        }
+
+        return $this->render('video/index.html.twig', [
+            'video' => $video,
+            'thumbs_up' => $thumbs_up,
+            'thumbs_down' => $thumbs_down,
+            'user_rate' => $rate,
+            'comments' => $comments
+        ]);
+    }
+
+    /**
+     * @Route("/{video_hash}", name="watch_paid")
+     */
+    public function watchPaidVideo(string $video_hash)
+    {
+        $user = $this->security->getUser();
+
+        $video = $this->videoRepository->findOneBy(['hash' => $video_hash]);
+        $comments = $this->commentRepository->findBy(['video' => $video]);
+
+        $this->videoManager->incrementViews($video);
+
+        $thumbs_up = $this->videoRateRepository->countRate($video, VideoRate::UP);
+        $thumbs_down = $this->videoRateRepository->countRate($video, VideoRate::DOWN);
+
+        $rate = null;
+
+        if ($user) {
+            $videoRate = $this->videoRateRepository->findOneBy(['video' => $video, 'author' => $user]);
+
+            if ($videoRate) {
                 $rate = $videoRate->getRate();
             }
         }
@@ -114,13 +155,10 @@ class VideoController extends AbstractController
             'author' => $user->getUsername()
         ]);
 
-        if($existingRate)
-        {
+        if ($existingRate) {
             $existingRate->setRate($rate);
             $entityManager->persist($existingRate);
-        }
-        else
-        {
+        } else {
             $videoRate = new VideoRate();
             $videoRate->setVideo($video);
             $videoRate->setAuthor($user->getUsername());
