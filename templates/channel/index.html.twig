@@ -20,7 +20,12 @@
         </div>
         <div class="row">
             <div class="col text-center">
-                <h1>{{ channel.name }}</h1>
+                <h1 style="display:inline-block">{{ channel.name }}</h1>
+                {% if channel.id is same as(app.user.channel.id) %}
+                    <a style="float:right" href="{{ path('app_user_channel_edit') }}">
+                        <i class="fas fa-edit text-primary"></i>
+                    </a>
+                {% endif %}
                 <hr>
             </div>
         </div>

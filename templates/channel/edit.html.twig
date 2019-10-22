@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello ChannelController!{% endblock %}
+
+{% block body %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col text-center">
+                {{ form_start(form) }}
+                {{ form_row(form.name) }}
+                {{ form_row(form.image) }}
+                <button class="btn btn-success" type="submit">Zapisz zmiany</button>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

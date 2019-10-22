@@ -18,7 +18,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  *
  * @package App\Controller
  * @IsGranted("IS_AUTHENTICATED_FULLY", message="Brak dostępu.")
- * @Route("/wallet", name="app_user_wallet_")
+ * @Route("/wallet", name="app_user_wallet")
  */
 class WalletController extends AbstractController
 {
@@ -39,7 +39,7 @@ class WalletController extends AbstractController
     }
 
     /**
-     * @Route("/buy/{amount}", name="buy")
+     * @Route("/buy/{amount}", name="_buy")
      * @param int $amount
      * @return Response
      */
@@ -55,7 +55,7 @@ class WalletController extends AbstractController
     }
 
     /**
-     * @Route("/buy-success", name="buy_success")
+     * @Route("/buy-success", name="_buy_success")
      */
     public function buySuccess()
     {
@@ -65,7 +65,7 @@ class WalletController extends AbstractController
     }
 
     /**
-     * @Route("/add_finances", name="add_finances")
+     * @Route("/add_finances", name="_add_finances")
      * @param Request $request
      * @param DotPayService $dotPayService
      * @return Response
