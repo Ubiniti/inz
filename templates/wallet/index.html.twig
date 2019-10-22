@@ -5,15 +5,25 @@
 {% block body %}
     <div class="container">
         <div class="row">
-            <h3>Twój portfel</h3>
+            <div class="col text-center">
+                <h3>Twój portfel</h3>
+                <hr>
+            </div>
         </div>
         <div class="row">
-            <div class="col-6">
-                {% if wallet is not null %}
-                    Dostępne środki: {{ wallet.funds }}
-                {% else %}
-                    Twój portfel nie istnieje
-                {% endif %}
+            <div class="col">
+                <div class="row">
+                    {% if wallet is not null %}
+                        Dostępne środki: {{ wallet.funds }}
+                    {% else %}
+                        Twój portfel nie istnieje
+                    {% endif %}
+                </div>
+                <div class="row">
+                    <a href="{{ path('app_user_wallet_add_finances') }}">Doładuj
+                        <i class="fas fa-plus text-success"></i>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
