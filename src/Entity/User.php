@@ -87,6 +87,11 @@ class User implements UserInterface
      */
     private $avatar;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\Wallet", mappedBy="user", cascade={"persist", "remove"})
+     */
+    private $wallet;
+
     public static function createFromDto(
         RegistrationDto $dto,
         UserPasswordEncoderInterface $encoder,
@@ -235,6 +240,23 @@ class User implements UserInterface
     public function setAvatar(string $avatar): self
     {
         $this->avatar = $avatar;
+
+        return $this;
+    }
+
+    public function getWallet(): ?Wallet
+    {
+        return $this->wallet;
+    }
+
+    public function setWallet(Wallet $wallet): self
+    {
+        $this->wallet = $wallet;
+
+        // set the owning side of the relation if necessary
+        if ($this !== $wallet->getUser()) {
+            $wallet->setUser($this);
+        }
 
         return $this;
     }

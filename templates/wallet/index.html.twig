@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello WalletController!{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <h3>Twój portfel</h3>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                {% if wallet is not null %}
+                    Dostępne środki: {{ wallet.funds }}
+                {% else %}
+                    Twój portfel nie istnieje
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
