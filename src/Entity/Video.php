@@ -306,6 +306,11 @@ class Video
         return $this->price;
     }
 
+    public function getPriceAsCurrency(): ?float
+    {
+        return $this->price/100;
+    }
+
     public function setPrice(?int $price): self
     {
         $this->price = $price;

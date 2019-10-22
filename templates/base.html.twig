@@ -71,10 +71,11 @@
     <br>
     <footer>MJ Sidor, PPuchacz, symf project</footer>
 
-    <script src="{{ asset('vendor/js/jquery-3.3.1.min.js') }}"></script>
-    <script src="{{ asset('vendor/js/popper.min.js') }}" ></script>
-    <script src="{{ asset('vendor/js/bootstrap.min.js') }}"></script>
-    
-    {% block javascripts %}{% endblock %}
+    {% block javascripts %}
+        <script src="{{ asset('vendor/js/jquery-3.3.1.min.js') }}"></script>
+        <script src="{{ asset('vendor/js/popper.min.js') }}" ></script>
+        <script src="{{ asset('vendor/js/bootstrap.min.js') }}"></script>
+        <script src="{{ asset('js/tooltips.js') }}"></script>
+    {% endblock %}
   </body>
 </html>
