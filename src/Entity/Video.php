@@ -75,9 +75,9 @@ class Video
     private $comments;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="integer", nullable=true, options={"default" : "0"})
      */
-    private $price;
+    private $price = 0;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Channel", inversedBy="videos")

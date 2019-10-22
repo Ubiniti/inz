@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class WalletController extends AbstractController
 {
     /**
-     * @Route("/wallet", name="wallet")
+     * @Route("/wallet", name="app_user_wallet")
      */
     public function index()
     {
