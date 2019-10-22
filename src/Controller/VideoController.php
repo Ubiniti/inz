@@ -19,8 +19,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Security;
 
 /**
- * @Route("/video", name="video_")
- */
+ * @Route("/video", name="app_video_")
+*/
 class VideoController extends AbstractController
 {
     /**

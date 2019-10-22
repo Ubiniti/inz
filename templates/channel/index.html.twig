@@ -8,16 +8,45 @@
         <div class="row">
             <div class="col text-center">
                 <h1>{{ channel.name }}</h1>
+                <hr>
             </div>
         </div>
         <div class="row">
             <div class="col">
-                <h3>Filmy</h3>
+                <h3 style="display:inline-block">Filmy</h3>
+                <a href="{{ path('app_video_add') }}">
+                    <i class="fas fa-plus-square text-success"></i>
+                </a>
+                <div class="row">
+                    {% if channel.videos is empty %}
+                        Na kanale nie ma żadnych filmów.
+                    {% else %}
+                        {% for video in channel.videos %}
+                            <div class="row">
+                                {{ include('video/_playlist_card.html.twig', {'video':video}) }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
             </div>
             <div class="col">
-                <h3>Playlisty</h3>
+                <h3 style="display:inline-block">Playlisty</h3>
+                <a href="{{ path('app_playlist_add') }}">
+                    <i class="fas fa-plus-square text-success"></i>
+                </a>
+                <div class="row">
+                    {% if channel.playlists is empty %}
+                        Na kanale nie ma żadnych playlist.
+                    {% else %}
+                        {% for playlist in channel.playlists %}
+                            <div class="row">
+                                {{ include('playlist/_playlist_card.html.twig', {'playlist':playlist}) }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
             </div>
         </div>
-
     </div>
+
 {% endblock %}

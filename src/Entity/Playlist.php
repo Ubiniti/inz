@@ -28,6 +28,12 @@ class Playlist
      */
     private $videos;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Channel", inversedBy="playlists")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $channel;
+
     public function __construct()
     {
         $this->videos = new ArrayCollection();
@@ -72,6 +78,18 @@ class Playlist
         if ($this->videos->contains($video)) {
             $this->videos->removeElement($video);
         }
+
+        return $this;
+    }
+
+    public function getChannel(): ?Channel
+    {
+        return $this->channel;
+    }
+
+    public function setChannel(?Channel $channel): self
+    {
+        $this->channel = $channel;
 
         return $this;
     }
