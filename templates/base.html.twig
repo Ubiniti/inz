@@ -8,7 +8,19 @@
       <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ asset('css/base.css') }}">
 
-    {% block stylesheets %}{% endblock %}
+    {% block stylesheets %}
+        <style>
+            .video-thumb {
+                font-family: 'Roboto', sans-serif;
+                font-size: 14px;
+                width: 200px;
+            }
+
+            .video-thumb a:link {
+                text-decoration: none;
+            }
+        </style>
+    {% endblock %}
 
     <title>{% block title %}Welcome!{% endblock %}</title>
   </head>
@@ -35,7 +47,8 @@
                         {{ app.user.username }}
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="{{ path('app_user_channel', {'username':app.user.username}) }}">Twój kanał</a>
+                        <a class="dropdown-item" href="{{ path('app_user_channel', {'id':app.user.channel.id}) }}">Twój kanał</a>
+                        <a class="dropdown-item" href="{{ path('app_user_wallet') }}">Twój portfel</a>
                         <a class="dropdown-item" href="{{ path('user_edit') }}">Edit account</a>
                         <a class="dropdown-item" href="{{ path('user_remove') }}">Remove account</a>
                         <a class="dropdown-item" href="{{ path('app_logout') }}">Logout</a>
@@ -58,10 +71,11 @@
     <br>
     <footer>MJ Sidor, PPuchacz, symf project</footer>
 
-    <script src="{{ asset('vendor/js/jquery-3.3.1.min.js') }}"></script>
-    <script src="{{ asset('vendor/js/popper.min.js') }}" ></script>
-    <script src="{{ asset('vendor/js/bootstrap.min.js') }}"></script>
-    
-    {% block javascripts %}{% endblock %}
+    {% block javascripts %}
+        <script src="{{ asset('vendor/js/jquery-3.3.1.min.js') }}"></script>
+        <script src="{{ asset('vendor/js/popper.min.js') }}" ></script>
+        <script src="{{ asset('vendor/js/bootstrap.min.js') }}"></script>
+        <script src="{{ asset('js/tooltips.js') }}"></script>
+    {% endblock %}
   </body>
 </html>

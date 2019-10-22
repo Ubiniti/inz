@@ -1,0 +1,12 @@
+<div class="video-thumb mb-3">
+    <a href="{{ path('app_video_watch', {video_hash: video.hash}) }}" class="text-dark">
+        <img width="200px" src="{{ asset( [uploads_dir, '/thumbs/', video.hash, '.jpg']|join ) }}"> <br>
+        {{ video.title|slice(0, 55) }}{% if video.title|length > 55 %}...{% endif %}
+        {% if video.price > 0 %}
+            <i class="fas fa-dollar-sign text-success"
+               data-toggle="tooltip"
+               data-placement="top"
+               title="Materiał płatny - {{ video.priceAsCurrency }} PLN"></i>
+        {% endif %}
+    </a>
+</div>

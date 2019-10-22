@@ -39,10 +39,16 @@ class Channel
      */
     private $videos;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Playlist", mappedBy="channel", orphanRemoval=true)
+     */
+    private $playlists;
+
     public function __construct(string $name)
     {
         $this->videos = new ArrayCollection();
         $this->name = $name;
+        $this->playlists = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -111,6 +117,37 @@ class Channel
             // set the owning side to null (unless already changed)
             if ($video->getChannel() === $this) {
                 $video->setChannel(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Playlist[]
+     */
+    public function getPlaylists(): Collection
+    {
+        return $this->playlists;
+    }
+
+    public function addPlaylist(Playlist $playlist): self
+    {
+        if (!$this->playlists->contains($playlist)) {
+            $this->playlists[] = $playlist;
+            $playlist->setChannel($this);
+        }
+
+        return $this;
+    }
+
+    public function removePlaylist(Playlist $playlist): self
+    {
+        if ($this->playlists->contains($playlist)) {
+            $this->playlists->removeElement($playlist);
+            // set the owning side to null (unless already changed)
+            if ($playlist->getChannel() === $this) {
+                $playlist->setChannel(null);
             }
         }
 

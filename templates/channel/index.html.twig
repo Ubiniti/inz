@@ -8,19 +8,69 @@
 
 {% block body %}
     <div class="container">
-        <div class="movies-wrapper">
-        {% for video in channel.videos %}
-            <a class="text-dark" href="{{ path('video_watch', {'video_hash': video.hash}) }}">
-                <div class="thumbnail align-top">
-                    <span class="badge badge-dark">{{ video.durationInReadableFormat }}</span>
-                    <img
-                        alt="{{ video.title }}"
-                        src="{{ ['/assets/uploads/thumbs/', video.hash, '.jpg']|join }}"
-                        class="img-thumbnail position-relative" />
-                    <h2>{{ video.title }}</h2>
+        <div class="row">
+            <div class="col">
+                <div class="channel-background"
+                        {% if channel.image is not null %}
+                            style="background-image:url({{ channel.image }})"
+                        {% else %}
+                            style="background-image:url('stock_images/channel.png');
+                            width:100%; height:100%;
+"
+                        {% endif %}
+                ></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col text-center">
+                <h1 style="display:inline-block">{{ channel.name }}</h1>
+                {% if channel.id is same as(app.user.channel.id) %}
+                    <a style="float:right" href="{{ path('app_user_channel_edit') }}">
+                        <i class="fas fa-edit text-primary"></i>
+                    </a>
+                {% endif %}
+                <hr>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h3 style="display:inline-block">Filmy</h3>
+                <a href="{{ path('app_video_add') }}">
+                    <i class="fas fa-plus text-success"></i>
+                </a>
+                <div class="row">
+                    {% if channel.videos is empty %}
+                        Na kanale nie ma żadnych filmów.
+                    {% else %}
+                        {% for video in channel.videos %}
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    {{ include('video/_video_card.html.twig', {'video':video}) }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
                 </div>
-            </a>
-        {% endfor %}
+            </div>
+            <div class="col">
+                <h3 style="display:inline-block">Playlisty</h3>
+                <a href="{{ path('app_playlist_add') }}">
+                    <i class="fas fa-plus text-success"></i>
+                </a>
+                <div class="row">
+                    {% if channel.playlists is empty %}
+                        Na kanale nie ma żadnych playlist.
+                    {% else %}
+                        {% for playlist in channel.playlists %}
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    {{ include('playlist/_playlist_card.html.twig', {'playlist':playlist}) }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}

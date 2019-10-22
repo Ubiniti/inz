@@ -56,6 +56,11 @@ class Wallet
         return $this->funds;
     }
 
+    public function getFundsAsCurrency(): ?int
+    {
+        return $this->funds/100;
+    }
+
     public function setFunds(?int $funds): self
     {
         $this->funds = $funds;

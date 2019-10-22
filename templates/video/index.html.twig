@@ -57,7 +57,7 @@
                 Your browser does not support the video tag.
             </video>
             <div class="info-panel container p-2 w-100 d-flex justify-content-between">
-                <div id="thumbs-container" data-action="{{path('video_rate', {video_hash:video.hash})}}">
+                <div id="thumbs-container" data-action="{{path('app_video_rate', {video_hash:video.hash})}}">
                     <button class="btn btn-light px-4" id="like_btn">
                         {% if user_rate is defined and user_rate is not null and user_rate == 1 %}
                         <i class="fas fa-thumbs-up text-dark"></i>
