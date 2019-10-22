@@ -1,9 +1,12 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/channel.css') }}">
+{% endblock %}
+
 {% block title %}Hello ChannelController!{% endblock %}
 
 {% block body %}
-
     <div class="container">
         <div class="row">
             <div class="col">
@@ -70,5 +73,4 @@
             </div>
         </div>
     </div>
-
 {% endblock %}

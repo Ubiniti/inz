@@ -3,6 +3,7 @@
 namespace App\Services\Uploader;
 
 use App\Dto\VideoUploadFormDto;
+use App\Entity\User;
 use App\Entity\Video;
 use App\Services\UserGetter;
 use Doctrine\ORM\EntityManagerInterface;
@@ -76,6 +77,10 @@ class VideoUploader
 
         $duration = $this->getVideoFileProperty('duration', $tmpPath);
 
+        /** @var User $author */
+        $author = $this->em->getRepository(User::class)->findOneBy([
+            'username' => $this->userGetter->getUsername()
+        ]);
         $video = new Video();
         $video
             ->setTitle($title)
@@ -84,7 +89,8 @@ class VideoUploader
             ->setDescription($dto->getDescription())
             ->setAuthorUsername($this->userGetter->getUsername())
             // TODO: set category
-            ->setCategory('');
+            ->setCategory('')
+            ->setChannel($author->getChannel());
 
         $this->em->persist($video);
         $this->em->flush();

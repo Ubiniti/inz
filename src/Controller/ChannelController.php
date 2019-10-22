@@ -6,6 +6,8 @@ use App\Entity\Channel;
 use App\Form\ChannelFormType;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use App\Repository\ChannelRepository;
+use App\Services\UserGetter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -54,8 +56,12 @@ class ChannelController extends AbstractController
      * @param Channel $channel
      * @return Response
      */
-    public function index(Channel $channel)
+    public function index(string $username, ChannelRepository $channelRepository, UserGetter $userGetter)
     {
+        $channel = $channelRepository->findOneBy([
+            'user' => $userGetter->get()
+        ]);
+
         return $this->render('channel/index.html.twig', [
             'channel' => $channel
         ]);

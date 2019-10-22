@@ -385,4 +385,14 @@ class Video
 
         return $this;
     }
+
+    public function getDurationInReadableFormat(): string
+    {
+        if (!$this->duration) {
+            return '';
+        }
+        $format = $this->duration >= 60*60 ? 'h:i:s' : 'i:s';
+
+        return date($format, $this->duration);
+    }
 }

@@ -1,6 +1,7 @@
 (function () {
     $(document).ready(function () {
         var progressBar = $('#upload-progress');
+        var successRoute = $('#uploadForm').data('success');
 
         function progressHandling(e) {
             var percent = e.loaded / e.total * 100;
@@ -29,7 +30,7 @@
                     return myXhr;
                 },
                 success: function(data) {
-                    console.log('Success uploading');
+                    window.location.replace(successRoute);
                 },
                 eroor: function(error) {
                     console.log('Error:');

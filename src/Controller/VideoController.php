@@ -187,7 +187,9 @@ class VideoController extends AbstractController
             $uploader->saveVideo($dto);
         }
 
-        return $this->render('video/add.html.twig');
+        return $this->render('video/add.html.twig', [
+            'success_route' => 'home'
+        ]);
     }
 
     /**
