@@ -36,7 +36,7 @@
                     {% else %}
                         {% for video in channel.videos %}
                             <div class="row">
-                                {{ include('video/_playlist_card.html.twig', {'video':video}) }}
+                                {{ include('video/_video_card.html.twig', {'video':video}) }}
                             </div>
                         {% endfor %}
                     {% endif %}
