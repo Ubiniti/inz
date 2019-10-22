@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Dto\RegistrationDto;
+use App\Entity\Channel;
 use App\Entity\User;
+use App\Entity\Wallet;
 use App\Form\RegistrationFormType;
 use App\Security\LoginFormAuthenticator;
 use App\Services\Uploader\AvatarUploader;
@@ -34,6 +36,9 @@ class RegistrationController extends AbstractController
 
         if ($form->isSubmitted() and $form->isValid()) {
             $user = User::createFromDto($dto, $passwordEncoder, $uploader);
+            $user->setWallet(new Wallet());
+            $user->setChannel(new Channel($user->getUsername()));
+            $user->setRoles($user->getRoles());
             $em->persist($user);
             $em->flush();
 

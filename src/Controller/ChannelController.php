@@ -10,9 +10,8 @@ use Symfony\Component\Routing\Annotation\Route;
 class ChannelController extends AbstractController
 {
     /**
-     * @Route("/channel/{id}", name="app_channel")
+     * @Route("/channel/{id}", name="app_user_channel")
      * @param Channel $channel
-     *
      * @return Response
      */
     public function index(Channel $channel)
