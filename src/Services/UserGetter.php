@@ -48,7 +48,7 @@ class UserGetter
 
         if (is_string($user) || is_object($user)) {
             $username = $token->getUsername();
-            $this->loadFromDb($username);
+            $user = $this->loadFromDb($username);
         }
 
         if ($user === null) {

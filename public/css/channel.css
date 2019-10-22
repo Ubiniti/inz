@@ -1,0 +1,22 @@
+.thumbnail {
+    display: inline-block;
+    position: relative;
+    width: 200px;
+    height: 200px;
+}
+
+.thumbnail .badge, .thumbnail .img-thumbnail {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.thumbnail .badge {
+    top: 100px;
+    right: 10px;
+    z-index: 10;
+}
+
+.thumbnail h2 {
+    font-size: 16px;
+}

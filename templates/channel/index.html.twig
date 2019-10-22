@@ -1,20 +1,26 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/channel.css') }}">
+{% endblock %}
+
 {% block title %}Hello ChannelController!{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
-
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ '/home/mjsidor/Dokumenty/inz/inz/src/Controller/ChannelController.php'|file_link(0) }}">src/Controller/ChannelController.php</a></code></li>
-        <li>Your template at <code><a href="{{ '/home/mjsidor/Dokumenty/inz/inz/templates/channel/index.html.twig'|file_link(0) }}">templates/channel/index.html.twig</a></code></li>
-    </ul>
-</div>
+    <div class="container">
+        <div class="movies-wrapper">
+        {% for video in channel.videos %}
+            <a class="text-dark" href="{{ path('video_watch', {'video_hash': video.hash}) }}">
+                <div class="thumbnail align-top">
+                    <span class="badge badge-dark">{{ video.durationInReadableFormat }}</span>
+                    <img
+                        alt="{{ video.title }}"
+                        src="{{ ['/assets/uploads/thumbs/', video.hash, '.jpg']|join }}"
+                        class="img-thumbnail position-relative" />
+                    <h2>{{ video.title }}</h2>
+                </div>
+            </a>
+        {% endfor %}
+        </div>
+    </div>
 {% endblock %}
