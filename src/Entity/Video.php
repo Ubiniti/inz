@@ -90,6 +90,11 @@ class Video
      */
     private $categories;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Playlist", mappedBy="videos")
+     */
+    private $playlists;
+
     public function __construct()
     {
         $this->uploaded = new \DateTimeImmutable();
@@ -99,6 +104,7 @@ class Video
         $this->rates = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->categories = new ArrayCollection();
+        $this->playlists = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -342,6 +348,34 @@ class Video
         if ($this->categories->contains($category)) {
             $this->categories->removeElement($category);
             $category->removeVideo($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Playlist[]
+     */
+    public function getPlaylists(): Collection
+    {
+        return $this->playlists;
+    }
+
+    public function addPlaylist(Playlist $playlist): self
+    {
+        if (!$this->playlists->contains($playlist)) {
+            $this->playlists[] = $playlist;
+            $playlist->addVideo($this);
+        }
+
+        return $this;
+    }
+
+    public function removePlaylist(Playlist $playlist): self
+    {
+        if ($this->playlists->contains($playlist)) {
+            $this->playlists->removeElement($playlist);
+            $playlist->removeVideo($this);
         }
 
         return $this;
