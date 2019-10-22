@@ -14,7 +14,7 @@
             <div class="col">
                 <div class="row">
                     {% if wallet is not null %}
-                        Dostępne środki: {{ wallet.funds }}
+                        Dostępne środki: {{ wallet.fundsAsCurrency }}
                     {% else %}
                         Twój portfel nie istnieje
                     {% endif %}

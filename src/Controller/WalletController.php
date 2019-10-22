@@ -39,15 +39,23 @@ class WalletController extends AbstractController
     }
 
     /**
-     * @Route("/", name="buy")
+     * @Route("/buy/{amount}", name="buy")
+     * @param int $amount
+     * @return Response
      */
-    public function buyPoints()
+    public function buyPoints(int $amount)
     {
+        $wallet = $this->getUser()->getWallet();
+        $wallet->setFunds($wallet->getFunds() + $amount);
 
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->flush();
+
+        return new Response('OK');
     }
 
     /**
-     * @Route("/", name="buy_success")
+     * @Route("/buy-success", name="buy_success")
      */
     public function buySuccess()
     {
@@ -73,9 +81,9 @@ class WalletController extends AbstractController
                 $dotPayService->generateParamsForBasicTransaction(
                     $this->generateUrl('app_user_wallet_buy_success', [], UrlGeneratorInterface::ABSOLUTE_URL),
                     $this->generateUrl(
-                        'app_user_wallet_buy', [], UrlGeneratorInterface::ABSOLUTE_URL),
+                        'app_user_wallet_buy', ['amount' => $form['amount']->getData()], UrlGeneratorInterface::ABSOLUTE_URL),
 
-                    $form['amount']->getData(),
+                    $form['amount']->getData()/100,
                     'PLN',
                     'Zasilenie portfela ' . (new DateTime())->format('d-m-Y') . ' kwota: ' .  $form['amount']->getData()
                 );

@@ -13,7 +13,7 @@ class AddFinancesToWalletFormType extends AbstractType
     {
         $builder
             ->add('amount', MoneyType::class, [
-                'required' => false,
+                'required' => true,
                 'divisor' => 100,
                 'currency' => 'PLN',
                 'label' => 'Ilość środków'
