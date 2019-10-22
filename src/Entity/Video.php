@@ -79,6 +79,12 @@ class Video
      */
     private $price;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Channel", inversedBy="videos")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $channel;
+
     public function __construct()
     {
         $this->uploaded = new \DateTimeImmutable();
@@ -291,6 +297,18 @@ class Video
     public function setPrice(?int $price): self
     {
         $this->price = $price;
+
+        return $this;
+    }
+
+    public function getChannel(): ?Channel
+    {
+        return $this->channel;
+    }
+
+    public function setChannel(?Channel $channel): self
+    {
+        $this->channel = $channel;
 
         return $this;
     }

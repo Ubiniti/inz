@@ -92,6 +92,11 @@ class User implements UserInterface
      */
     private $wallet;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\Channel", mappedBy="user", cascade={"persist", "remove"})
+     */
+    private $channel;
+
     public static function createFromDto(
         RegistrationDto $dto,
         UserPasswordEncoderInterface $encoder,
@@ -256,6 +261,23 @@ class User implements UserInterface
         // set the owning side of the relation if necessary
         if ($this !== $wallet->getUser()) {
             $wallet->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function getChannel(): ?Channel
+    {
+        return $this->channel;
+    }
+
+    public function setChannel(Channel $channel): self
+    {
+        $this->channel = $channel;
+
+        // set the owning side of the relation if necessary
+        if ($this !== $channel->getUser()) {
+            $channel->setUser($this);
         }
 
         return $this;
