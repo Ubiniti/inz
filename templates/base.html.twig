@@ -67,9 +67,20 @@
             {% endif %}
         </div>
     </nav>
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-warning">
+            {{ message }}
+        </div>
+    {% endfor %}
+
     {% block body %}{% endblock %}
     <br>
-    <footer>MJ Sidor, PPuchacz, symf project</footer>
+    <footer class="bg-dark text-white">MJ Sidor, PPuchacz, symf project</footer>
 
     {% block javascripts %}
         <script src="{{ asset('vendor/js/jquery-3.3.1.min.js') }}"></script>

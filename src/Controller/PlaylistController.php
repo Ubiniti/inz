@@ -104,6 +104,12 @@ class PlaylistController extends AbstractController
      */
     public function playlistView(Playlist $playlist)
     {
+        if ($playlist->getIsPublic() === false && $playlist->getChannel()->getUser() !== $this->getUser()) {
+            $this->addFlash('error', 'Podana playlista jest prywatna.');
+
+            return $this->redirectToRoute('home');
+        }
+
         return $this->render('playlist/index.html.twig', [
             'playlist' => $playlist
         ]);

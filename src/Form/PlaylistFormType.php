@@ -19,7 +19,7 @@ class PlaylistFormType extends AbstractType
                 'label' => 'Nazwa playlisty'
             ])
             ->add('isPublic', CheckboxType::class, [
-                'required' => true,
+                'required' => false,
                 'label' => 'Publiczna'
             ]);
     }
