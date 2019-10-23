@@ -52,14 +52,14 @@ class ChannelController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="")
+     * @Route("/{channel_name}", name="")
      * @param Channel $channel
      * @return Response
      */
-    public function index(string $username, ChannelRepository $channelRepository, UserGetter $userGetter)
+    public function index(string $channel_name, ChannelRepository $channelRepository, UserGetter $userGetter)
     {
         $channel = $channelRepository->findOneBy([
-            'user' => $userGetter->get()
+            'name' => $channel_name
         ]);
 
         return $this->render('channel/index.html.twig', [

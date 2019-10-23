@@ -26,7 +26,7 @@ class Playlist
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Video", inversedBy="playlists")
      */
-    private $videos;
+    private $videos = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Channel", inversedBy="playlists")
