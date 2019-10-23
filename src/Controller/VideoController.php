@@ -277,7 +277,7 @@ class VideoController extends AbstractController
     }
 
     /**
-     * @Route("/{video_hash}/remove-from-playlist/{playlist}", name="_remove_from_playlist")
+     * @Route("/{video_hash}/remove-from-playlist/{playlist}", name="remove_from_playlist")
      * @param string $video_hash
      * @param Playlist $playlist
      * @param EntityManagerInterface $entityManager
