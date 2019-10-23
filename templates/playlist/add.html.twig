@@ -4,6 +4,9 @@
 
 {% block body %}
     <div class="container">
-
+        {{ form_start(form) }}
+        {{ form_row(form.title) }}
+        <button class="btn btn-success" type="submit">Zapisz</button>
+        {{ form_end(form) }}
     </div>
 {% endblock %}

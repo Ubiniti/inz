@@ -3,8 +3,37 @@
 {% block title %}{{ playlist.title }}{% endblock %}
 
 {% block body %}
-    <div class="container">
-
-
+    <div class="container">>
+        <div class="row">
+            <div class="col text-center">
+                <h1 style="display:inline-block">{{ playlist.title}}</h1>
+                {% if playlist.channel.id is same as(app.user.channel.id) %}
+                    <a style="float:right" href="{{ path('app_playlist_edit', {'id':playlist.id}) }}">
+                        <i class="fas fa-edit text-primary"></i>
+                    </a>
+                {% endif %}
+                <hr>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col text-center">
+                <h3 style="display:inline-block">Filmy</h3>
+                <div class="row text-center">
+                    {% if playlist.videos is empty %}
+                        <div class="col text-center">
+                            Playlista nie zawiera nie ma żadnych filmów. Aby dodać film przejdź na jego podstronę.
+                        </div>
+                    {% else %}
+                        {% for video in playlist.videos %}
+                            <div class="row mt-3 text-center">
+                                <div class="col-12">
+                                    {{ include('video/_video_card.html.twig', {'video':video}) }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock %}
