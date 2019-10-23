@@ -19,7 +19,9 @@
     {% endif %}
     {% set playlist = isVideoInUserPlaylists(video, app.user) %}
     {% if playlist is not null %}
-        <a style="float:right" href="{{ path('app_video_remove_from_playlist', {'video_hash':video.hash, 'playlist':playlist.id}) }}">
+        <a class="ml-1 mr-1"
+           style="float:right"
+           href="{{ path('app_video_remove_from_playlist', {'video_hash':video.hash, 'playlist':playlist.id}) }}">
             <i class="fas fa-times text-warning"
                data-toggle="tooltip"
                data-placement="top"
@@ -27,7 +29,8 @@
         </a>
     {% endif %}
     {% if app.user is not null and playlist is null %}
-        <a style="float:right"
+        <a class="ml-1 mr-1"
+           style="float:right"
            href="{{ path('app_video_add_to_playlist', {'video_hash':video.hash}) }}">
             <i class="fas fa-plus text-success"
                data-toggle="tooltip"
