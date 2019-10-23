@@ -34,6 +34,11 @@ class Playlist
      */
     private $channel;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isPublic;
+
     public function __construct()
     {
         $this->videos = new ArrayCollection();
@@ -90,6 +95,18 @@ class Playlist
     public function setChannel(?Channel $channel): self
     {
         $this->channel = $channel;
+
+        return $this;
+    }
+
+    public function getIsPublic(): ?bool
+    {
+        return $this->isPublic;
+    }
+
+    public function setIsPublic(bool $isPublic): self
+    {
+        $this->isPublic = $isPublic;
 
         return $this;
     }
