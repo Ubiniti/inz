@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Dto\VideoUploadFormDto;
+use App\Entity\Playlist;
 use App\Entity\User;
 use App\Entity\Video;
 use App\Entity\VideoRate;
@@ -290,7 +291,7 @@ class VideoController extends AbstractController
             return $this->redirectToRoute('app_user_channel', ['channel_name' => $this->getUser()->getChannel()->getName()]);
         }
 
-        $entityManager->remove($playlist);
+        $playlist->removeVideo($this->videoRepository->findOneBy(['hash' => $video_hash]));
         $entityManager->flush();
         $this->addFlash('success', 'Usunięto film z playlisty!');
 
