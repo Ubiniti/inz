@@ -8,6 +8,9 @@
             <div class="col text-center">
                 <h1 style="display:inline-block">{{ playlist.title}}</h1>
                 {% if playlist.channel.id is same as(app.user.channel.id) %}
+                    <a style="float:right" href="{{ path('app_playlist_remove', {'id':playlist.id}) }}">
+                        <i class="fas fa-times text-danger"></i>
+                    </a>
                     <a style="float:right" href="{{ path('app_playlist_edit', {'id':playlist.id}) }}">
                         <i class="fas fa-edit text-primary"></i>
                     </a>
