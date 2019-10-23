@@ -4,14 +4,18 @@ namespace App\Controller;
 
 use App\Dto\VideoUploadFormDto;
 use App\Entity\User;
+use App\Entity\Video;
 use App\Entity\VideoRate;
 
+use App\Form\AddVideoToPlaylistFormType;
 use App\Form\AddVideoType;
 use App\Repository\CommentRepository;
 use App\Repository\VideoRateRepository;
 use App\Repository\VideoRepository;
 use App\Services\VideoManager;
 use App\Services\Uploader\VideoUploader;
+use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -176,6 +180,9 @@ class VideoController extends AbstractController
 
     /**
      * @Route("/", name="add")
+     * @param VideoUploader $uploader
+     * @param Request $request
+     * @return Response
      */
     public function add(VideoUploader $uploader, Request $request)
     {
@@ -190,6 +197,27 @@ class VideoController extends AbstractController
         return $this->render('video/add.html.twig', [
             'success_route' => 'home'
         ]);
+    }
+
+    /**
+     * @Route("/remove/{video_hash}", name="remove")
+     * @param string $video_hash
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
+    public function removeVideo(string $video_hash, EntityManagerInterface $entityManager)
+    {
+        $video = $this->videoRepository->findOneBy(['hash' => $video_hash]);
+
+        if ($this->getUser()->getChannel() != $video->getChannel()) {
+            $this->addFlash('error', 'Podany film nie należy do Twojego kanału.');
+        }
+
+        $entityManager->remove($video);
+        $entityManager->flush();
+        $this->addFlash('success', 'Usunięto film!');
+
+        return $this->redirectToRoute('app_user_channel', ['channel_name' => $this->getUser()->getChannel()->getName()]);
     }
 
     /**
@@ -211,5 +239,61 @@ class VideoController extends AbstractController
         $result = json_encode($rate);
 
         return new Response($result);
+    }
+
+    /**
+     * @Route("/{video_hash}/add-to-playlist", methods={"POST", "GET"}, name="add_to_playlist")
+     * @param string $video_hash
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
+    public function addVideoToPlaylist(string $video_hash, Request $request, EntityManagerInterface $entityManager)
+    {
+        $form = $this->createForm(AddVideoToPlaylistFormType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $playlist = $form->get('playlist')->getData();
+
+            if ($this->getUser() != $playlist->getChannel()->getUser()) {
+                $this->addFlash('error', 'Podana playlista nie należy do Twojego kanału.');
+
+                return $this->redirectToRoute('app_user_channel', ['channel_name' => $this->getUser()->getChannel()->getName()]);
+            }
+
+            $playlist->addVideo($this->videoRepository->findOneBy(['hash' => $video_hash]));
+
+            $entityManager->flush();
+            $this->addFlash('success', 'Dodano film do playlisty!');
+
+            return $this->redirectToRoute('app_playlist', ['id' => $playlist->getId()]);
+        }
+
+        return $this->render('video/add_to_playlist.twig', [
+            'form' => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route("/{video_hash}/remove-from-playlist/{playlist}", name="_remove_from_playlist")
+     * @param string $video_hash
+     * @param Playlist $playlist
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
+    public function removeVideoFromPlaylist(string $video_hash, Playlist $playlist, EntityManagerInterface $entityManager)
+    {
+        if ($this->getUser() != $playlist->getChannel()->getUser()) {
+            $this->addFlash('error', 'Podana playlista nie należy do Twojego kanału.');
+
+            return $this->redirectToRoute('app_user_channel', ['channel_name' => $this->getUser()->getChannel()->getName()]);
+        }
+
+        $entityManager->remove($playlist);
+        $entityManager->flush();
+        $this->addFlash('success', 'Usunięto film z playlisty!');
+
+        return $this->redirectToRoute('app_playlist', ['id' => $playlist->getId()]);
     }
 }

@@ -57,6 +57,8 @@ class PlaylistController extends AbstractController
     {
         if ($this->getUser()->getChannel() != $playlist->getChannel()) {
             $this->addFlash('error', 'Podana playlista nie należy do Twojego kanału.');
+
+            return $this->redirectToRoute('app_user_channel', ['channel_name' => $this->getUser()->getChannel()->getName()]);
         }
 
         $form = $this->createForm(PlaylistFormType::class, $playlist);
@@ -82,6 +84,12 @@ class PlaylistController extends AbstractController
      */
     public function removePlaylist(Playlist $playlist, EntityManagerInterface $entityManager)
     {
+        if ($this->getUser()->getChannel() != $playlist->getChannel()) {
+            $this->addFlash('error', 'Podana playlista nie należy do Twojego kanału.');
+
+            return $this->redirectToRoute('app_user_channel', ['channel_name' => $this->getUser()->getChannel()->getName()]);
+        }
+
         $entityManager->remove($playlist);
         $entityManager->flush();
         $this->addFlash('success', 'Usunięto playlistę!');

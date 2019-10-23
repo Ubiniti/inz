@@ -2,11 +2,28 @@
     <a href="{{ path('app_video_watch', {video_hash: video.hash}) }}" class="text-dark">
         <img width="200px" src="{{ asset( [uploads_dir, '/thumbs/', video.hash, '.jpg']|join ) }}"> <br>
         {{ video.title|slice(0, 55) }}{% if video.title|length > 55 %}...{% endif %}
+    </a>
         {% if video.price > 0 %}
             <i class="fas fa-dollar-sign text-success"
                data-toggle="tooltip"
                data-placement="top"
                title="Materiał płatny - {{ video.priceAsCurrency }} PLN"></i>
         {% endif %}
-    </a>
+        {% if video.channel.id is same as(app.user.channel.id) %}
+            <a style="float:right" href="{{ path('app_video_remove', {'video_hash':video.hash}) }}">
+                <i class="fas fa-times text-danger"
+                   data-toggle="tooltip"
+                   data-placement="top"
+                   title="Usuń film"></i>
+            </a>
+        {% endif %}
+        {% if app.user is not null %}
+            <a style="float:right"
+               href="{{ path('app_video_add_to_playlist', {'video_hash':video.hash}) }}">
+                <i class="fas fa-plus text-success"
+                   data-toggle="tooltip"
+                   data-placement="top"
+                   title="Dodaj do playlisty"></i>
+            </a>
+        {% endif %}
 </div>
