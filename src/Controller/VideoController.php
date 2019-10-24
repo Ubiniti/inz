@@ -18,6 +18,7 @@ use App\Services\Uploader\VideoUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -75,7 +76,7 @@ class VideoController extends AbstractController
 
         $video = $this->videoRepository->findOneBy(['hash' => $video_hash]);
 
-        if ($video->getPrice() > 0) {
+        if ($video->getPrice() > 0 && $user->getChannel() !== $video->getChannel()) {
 
             return $this->redirectToRoute('app_video_watch_paid', ['video_hash' => $video_hash]);
         }
@@ -107,15 +108,38 @@ class VideoController extends AbstractController
     }
 
     /**
-     * @Route("/{video_hash}", name="watch_paid")
+     * @Route("/{video_hash}/paid", name="watch_paid")
+     * @param string $video_hash
+     * @param EntityManagerInterface $entityManager
+     * @return RedirectResponse|Response
      */
-    public function watchPaidVideo(string $video_hash)
+    public function watchPaidVideo(string $video_hash, EntityManagerInterface $entityManager)
     {
         $user = $this->security->getUser();
 
-        $video = $this->videoRepository->findOneBy(['hash' => $video_hash]);
-        $comments = $this->commentRepository->findBy(['video' => $video]);
+        if ($user === null) {
+            $this->addFlash('error', 'Musisz się zalogować, aby mieć dostęp do swojego Portfela.');
 
+            return $this->redirectToRoute('app_login');
+        }
+
+        $video = $this->videoRepository->findOneBy(['hash' => $video_hash]);
+
+        if (!($user->getPaidForVideos()->contains($video))) {
+            $wallet = $user->getWallet();
+            if ($wallet->getFunds() >= $video->getPrice()) {
+                $wallet->setFunds($wallet->getFunds() - $video->getPrice());
+                $this->addFlash('sucess', 'Pobrano środki z Twojego portfela.');
+                $user->addPaidForVideo($video);
+                $entityManager->flush();
+            } else {
+                $this->addFlash('error', 'Nie masz wystarczających środków w swoim portfelu.');
+
+                return $this->redirectToRoute('app_user_wallet');
+            }
+        }
+
+        $comments = $this->commentRepository->findBy(['video' => $video]);
         $this->videoManager->incrementViews($video);
 
         $thumbs_up = $this->videoRateRepository->countRate($video, VideoRate::UP);
@@ -212,6 +236,8 @@ class VideoController extends AbstractController
 
         if ($this->getUser()->getChannel() != $video->getChannel()) {
             $this->addFlash('error', 'Podany film nie należy do Twojego kanału.');
+
+            return $this->redirectToRoute('app_user_channel', ['channel_name' => $this->getUser()->getChannel()->getName()]);
         }
 
         $entityManager->remove($video);
