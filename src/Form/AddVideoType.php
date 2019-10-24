@@ -3,6 +3,8 @@
 namespace App\Form;
 
 use App\Dto\VideoUploadFormDto;
+use App\Entity\Category;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -16,12 +18,27 @@ class AddVideoType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('title', TextType::class)
-            ->add('description', TextareaType::class)
-            ->add('file', FileType::class)
-            ->add('thumbnail', FileType::class)
-            ->add('submit', SubmitType::class)
-        ;
+            ->add('title', TextType::class, [
+                'label' => 'Tytuł'
+            ])
+            ->add('description', TextareaType::class, [
+                'label' => 'Opis'
+            ])
+            ->add('file', FileType::class, [
+                'label' => 'Wideo'
+            ])
+            ->add('thumbnail', FileType::class, [
+                'label' => 'Thumnbail'
+            ])
+            ->add('categories', EntityType::class, [
+                'label' => 'Kategoria',
+                'class' => Category::class,
+                'multiple' => true,
+                'expanded' => true,
+                'choice_label' => 'name'])
+            ->add('submit', SubmitType::class, [
+                'label' => 'Zapisz'
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

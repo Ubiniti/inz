@@ -2,6 +2,7 @@
 
 namespace App\Dto;
 
+use App\Entity\Category;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -28,6 +29,11 @@ class VideoUploadFormDto
      * @var ?UploadedFile
      */
     private $thumbnail;
+
+    /**
+     * @var Category
+     */
+    private $categories;
 
     public function getTitle(): ?string
     {
@@ -75,5 +81,21 @@ class VideoUploadFormDto
         $this->thumbnail = $thumbnail;
 
         return $this;
+    }
+
+    /**
+     * @return Category
+     */
+    public function getCategories(): ?Category
+    {
+        return $this->categories;
+    }
+
+    /**
+     * @param Category $categories
+     */
+    public function setCategories(Category $categories): void
+    {
+        $this->categories = $categories;
     }
 }

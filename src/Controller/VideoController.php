@@ -166,6 +166,9 @@ class VideoController extends AbstractController
 
     /**
      * @Route("/{video_hash}/rate", methods={"POST"}, name="rate")
+     * @param string $video_hash
+     * @param Request $request
+     * @return RedirectResponse
      */
     public function rate(string $video_hash, Request $request)
     {
@@ -219,8 +222,9 @@ class VideoController extends AbstractController
             $uploader->saveVideo($dto);
         }
 
-        return $this->render('video/add.html.twig', [
-            'success_route' => 'home'
+        return $this->render('video/add_v2.html.twig', [
+            'success_route' => 'home',
+            'form' => $form->createView()
         ]);
     }
 
