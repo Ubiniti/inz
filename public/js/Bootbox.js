@@ -16,12 +16,7 @@ export default class Bootbox {
             },
             callback: function (result) {
                 if (result === true) {
-                    $.ajax({
-                        url: url,
-                        success:  setTimeout( function () {
-                            location.reload();
-                        }, 100)
-                    });
+                    window.location.replace(url)
                 }
             }
         });
