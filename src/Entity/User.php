@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Dto\RegistrationDto;
 use App\Services\Uploader\AvatarUploader;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -96,6 +98,16 @@ class User implements UserInterface
      * @ORM\OneToOne(targetEntity="App\Entity\Channel", mappedBy="user", cascade={"persist", "remove"})
      */
     private $channel;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Video", mappedBy="usersWithAccess")
+     */
+    private $paidForVideos;
+
+    public function __construct()
+    {
+        $this->paidForVideos = new ArrayCollection();
+    }
 
     public static function createFromDto(
         RegistrationDto $dto,
@@ -278,6 +290,34 @@ class User implements UserInterface
         // set the owning side of the relation if necessary
         if ($this !== $channel->getUser()) {
             $channel->setUser($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Video[]
+     */
+    public function getPaidForVideos(): Collection
+    {
+        return $this->paidForVideos;
+    }
+
+    public function addPaidForVideo(Video $paidForVideo): self
+    {
+        if (!$this->paidForVideos->contains($paidForVideo)) {
+            $this->paidForVideos[] = $paidForVideo;
+            $paidForVideo->addUsersWithAccess($this);
+        }
+
+        return $this;
+    }
+
+    public function removePaidForVideo(Video $paidForVideo): self
+    {
+        if ($this->paidForVideos->contains($paidForVideo)) {
+            $this->paidForVideos->removeElement($paidForVideo);
+            $paidForVideo->removeUsersWithAccess($this);
         }
 
         return $this;

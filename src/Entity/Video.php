@@ -95,6 +95,16 @@ class Video
      */
     private $playlists;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $isPublic;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\User", inversedBy="paidForVideos")
+     */
+    private $usersWithAccess;
+
     public function __construct()
     {
         $this->uploaded = new \DateTimeImmutable();
@@ -105,6 +115,7 @@ class Video
         $this->comments = new ArrayCollection();
         $this->categories = new ArrayCollection();
         $this->playlists = new ArrayCollection();
+        $this->usersWithAccess = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -394,5 +405,43 @@ class Video
         $format = $this->duration >= 60*60 ? 'h:i:s' : 'i:s';
 
         return date($format, $this->duration);
+    }
+
+    public function getIsPublic(): ?bool
+    {
+        return $this->isPublic;
+    }
+
+    public function setIsPublic(?bool $isPublic): self
+    {
+        $this->isPublic = $isPublic;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getUsersWithAccess(): Collection
+    {
+        return $this->usersWithAccess;
+    }
+
+    public function addUsersWithAccess(User $usersWithAccess): self
+    {
+        if (!$this->usersWithAccess->contains($usersWithAccess)) {
+            $this->usersWithAccess[] = $usersWithAccess;
+        }
+
+        return $this;
+    }
+
+    public function removeUsersWithAccess(User $usersWithAccess): self
+    {
+        if ($this->usersWithAccess->contains($usersWithAccess)) {
+            $this->usersWithAccess->removeElement($usersWithAccess);
+        }
+
+        return $this;
     }
 }
