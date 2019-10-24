@@ -1,14 +1,13 @@
 export default class Bootbox {
     static confirm(text, a) {
         let url = $(a).attr('href');
-        console.log(url);
         bootbox.confirm({
             message: text,
             centerVertical: true,
             buttons: {
                 confirm: {
                     label: 'OK',
-                    className: 'btn-primary'
+                    className: 'btn-success'
                 },
                 cancel: {
                     label: 'Anuluj',
