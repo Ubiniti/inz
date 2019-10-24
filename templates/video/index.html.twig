@@ -4,142 +4,177 @@
 
 {% block body %}
     <style>
-        .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-        .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+        .example-wrapper {
+            margin: 1em auto;
+            max-width: 800px;
+            width: 95%;
+            font: 18px/1.5 sans-serif;
+        }
+
+        .example-wrapper code {
+            background: #F5F5F5;
+            padding: 2px 6px;
+        }
+
         .com-author {
             font-size: 15px;
         }
+
         .info-panel {
             font-size: 25px;
         }
-        
+
         .info-panel button {
             font-size: 25px;
         }
+
         .avatar {
             width: 60px;
             height: 60px;
         }
+
         .user-card {
             width: 100px;
         }
+
         .com-date {
             font-size: 14px;
         }
+
         .sub-avatar {
             width: 45px;
             height: 45px;
         }
+
         .sub-user-card {
             width: 60px;
         }
+
         .sub-com-date {
             font-size: 12px;
         }
+
         .sub-content {
             font-size: 15px;
         }
+
         .sub-com-author {
             font-size: 13px;
         }
     </style>
 
     <div class="example-wrapper">
-        
+
         <div class="container text-dark">
-            <div class="h3 my-3">{{ video.title }}</div>
+            <div class="row">
+                <div class="col">
+                    <div class="h3 my-3">{{ video.title }}</div>
+                </div>
+                <div class="col text-right">
+                    {% if video.categories is not empty %}
+                        <div >
+                            {% for category in video.categories %}
+                                <a href="{{ path('app_category_show',{'id':category.id}) }}">#{{ category.name }},</a>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
             <div class="container p-1 w-100 d-flex justify-content-between">
                 {% if video.channel is not null %}
-                <a href="{{ path('app_user_channel',{'channel_name':video.channel.name}) }}" class="text-dark">{{ video.channel.name }}</a>
+                    <a href="{{ path('app_user_channel',{'channel_name':video.channel.name}) }}"
+                       class="text-dark">{{ video.channel.name }}</a>
                 {% endif %}
-                <div class="vid-data">{{video.uploaded|date("d-m-Y")}}</div>
+                <div class="vid-data">{{ video.uploaded|date("d-m-Y") }}</div>
             </div>
-            <video id="player" class="embed-responsive embed-responsive-16by9" autoplay controls data-video-hash="{{video.hash}}">
-                <source src="{{ asset([uploads_dir, '/', video.hash, '.mp4']|join)}}" type="video/mp4">
+            <video id="player" class="embed-responsive embed-responsive-16by9" autoplay controls
+                   data-video-hash="{{ video.hash }}">
+                <source src="{{ asset([uploads_dir, '/', video.hash, '.mp4']|join) }}" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
             <div class="info-panel container p-2 w-100 d-flex justify-content-between">
-                <div id="thumbs-container" data-action="{{path('app_video_rate', {video_hash:video.hash})}}">
+                <div id="thumbs-container" data-action="{{ path('app_video_rate', {video_hash:video.hash}) }}">
                     <button class="btn btn-light px-4" id="like_btn">
                         {% if user_rate is defined and user_rate is not null and user_rate == 1 %}
-                        <i class="fas fa-thumbs-up text-dark"></i>
+                            <i class="fas fa-thumbs-up text-dark"></i>
                         {% else %}
-                        <i class="far fa-thumbs-up text-dark"></i>
+                            <i class="far fa-thumbs-up text-dark"></i>
                         {% endif %}
-                        <span id="thumbs_up" class="text-dark">{{thumbs_up}}</span>
+                        <span id="thumbs_up" class="text-dark">{{ thumbs_up }}</span>
                     </button>
                     <button class="btn btn-light px-4" id="dislike_btn">
                         {% if user_rate is defined and user_rate is not null and user_rate == 0 %}
-                        <i class="fas fa-thumbs-down text-dark"></i>
+                            <i class="fas fa-thumbs-down text-dark"></i>
                         {% else %}
-                        <i class="far fa-thumbs-down text-dark"></i>
+                            <i class="far fa-thumbs-down text-dark"></i>
                         {% endif %}
-                        <span id="thumbs_down" class="text-dark">{{thumbs_down}}</span>
+                        <span id="thumbs_down" class="text-dark">{{ thumbs_down }}</span>
                     </button>
                 </div>
                 <div class="views">
-                    <i class="fas fa-eye"></i> {{video.views}}
+                    <i class="fas fa-eye"></i> {{ video.views }}
                 </div>
             </div>
             <div class="my-3">
                 <h5>Comments: </h5>
                 <!-- _______________ -->
                 {% for comment in comments %}
-                <div class="jumbotron bg-white overflow-hidden py-2 px-0 m-0 mb-2">
-                    <div class="comment d-flex container p-0">
-                        <div class="user-card m-0 mt-3 container text-center">
-                            <div class="avatar container rounded-circle bg-dark"></div>
-                            <a href="#" class="com-author text-dark">{{comment.authorusername}}</a>
-                        </div>
-                        <div class="container p-0 m-0">
-                            <div class="com-date m-0 p-0 text-right">{{comment.added|date("d-m-Y")}}</div>
-                            <div class="content">
-                                {{comment.contents}}
-                                <!-- subcomment -->
-                                {# <div class="comment d-flex container p-0">
-                                    <div class="sub-user-card m-0 mt-3 container text-center pl-0 pr-2 mr-2">
-                                        <div class="sub-avatar container rounded-circle bg-dark"></div>
-                                        <a href="#" class="sub-com-author text-dark">kowalski</a>
-                                    </div>
-                                    <div class="container p-0 m-0">
-                                        <div class="sub-com-date m-0 p-0 text-right">3 mar 2017</div>
-                                        <div class="sub-content">Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores, odit repudiandae vel ducimus nulla, quas eum fugiat consequatur adipisci dolorum perferendis non in exercitationem magnam voluptatum, dolor esse rem possimus?
+                    <div class="jumbotron bg-white overflow-hidden py-2 px-0 m-0 mb-2">
+                        <div class="comment d-flex container p-0">
+                            <div class="user-card m-0 mt-3 container text-center">
+                                <div class="avatar container rounded-circle bg-dark"></div>
+                                <a href="#" class="com-author text-dark">{{ comment.authorusername }}</a>
+                            </div>
+                            <div class="container p-0 m-0">
+                                <div class="com-date m-0 p-0 text-right">{{ comment.added|date("d-m-Y") }}</div>
+                                <div class="content">
+                                    {{ comment.contents }}
+                                    <!-- subcomment -->
+                                    {# <div class="comment d-flex container p-0">
+                                        <div class="sub-user-card m-0 mt-3 container text-center pl-0 pr-2 mr-2">
+                                            <div class="sub-avatar container rounded-circle bg-dark"></div>
+                                            <a href="#" class="sub-com-author text-dark">kowalski</a>
                                         </div>
-                                    </div>
-                                </div> #}
-                                <!-- end subcomment -->
+                                        <div class="container p-0 m-0">
+                                            <div class="sub-com-date m-0 p-0 text-right">3 mar 2017</div>
+                                            <div class="sub-content">Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores, odit repudiandae vel ducimus nulla, quas eum fugiat consequatur adipisci dolorum perferendis non in exercitationem magnam voluptatum, dolor esse rem possimus?
+                                            </div>
+                                        </div>
+                                    </div> #}
+                                    <!-- end subcomment -->
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
                 {% endfor %}
                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                <div class="jumbotron bg-white overflow-hidden py-2 px-0 m-0 mb-2">
-                    <div class="comment d-flex container p-0">
-                        <div class="user-card m-0 mt-3 container text-center pt-3">
-                            <div class="avatar container rounded-circle bg-dark"></div>
-                            <a href="#" class="com-author text-dark">{{app.user.username}}</a>
-                        </div>
-                        <div class="container p-0 m-0">
-                            <div class="content">
-                            <form action="{{ path('add_comment', {video_hash: video.hash}) }}" method="POST" class="container">
-                                <label for="newcomment" class="com-author pb-0 mb-1">New comment:</label>
-                                <textarea class="form-control" name="message" id="message" rows="3"></textarea>
-                                <div class="d-flex justify-content-end">
-                                    <button class="btn" type="submit">Send</button>
+                    <div class="jumbotron bg-white overflow-hidden py-2 px-0 m-0 mb-2">
+                        <div class="comment d-flex container p-0">
+                            <div class="user-card m-0 mt-3 container text-center pt-3">
+                                <div class="avatar container rounded-circle bg-dark"></div>
+                                <a href="#" class="com-author text-dark">{{ app.user.username }}</a>
+                            </div>
+                            <div class="container p-0 m-0">
+                                <div class="content">
+                                    <form action="{{ path('add_comment', {video_hash: video.hash}) }}" method="POST"
+                                          class="container">
+                                        <label for="newcomment" class="com-author pb-0 mb-1">New comment:</label>
+                                        <textarea class="form-control" name="message" id="message" rows="3"></textarea>
+                                        <div class="d-flex justify-content-end">
+                                            <button class="btn" type="submit">Send</button>
+                                        </div>
+                                    </form>
                                 </div>
-                            </form>
                             </div>
                         </div>
                     </div>
-                </div>
                 {% endif %}
             </div>
         </div>
-            
+
     </div>
 {% endblock %}
 
 {% block javascripts %}
-<script src="{{asset('js/video_rate.js')}}"></script>
+    <script src="{{ asset('js/video_rate.js') }}"></script>
 {% endblock %}
