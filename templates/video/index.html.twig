@@ -49,7 +49,9 @@
         <div class="container text-dark">
             <div class="h3 my-3">{{ video.title }}</div>
             <div class="container p-1 w-100 d-flex justify-content-between">
-                <a href="#" class="text-dark">author</a>
+                {% if video.channel is not null %}
+                <a href="{{ path('app_user_channel',{'channel_name':video.channel.name}) }}" class="text-dark">{{ video.channel.name }}</a>
+                {% endif %}
                 <div class="vid-data">{{video.uploaded|date("d-m-Y")}}</div>
             </div>
             <video id="player" class="embed-responsive embed-responsive-16by9" autoplay controls data-video-hash="{{video.hash}}">

@@ -53,7 +53,9 @@ class ChannelController extends AbstractController
 
     /**
      * @Route("/{channel_name}", name="")
-     * @param Channel $channel
+     * @param string $channel_name
+     * @param ChannelRepository $channelRepository
+     * @param UserGetter $userGetter
      * @return Response
      */
     public function index(string $channel_name, ChannelRepository $channelRepository, UserGetter $userGetter)
