@@ -3,6 +3,8 @@
 namespace App\Dto;
 
 use App\Entity\Category;
+use App\Entity\Video;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -31,9 +33,34 @@ class VideoUploadFormDto
     private $thumbnail;
 
     /**
-     * @var Category
+     * @var Category[]|Collection
      */
     private $categories;
+
+    /**
+     * @var bool
+     */
+    private $isPublic;
+
+    public function createVideoSkeleton(): Video
+    {
+        return (new Video())
+            ->setTitle($this->title)
+            ->setDescription($this->description)
+            ->setCategories($this->categories)
+            ->setIsPublic($this->isPublic);
+    }
+
+    public function updateVideo(Video $video): Video
+    {
+        $mutableProperties = ['title', 'description', 'categories', 'isPublic'];
+
+        foreach ($mutableProperties as $property) {
+            $video->{$property} = $this->{$property};
+        }
+
+        return $video;
+    }
 
     public function getTitle(): ?string
     {
@@ -84,18 +111,28 @@ class VideoUploadFormDto
     }
 
     /**
-     * @return Category
+     * @return Category[]|Collection
      */
-    public function getCategories(): ?Category
+    public function getCategories(): ?Collection
     {
         return $this->categories;
     }
 
     /**
-     * @param Category $categories
+     * @param Category[]|Collection $categories
      */
-    public function setCategories(Category $categories): void
+    public function setCategories(?Collection $categories): void
     {
         $this->categories = $categories;
+    }
+
+    public function isPublic(): ?bool
+    {
+        return $this->isPublic;
+    }
+
+    public function setIsPublic(?bool $isPublic): void
+    {
+        $this->isPublic = $isPublic;
     }
 }

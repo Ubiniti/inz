@@ -69,6 +69,8 @@ class VideoController extends AbstractController
 
     /**
      * @Route("/{video_hash}", name="watch")
+     * @param string $video_hash
+     * @return RedirectResponse|Response
      */
     public function index(string $video_hash)
     {
@@ -200,7 +202,7 @@ class VideoController extends AbstractController
 
         $entityManager->flush();
 
-        return $this->redirectToRoute('video_get_rate', [
+        return $this->redirectToRoute('app_video_get_rate', [
             'video_hash' => $video_hash,
             'positive' => $rate
         ]);
@@ -253,6 +255,8 @@ class VideoController extends AbstractController
 
     /**
      * @Route("/{video_hash}/rate", methods={"GET"}, name="get_rate")
+     * @param string $video_hash
+     * @return Response
      */
     public function getRate(string $video_hash)
     {

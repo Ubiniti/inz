@@ -1,7 +1,7 @@
 (function () {
     $(document).ready(function () {
-        var progressBar = $('#upload-progress');
-        var successRoute = $('#uploadForm').data('success');
+        var progressBar = $(upload_progress);
+        var successRoute = $(uploadForm).data('success');
 
         function progressHandling(e) {
             var percent = e.loaded / e.total * 100;
@@ -13,7 +13,7 @@
             e.preventDefault();
 
             var formData = new FormData(uploadForm);
-            formData.append('add_video[file]', videoFile.files[0]);
+            formData.append('add_video[file]', add_video_file.files[0]);
 
             $.ajax({
                 url: $(this).action,
@@ -30,6 +30,9 @@
                     return myXhr;
                 },
                 success: function(data) {
+                    if (!successRoute) {
+                        throw DOMException('data-success not defined in uploadForm');
+                    }
                     window.location.replace(successRoute);
                 },
                 eroor: function(error) {
@@ -37,6 +40,8 @@
                     console.log(error);
                 }
             })
+
+            return false;
         })
     })
 })();

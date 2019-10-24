@@ -98,7 +98,7 @@ class Video
     /**
      * @ORM\Column(type="boolean", nullable=true)
      */
-    private $isPublic;
+    private $isPublic = true;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\User", inversedBy="paidForVideos")
@@ -355,6 +355,13 @@ class Video
             $this->categories[] = $category;
             $category->addVideo($this);
         }
+
+        return $this;
+    }
+
+    public function setCategories(Collection $categories)
+    {
+        $this->categories = $categories;
 
         return $this;
     }

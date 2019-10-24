@@ -6,6 +6,7 @@ use App\Dto\VideoUploadFormDto;
 use App\Entity\Category;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -19,16 +20,17 @@ class AddVideoType extends AbstractType
     {
         $builder
             ->add('title', TextType::class, [
-                'label' => 'Tytuł'
+                'label' => 'Tytuł',
             ])
             ->add('description', TextareaType::class, [
-                'label' => 'Opis'
+                'label' => 'Opis',
             ])
             ->add('file', FileType::class, [
-                'label' => 'Wideo'
+                'label' => 'Wideo',
             ])
             ->add('thumbnail', FileType::class, [
-                'label' => 'Thumnbail'
+                'label' => 'Thumnbail',
+                'required' => false,
             ])
             ->add('categories', EntityType::class, [
                 'label' => 'Kategoria',
@@ -36,15 +38,19 @@ class AddVideoType extends AbstractType
                 'multiple' => true,
                 'expanded' => true,
                 'choice_label' => 'name'])
+            ->add('isPublic', CheckboxType::class, [
+                'label' => 'Widoczny na stronie głównej',
+                'required' => false,
+            ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Zapisz'
+                'label' => 'Zapisz',
             ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => VideoUploadFormDto::class
+            'data_class' => VideoUploadFormDto::class,
         ]);
     }
 }

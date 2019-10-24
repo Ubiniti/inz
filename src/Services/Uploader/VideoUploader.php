@@ -81,15 +81,11 @@ class VideoUploader
         $author = $this->em->getRepository(User::class)->findOneBy([
             'username' => $this->userGetter->getUsername()
         ]);
-        $video = new Video();
+        $video = $dto->createVideoSkeleton();
         $video
-            ->setTitle($title)
             ->setHash($hash)
             ->setDuration($duration)
-            ->setDescription($dto->getDescription())
             ->setAuthorUsername($this->userGetter->getUsername())
-            // TODO: set category
-            ->setCategory('')
             ->setChannel($author->getChannel());
 
         $this->em->persist($video);
