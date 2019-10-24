@@ -125,7 +125,7 @@ class VideoController extends AbstractController
 
         $video = $this->videoRepository->findOneBy(['hash' => $video_hash]);
 
-        if (!($user->getPaidForVideos()->contains($video))) {
+        if (!($user->getPaidForVideos()->contains($video)) && $user->getChannel() !== $video->getChannel()) {
             $wallet = $user->getWallet();
             if ($wallet->getFunds() >= $video->getPrice()) {
                 $wallet->setFunds($wallet->getFunds() - $video->getPrice());
