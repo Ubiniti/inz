@@ -2,7 +2,7 @@
     <a href="{{ path('app_video_watch', {video_hash: video.hash}) }}"
        class="text-dark{% if video.price > 0 %} bootbox-confirm-button{% endif %}"
             {% if video.price > 0 %}
-        data-title="Czy chcesz dokonać opłaty za film ({{ video.priceAsCurrency }}zł)?"
+        data-title="Film jest płatny ({{ video.priceAsCurrency }}zł). Jeżeli nie masz obecnie do niego dostępu - środki zostaną pobrane z Twojego portfela. Kontynuować?"
             {% endif %}>
         <img width="200px" src="{{ asset( [uploads_dir, '/thumbs/', video.hash, '.jpg']|join ) }}"> <br>
         {{ video.title|slice(0, 55) }}{% if video.title|length > 55 %}...{% endif %}
