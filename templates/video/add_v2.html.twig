@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="form-container row pt-5">
+            <a class="btn btn-success" href="{{ path('app_category_new') }}">Dodaj kategorię</a>
+            {{ form(form) }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('js/video_upload.js') }}"></script>
+{% endblock %}

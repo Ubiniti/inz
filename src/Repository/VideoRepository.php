@@ -22,7 +22,9 @@ class VideoRepository extends ServiceEntityRepository
     public function findByFilter(string $filter)
     {
         $qb = $this->createQueryBuilder('v')
+            ->join('v.categories', 'c')
             ->where("v.title LIKE '%" . $filter . "%'")
+            ->orWhere("c.name LIKE '%" . $filter . "%'")
             ->orderBy('v.title');
 
         return $qb->getQuery()->getResult();

@@ -20,12 +20,33 @@
     </style>
 
     <div class="container mt-3">
-        <div class="row">
-            {% for video in videos %}
-                <div class="col">
-                   {{ include('video/_video_card.html.twig', {'video':video}) }}
-                </div>
+        {% if categories is defined %}
+            {% for category in categories %}
+                {% if category.video is not empty %}
+                    <div class="row">
+                        <div class="col">
+                            <h4><a href="{{ path('app_category_show',{'id':category.id}) }}">#{{ category.name }}</a>
+                            </h4>
+                        </div>
+                    </div>
+                    <div class="row">
+                        {% for video in category.video %}
+                            <div class="col">
+                                {{ include('video/_video_card.html.twig', {'video':video}) }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <hr>
+                {% endif %}
             {% endfor %}
-        </div>
+        {% else %}
+            <div class="row">
+                {% for video in videos %}
+                    <div class="col">
+                        {{ include('video/_video_card.html.twig', {'video':video}) }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
     </div>
 {% endblock %}
