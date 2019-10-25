@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Video;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -27,5 +28,17 @@ class SearchController extends AbstractController {
         return $this->render('home/index.html.twig', [
             'videos' => $videos
         ]);
+    }
+
+    /**
+     * @Route("/video/titles", name="app_video_titles_json")
+     */
+    public function getVideoTitlesAsJson(Request $request) {
+
+        $titles = $this->getDoctrine()->getManager()->getRepository(Video::class)->getTitles();
+
+        dd($titles);
+
+        return new JsonResponse($titles);
     }
 }

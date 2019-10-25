@@ -4,4 +4,12 @@ $(document).ready(function () {
     };
 
     $("input[name='search']").easyAutocomplete(options);
+
+    $("input[name='search']").change(function () {
+        options = $.ajax({
+            method: "get",
+            url: '/video/titles',
+            dataType: 'json',
+        })
+    });
 });

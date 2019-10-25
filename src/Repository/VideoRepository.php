@@ -29,4 +29,13 @@ class VideoRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    public function getTitles()
+    {
+        $qb = $this->createQueryBuilder('v')
+            ->select('v.title')
+            ->orderBy('v.title');
+
+        return $qb->getQuery()->getResult();
+    }
 }
