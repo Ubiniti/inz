@@ -24,7 +24,7 @@ class Category
     private $name;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Video", mappedBy="categories", cascade={"persist", "remove"})
+     * @ORM\ManyToMany(targetEntity="App\Entity\Video", mappedBy="categories")
      */
     private $video;
 

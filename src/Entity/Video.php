@@ -83,7 +83,7 @@ class Video
     private $channel;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Category", inversedBy="video",  cascade={"persist", "remove"})
+     * @ORM\ManyToMany(targetEntity="App\Entity\Category", inversedBy="video")
      */
     private $categories;
 
