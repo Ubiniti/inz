@@ -104,9 +104,15 @@ class User implements UserInterface
      */
     private $paidForVideos;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\CommentRate", mappedBy="author")
+     */
+    private $commentRates;
+
     public function __construct()
     {
         $this->paidForVideos = new ArrayCollection();
+        $this->commentRates = new ArrayCollection();
     }
 
     public static function createFromDto(
@@ -318,6 +324,37 @@ class User implements UserInterface
         if ($this->paidForVideos->contains($paidForVideo)) {
             $this->paidForVideos->removeElement($paidForVideo);
             $paidForVideo->removeUsersWithAccess($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|CommentRate[]
+     */
+    public function getCommentRates(): Collection
+    {
+        return $this->commentRates;
+    }
+
+    public function addCommentRate(CommentRate $commentRate): self
+    {
+        if (!$this->commentRates->contains($commentRate)) {
+            $this->commentRates[] = $commentRate;
+            $commentRate->setAuthor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommentRate(CommentRate $commentRate): self
+    {
+        if ($this->commentRates->contains($commentRate)) {
+            $this->commentRates->removeElement($commentRate);
+            // set the owning side to null (unless already changed)
+            if ($commentRate->getAuthor() === $this) {
+                $commentRate->setAuthor(null);
+            }
         }
 
         return $this;

@@ -1,6 +1,4 @@
-{#{{ comment }}#}
-{#{{ video }}#}
-<div class="jumbotron bg-light overflow-hidden pr-3 py-2 px-0 m-0 mb-2">
+<div class="jumbotron bg-comment overflow-hidden pr-3 py-2 px-0 m-0 mb-2">
     <div class="comment d-flex container p-0">
         <div class="user-card m-0 mt-3 container text-center">
             <div class="avatar container rounded-circle bg-dark"></div>
@@ -11,10 +9,26 @@
             <div class="com-date m-0 p-0 text-right">{{ comment.added|date("d-m-Y") }}</div>
             <div class="content">
                 <div>
-                    <div style="margin-bottom: 0; min-height: 50px;">
+                    <div class="contents">
                         {{ comment.contents }}
                     </div>
-                    <div>
+                    <div class="m-2 p-0 float-right">
+                        <div class="float-left">
+                            <a class="btn btn-light" href="{{ path('app_comment_rate', {
+                                'grade': 1,
+                                'id': comment.id
+                            }) }}">
+                                <i class="fas fa-thumbs-up text-dark"></i>
+                                {{ comment.commentRatesUp.count }}
+                            </a>
+                            <a class="btn btn-light" href="{{ path('app_comment_rate', {
+                                'grade': 0,
+                                'id': comment.id
+                            }) }}">
+                                <i class="fas fa-thumbs-down text-dark"></i>
+                                {{ comment.commentRatesDown.count }}
+                            </a>
+                        </div>
                         <div class="btn btn-reply float-right m-2 p-0"
                            data-comment-id="{{ comment.id }}"
                         >

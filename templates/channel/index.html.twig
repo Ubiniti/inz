@@ -23,7 +23,7 @@
         <div class="row">
             <div class="col text-center">
                 <h1 style="display:inline-block">{{ channel.name }}</h1>
-                {% if channel.id is same as(app.user.channel.id) %}
+                {% if app.user is not null and channel.id is same as(app.user.channel.id) %}
                     <a style="float:right" href="{{ path('app_user_channel_edit') }}">
                         <i class="fas fa-edit text-primary"></i>
                     </a>
@@ -34,9 +34,11 @@
         <div class="row">
             <div class="col">
                 <h3 style="display:inline-block">Filmy</h3>
-                <a href="{{ path('app_video_add') }}">
-                    <i class="fas fa-plus text-success"></i>
-                </a>
+                {% if app.user is not null %}
+                    <a href="{{ path('app_video_add') }}">
+                        <i class="fas fa-plus text-success"></i>
+                    </a>
+                {% endif %}
                 <div class="row">
                     {% if channel.videos is empty %}
                         Na kanale nie ma żadnych filmów.
@@ -53,9 +55,11 @@
             </div>
             <div class="col">
                 <h3 style="display:inline-block">Playlisty</h3>
-                <a href="{{ path('app_playlist_add') }}">
-                    <i class="fas fa-plus text-success"></i>
-                </a>
+                {% if app.user is not null %}
+                    <a href="{{ path('app_playlist_add') }}">
+                        <i class="fas fa-plus text-success"></i>
+                    </a>
+                {% endif %}
                 <div class="row">
                     {% if channel.playlists is empty %}
                         Na kanale nie ma żadnych playlist.

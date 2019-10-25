@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Comment;
+use App\Entity\CommentRate;
 use App\Repository\VideoRepository;
+use App\Services\UserGetter;
 use App\Services\VideoManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -86,5 +88,33 @@ class CommentController extends AbstractController
         return $this->redirectToRoute('app_video_watch', [
             'video_hash' => $comment->getVideo()->getHash()
         ]);
+    }
+
+    /**
+     * @Route("/comment/{id}/rate/{grade}", name="app_comment_rate")
+     * @param Comment $comment
+     * @param bool $grade
+     * @param UserGetter $userGetter
+     * @return RedirectResponse
+     */
+    public function rate(Comment $comment, bool $grade, UserGetter $userGetter)
+    {
+        $user = $userGetter->get();
+        $rate = $this->em->getRepository(CommentRate::class)->findBy([
+            'author' => $user,
+            'comment' => $comment
+        ]);
+
+        if (count($rate) > 0) {
+            foreach ($rate as $item) {
+                $this->em->remove($item);
+            }
+        }
+
+        $comment->rate($grade, $userGetter->get());
+        $this->em->persist($comment);
+        $this->em->flush();
+
+        return $this->redirectToRoute('app_video_watch', ['video_hash' => $comment->getVideo()->getHash()]);
     }
 }

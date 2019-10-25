@@ -9,7 +9,7 @@
             <a href="{{ path('app_playlist',{'id':playlist.id}) }}">
                 {{ playlist.title }}
             </a>
-            {% if playlist.channel.id is same as(app.user.channel.id) %}
+            {% if app.user is not null and playlist.channel.id is same as(app.user.channel.id) %}
                 <a style="float:right" class="mr-1 ml-1" href="{{ path('app_playlist_remove', {'id':playlist.id}) }}">
                     <i class="fas fa-times text-danger"
                        data-toggle="tooltip"

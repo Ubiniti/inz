@@ -251,7 +251,7 @@ class VideoController extends AbstractController
         $user = $this->getUser();
 
         if ($video->getAuthorUsername() !== $user->getUsername()) {
-            $this->addFlash('error', 'Nie jesteś utorem tego filmu i nie możesz go edytować.');
+            $this->addFlash('error', 'Nie jesteś autorem tego filmu i nie możesz go edytować.');
 
             return $this->redirectToRoute('app_user_channel', ['channel_name' => $this->getUser()->getChannel()->getName()]);
         }

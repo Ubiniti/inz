@@ -51,6 +51,11 @@ class Comment
      */
     private $subComments;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\CommentRate", mappedBy="comment", orphanRemoval=true, cascade={"persist"})
+     */
+    private $commentRates;
+
     public function __construct(?Comment $parent = null)
     {
         $this->subComments = new ArrayCollection();
@@ -60,6 +65,17 @@ class Comment
             $this->video = $parent->video;
             $this->parent = $parent;
         }
+        $this->commentRates = new ArrayCollection();
+    }
+
+    public function rate(bool $rate, User $author)
+    {
+        $commentRate = (new CommentRate())
+            ->setRate($rate)
+            ->setComment($this)
+            ->setAuthor($author);
+
+        $this->addCommentRate($commentRate);
     }
 
     public function getId(): ?int
@@ -156,5 +172,61 @@ class Comment
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection|CommentRate[]
+     */
+    public function getCommentRates(): Collection
+    {
+        return $this->commentRates;
+    }
+
+    public function addCommentRate(CommentRate $commentRate): self
+    {
+        if (!$this->commentRates->contains($commentRate)) {
+            $this->commentRates[] = $commentRate;
+            $commentRate->setComment($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommentRate(CommentRate $commentRate): self
+    {
+        if ($this->commentRates->contains($commentRate)) {
+            $this->commentRates->removeElement($commentRate);
+            // set the owning side to null (unless already changed)
+            if ($commentRate->getComment() === $this) {
+                $commentRate->setComment(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|CommentRate[]
+     */
+    public function getCommentRatesUp(): Collection
+    {
+        $ratesUp = $this->commentRates->filter(function (CommentRate $commentRate) {
+            dump($commentRate->getRate(), CommentRate::UP, $commentRate->getRate() === CommentRate::UP);
+            return $commentRate->getRate() === CommentRate::UP;
+        });
+
+        return $ratesUp;
+    }
+
+    /**
+     * @return Collection|CommentRate[]
+     */
+    public function getCommentRatesDown(): Collection
+    {
+        $ratesDown = $this->commentRates->filter(function (CommentRate $commentRate) {
+            return $commentRate->getRate() === CommentRate::DOWN;
+        });
+
+        return $ratesDown;
     }
 }
