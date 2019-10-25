@@ -1,7 +1,7 @@
 $(document).ready(function () {
     let titles = getTitles();
 
-    $("input[name='search']").easyAutocomplete(options);
+    $("input[name='search']").easyAutocomplete(titles);
 
     $("input[name='search']").change(function () {
         titles = getTitles();

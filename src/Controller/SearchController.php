@@ -37,8 +37,6 @@ class SearchController extends AbstractController {
 
         $titles = $this->getDoctrine()->getManager()->getRepository(Video::class)->getTitles();
 
-        dd($titles);
-
         return new JsonResponse($titles);
     }
 }
