@@ -1,15 +1,19 @@
 $(document).ready(function () {
-    let options = {
-        data: ["blue", "green", "pink", "red", "yellow"]
-    };
+    let titles = getTitles();
 
     $("input[name='search']").easyAutocomplete(options);
 
     $("input[name='search']").change(function () {
-        options = $.ajax({
-            method: "get",
-            url: '/video/titles',
-            dataType: 'json',
-        })
+        titles = getTitles();
     });
 });
+
+function getTitles() {
+    options = $.ajax({
+        method: "get",
+        url: '/video/titles',
+        dataType: 'json',
+    });
+
+    return options;
+}
