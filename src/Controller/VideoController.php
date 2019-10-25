@@ -5,18 +5,18 @@ namespace App\Controller;
 use App\Dto\VideoUploadFormDto;
 use App\Entity\Playlist;
 use App\Entity\User;
-use App\Entity\Video;
 use App\Entity\VideoRate;
 
 use App\Form\AddVideoToPlaylistFormType;
 use App\Form\AddVideoType;
+use App\Form\EditVideoFormType;
 use App\Repository\CommentRepository;
 use App\Repository\VideoRateRepository;
 use App\Repository\VideoRepository;
 use App\Services\VideoManager;
 use App\Services\Uploader\VideoUploader;
 use Doctrine\ORM\EntityManagerInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -48,6 +48,10 @@ class VideoController extends AbstractController
      */
     private $videoManager;
     /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+    /**
      * @var Security
      */
     private $security;
@@ -57,6 +61,7 @@ class VideoController extends AbstractController
         VideoRateRepository $videoRateRepository,
         CommentRepository $commentRepository,
         VideoManager $videoManager,
+        EntityManagerInterface $entityManager,
         Security $security
     )
     {
@@ -64,11 +69,12 @@ class VideoController extends AbstractController
         $this->videoRateRepository = $videoRateRepository;
         $this->commentRepository = $commentRepository;
         $this->videoManager = $videoManager;
+        $this->entityManager = $entityManager;
         $this->security = $security;
     }
 
     /**
-     * @Route("/{video_hash}", name="watch")
+     * @Route("/{video_hash}", name="watch", requirements={"video_hash"="[\w\d]{32}"})
      * @param string $video_hash
      * @return RedirectResponse|Response
      */
@@ -112,10 +118,9 @@ class VideoController extends AbstractController
     /**
      * @Route("/{video_hash}/paid", name="watch_paid")
      * @param string $video_hash
-     * @param EntityManagerInterface $entityManager
      * @return RedirectResponse|Response
      */
-    public function watchPaidVideo(string $video_hash, EntityManagerInterface $entityManager)
+    public function watchPaidVideo(string $video_hash)
     {
         $user = $this->security->getUser();
 
@@ -133,7 +138,7 @@ class VideoController extends AbstractController
                 $wallet->setFunds($wallet->getFunds() - $video->getPrice());
                 $this->addFlash('sucess', 'Pobrano środki z Twojego portfela.');
                 $user->addPaidForVideo($video);
-                $entityManager->flush();
+                $this->entityManager->flush();
             } else {
                 $this->addFlash('error', 'Nie masz wystarczających środków w swoim portfelu.');
 
@@ -178,8 +183,7 @@ class VideoController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        $entityManager = $this->getDoctrine()->getManager();
-        $videoRateRepo = $entityManager->getRepository(VideoRate::class);
+        $videoRateRepo = $this->entityManager->getRepository(VideoRate::class);
 
         $rate = $request->request->get('rate');
         $video = $this->videoRepository->findOneBy(['hash' => $video_hash]);
@@ -191,16 +195,16 @@ class VideoController extends AbstractController
 
         if ($existingRate) {
             $existingRate->setRate($rate);
-            $entityManager->persist($existingRate);
+            $this->entityManager->persist($existingRate);
         } else {
             $videoRate = new VideoRate();
             $videoRate->setVideo($video);
             $videoRate->setAuthor($user->getUsername());
             $videoRate->setRate($rate);
-            $entityManager->persist($videoRate);
+            $this->entityManager->persist($videoRate);
         }
 
-        $entityManager->flush();
+        $this->entityManager->flush();
 
         return $this->redirectToRoute('app_video_get_rate', [
             'video_hash' => $video_hash,
@@ -209,13 +213,16 @@ class VideoController extends AbstractController
     }
 
     /**
-     * @Route("/", name="add")
+     * @Route("/add", name="add")
+     * @IsGranted("IS_AUTHENTICATED_FULLY", message="Brak dostępu.")
      * @param VideoUploader $uploader
      * @param Request $request
      * @return Response
      */
     public function add(VideoUploader $uploader, Request $request)
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
         $dto = new VideoUploadFormDto();
         $form = $this->createForm(AddVideoType::class, $dto);
 
@@ -231,12 +238,46 @@ class VideoController extends AbstractController
     }
 
     /**
-     * @Route("/remove/{video_hash}", name="remove")
-     * @param string $video_hash
-     * @param EntityManagerInterface $entityManager
+     * @Route("/{video_hash}/edit", name="edit")
+     * @IsGranted("IS_AUTHENTICATED_FULLY", message="Brak dostępu.")
+     * @param Request $request
      * @return Response
      */
-    public function removeVideo(string $video_hash, EntityManagerInterface $entityManager)
+    public function edit(string $video_hash, Request $request)
+    {
+        $video = $this->videoRepository->findOneBy(['hash' => $video_hash]);
+//        $dto = VideoEditFormDto::createFromEntity($video);
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if ($video->getAuthorUsername() !== $user->getUsername()) {
+            $this->addFlash('error', 'Nie jesteś utorem tego filmu i nie możesz go edytować.');
+
+            return $this->redirectToRoute('app_user_channel', ['channel_name' => $this->getUser()->getChannel()->getName()]);
+        }
+
+        $form = $this->createForm(EditVideoFormType::class, $video);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() and $form->isValid()) {
+            $this->entityManager->persist($video);
+            $this->entityManager->flush();
+
+            return $this->redirectToRoute('app_user_channel', ['channel_name' => $this->getUser()->getChannel()->getName()]);
+        }
+
+        return $this->render('video/edit.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route("/remove/{video_hash}", name="remove")
+     * @IsGranted("IS_AUTHENTICATED_FULLY", message="Brak dostępu.")
+     * @param string $video_hash
+     * @return Response
+     */
+    public function removeVideo(string $video_hash)
     {
         $video = $this->videoRepository->findOneBy(['hash' => $video_hash]);
 
@@ -246,8 +287,8 @@ class VideoController extends AbstractController
             return $this->redirectToRoute('app_user_channel', ['channel_name' => $this->getUser()->getChannel()->getName()]);
         }
 
-        $entityManager->remove($video);
-        $entityManager->flush();
+        $this->entityManager->remove($video);
+        $this->entityManager->flush();
         $this->addFlash('success', 'Usunięto film!');
 
         return $this->redirectToRoute('app_user_channel', ['channel_name' => $this->getUser()->getChannel()->getName()]);
@@ -280,10 +321,9 @@ class VideoController extends AbstractController
      * @Route("/{video_hash}/add-to-playlist", methods={"POST", "GET"}, name="add_to_playlist")
      * @param string $video_hash
      * @param Request $request
-     * @param EntityManagerInterface $entityManager
      * @return Response
      */
-    public function addVideoToPlaylist(string $video_hash, Request $request, EntityManagerInterface $entityManager)
+    public function addVideoToPlaylist(string $video_hash, Request $request)
     {
         $form = $this->createForm(AddVideoToPlaylistFormType::class);
         $form->handleRequest($request);
@@ -299,7 +339,7 @@ class VideoController extends AbstractController
 
             $playlist->addVideo($this->videoRepository->findOneBy(['hash' => $video_hash]));
 
-            $entityManager->flush();
+            $this->entityManager->flush();
             $this->addFlash('success', 'Dodano film do playlisty!');
 
             return $this->redirectToRoute('app_playlist', ['id' => $playlist->getId()]);
@@ -314,10 +354,9 @@ class VideoController extends AbstractController
      * @Route("/{video_hash}/remove-from-playlist/{playlist}", name="remove_from_playlist")
      * @param string $video_hash
      * @param Playlist $playlist
-     * @param EntityManagerInterface $entityManager
      * @return Response
      */
-    public function removeVideoFromPlaylist(string $video_hash, Playlist $playlist, EntityManagerInterface $entityManager)
+    public function removeVideoFromPlaylist(string $video_hash, Playlist $playlist)
     {
         if ($this->getUser() != $playlist->getChannel()->getUser()) {
             $this->addFlash('error', 'Podana playlista nie należy do Twojego kanału.');
@@ -326,7 +365,7 @@ class VideoController extends AbstractController
         }
 
         $playlist->removeVideo($this->videoRepository->findOneBy(['hash' => $video_hash]));
-        $entityManager->flush();
+        $this->entityManager->flush();
         $this->addFlash('success', 'Usunięto film z playlisty!');
 
         return $this->redirectToRoute('app_playlist', ['id' => $playlist->getId()]);

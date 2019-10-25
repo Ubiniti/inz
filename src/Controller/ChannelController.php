@@ -43,7 +43,7 @@ class ChannelController extends AbstractController
 
             $this->addFlash('success', 'Edytowano kanał!');
 
-            return $this->redirectToRoute('app_user_channel', ['id' => $channel->getId()]);
+            return $this->redirectToRoute('app_user_channel', ['channel_name' => $this->getUser()->getChannel()->getName()]);
         }
 
         return $this->render('channel/edit.html.twig', [

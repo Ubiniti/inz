@@ -21,6 +21,12 @@
                    data-placement="top"
                    title="Usuń film"></i>
             </a>
+            <a style="float:right" href="{{ path('app_video_edit', {'video_hash':video.hash}) }}">
+                <i class="fas fa-edit text-primary"
+                   data-toggle="tooltip"
+                   data-placement="top"
+                   title="Edytuj film"></i>
+            </a>
         {% endif %}
         {% set playlist = isVideoInUserPlaylists(video, app.user) %}
         {% if playlist is not null %}

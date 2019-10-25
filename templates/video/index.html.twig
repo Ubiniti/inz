@@ -67,8 +67,18 @@
 
         <div class="container text-dark">
             <div class="row">
-                <div class="col">
-                    <div class="h3 my-3">{{ video.title }}</div>
+                <div class="col-12">
+                    <div class="h3 my-3 w-100">
+                        {{ video.title }}
+                        {% if app.user.username == video.authorUsername %}
+                            <a style="float:right" href="{{ path('app_video_edit', {'video_hash':video.hash}) }}">
+                                <i class="fas fa-edit text-primary"
+                                   data-toggle="tooltip"
+                                   data-placement="top"
+                                   title="Edytuj film"></i>
+                            </a>
+                        {% endif %}
+                    </div>
                 </div>
                 <div class="col text-right">
                     {% if video.categories is not empty %}
@@ -176,5 +186,6 @@
 {% endblock %}
 
 {% block javascripts %}
+    {{ parent() }}
     <script src="{{ asset('js/video_rate.js') }}"></script>
 {% endblock %}

@@ -51,17 +51,6 @@ class VideoUploadFormDto
             ->setIsPublic($this->isPublic);
     }
 
-    public function updateVideo(Video $video): Video
-    {
-        $mutableProperties = ['title', 'description', 'categories', 'isPublic'];
-
-        foreach ($mutableProperties as $property) {
-            $video->{$property} = $this->{$property};
-        }
-
-        return $video;
-    }
-
     public function getTitle(): ?string
     {
         return $this->title;
