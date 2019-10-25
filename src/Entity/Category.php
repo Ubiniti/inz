@@ -28,9 +28,15 @@ class Category
      */
     private $video;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Playlist", mappedBy="category")
+     */
+    private $playlists;
+
     public function __construct()
     {
         $this->video = new ArrayCollection();
+        $this->playlists = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -71,6 +77,34 @@ class Category
     {
         if ($this->video->contains($video)) {
             $this->video->removeElement($video);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Playlist[]
+     */
+    public function getPlaylists(): Collection
+    {
+        return $this->playlists;
+    }
+
+    public function addPlaylist(Playlist $playlist): self
+    {
+        if (!$this->playlists->contains($playlist)) {
+            $this->playlists[] = $playlist;
+            $playlist->addCategory($this);
+        }
+
+        return $this;
+    }
+
+    public function removePlaylist(Playlist $playlist): self
+    {
+        if ($this->playlists->contains($playlist)) {
+            $this->playlists->removeElement($playlist);
+            $playlist->removeCategory($this);
         }
 
         return $this;
