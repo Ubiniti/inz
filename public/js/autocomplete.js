@@ -1,19 +1,14 @@
 $(document).ready(function () {
-    let titles = getTitles();
+    let options = {
+        url: location.protocol + '//' + location.host + '/video/titles',
+        getValue: "title",
+        list: {
+            match: {
+                enabled: true
+            }
+        },
+        theme: "square"
+    };
 
-    $("input[name='search']").easyAutocomplete(titles);
-
-    $("input[name='search']").change(function () {
-        titles = getTitles();
-    });
+    $("input[name='search']").easyAutocomplete(options);
 });
-
-function getTitles() {
-    options = $.ajax({
-        method: "get",
-        url: '/video/titles',
-        dataType: 'json',
-    });
-
-    return options;
-}

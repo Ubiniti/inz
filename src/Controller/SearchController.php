@@ -33,7 +33,7 @@ class SearchController extends AbstractController {
     /**
      * @Route("/video/titles", name="app_video_titles_json")
      */
-    public function getVideoTitlesAsJson(Request $request) {
+    public function getVideoTitlesAsJson() {
 
         $titles = $this->getDoctrine()->getManager()->getRepository(Video::class)->getTitles();
 
