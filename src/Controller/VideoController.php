@@ -259,8 +259,7 @@ class VideoController extends AbstractController
         $form = $this->createForm(EditVideoFormType::class, $video);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() and $form->isValid()) {
-            $this->entityManager->persist($video);
+        if ($form->isSubmitted() && $form->isValid()) {
             $this->entityManager->flush();
 
             return $this->redirectToRoute('app_user_channel', ['channel_name' => $this->getUser()->getChannel()->getName()]);
