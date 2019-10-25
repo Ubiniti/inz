@@ -15,13 +15,13 @@ use Symfony\Component\Routing\Annotation\Route;
  * Class PlaylistController
  *
  * @package App\Controller
- * @IsGranted("IS_AUTHENTICATED_FULLY", message="Brak dostępu.")
  * @Route("/playlist", name="app_playlist")
  */
 class PlaylistController extends AbstractController
 {
     /**
      * @Route("/add", name="_add")
+     * @IsGranted("IS_AUTHENTICATED_FULLY", message="Brak dostępu.")
      * @param Request $request
      * @param EntityManagerInterface $entityManager
      * @return Response
@@ -48,6 +48,7 @@ class PlaylistController extends AbstractController
 
     /**
      * @Route("/edit/{id}", name="_edit")
+     * @IsGranted("IS_AUTHENTICATED_FULLY", message="Brak dostępu.")
      * @param Playlist $playlist
      * @param Request $request
      * @param EntityManagerInterface $entityManager
@@ -78,6 +79,7 @@ class PlaylistController extends AbstractController
 
     /**
      * @Route("/remove/{id}", name="_remove")
+     * @IsGranted("IS_AUTHENTICATED_FULLY", message="Brak dostępu.")
      * @param Playlist $playlist
      * @param EntityManagerInterface $entityManager
      * @return Response

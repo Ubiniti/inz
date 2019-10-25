@@ -13,12 +13,12 @@ use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @Route("/category", name="app_category")
- * @IsGranted("IS_AUTHENTICATED_FULLY", message="Brak dostępu.")
  */
 class CategoryController extends AbstractController
 {
     /**
      * @Route("/new", name="_new", methods={"GET","POST"})
+     * @IsGranted("IS_AUTHENTICATED_FULLY", message="Brak dostępu.")
      * @param Request $request
      * @return Response
      */
@@ -57,6 +57,7 @@ class CategoryController extends AbstractController
 
     /**
      * @Route("/{id}/edit", name="category_edit", methods={"GET","POST"})
+     * @IsGranted("IS_AUTHENTICATED_FULLY", message="Brak dostępu.")
      * @param Request $request
      * @param Category $category
      * @return Response
@@ -82,6 +83,7 @@ class CategoryController extends AbstractController
 
     /**
      * @Route("/{id}", name="category_delete", methods={"DELETE"})
+     * @IsGranted("IS_AUTHENTICATED_FULLY", message="Brak dostępu.")
      * @param Category $category
      * @return Response
      */
