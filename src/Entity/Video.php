@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use DateTimeImmutable;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -107,7 +109,7 @@ class Video
 
     public function __construct()
     {
-        $this->uploaded = new \DateTimeImmutable();
+        $this->uploaded = new DateTimeImmutable();
         $this->views = 0;
         $this->description = '';
         $this->category = '';
@@ -159,12 +161,12 @@ class Video
         return $this;
     }
 
-    public function getUploaded(): ?\DateTimeInterface
+    public function getUploaded(): ?DateTimeInterface
     {
         return $this->uploaded;
     }
 
-    public function setUploaded(\DateTimeInterface $uploaded): self
+    public function setUploaded(DateTimeInterface $uploaded): self
     {
         $this->uploaded = $uploaded;
 
@@ -291,8 +293,7 @@ class Video
     {
         $comment = (new Comment())
             ->setContents($message)
-            ->setAuthorUsername($user->getUsername())
-            ->setAdded(new \DateTime());
+            ->setAuthorUsername($user->getUsername());
 
         $this->addComment($comment);
 

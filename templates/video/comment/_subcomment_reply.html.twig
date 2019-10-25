@@ -1,0 +1,16 @@
+<div class="subcomment-reply jumbotron comment d-none container px-3 pb-1 pt-3 mx-0 mb-0 mt-2 bg-subcomment"
+     data-comment-id="{{ comment.id }}"
+>
+    <div class="sub-user-card m-0 mt-3 container text-center pl-0 pr-2 mr-2">
+        <div class="sub-avatar container rounded-circle bg-dark"></div>
+        <a href="#" class="sub-com-author text-dark">kowalski</a>
+    </div>
+    <div class="container p-0 m-0">
+        <form action="{{ path('comment_reply', {'id': comment.id}) }}" method="POST" class="container">
+            <textarea class="textarea-reply form-control" name="message" id="message" rows="3"></textarea>
+            <div class="d-flex justify-content-end">
+                <button class="btn" type="submit">Wyślij</button>
+            </div>
+        </form>
+    </div>
+</div>

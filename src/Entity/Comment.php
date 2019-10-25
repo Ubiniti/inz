@@ -2,6 +2,10 @@
 
 namespace App\Entity;
 
+use DateTime;
+use DateTimeInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -37,6 +41,27 @@ class Comment
      */
     private $video;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Comment", inversedBy="subComments")
+     */
+    private $parent;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="parent")
+     */
+    private $subComments;
+
+    public function __construct(?Comment $parent = null)
+    {
+        $this->subComments = new ArrayCollection();
+        $this->added = new DateTime();
+
+        if ($parent !== null) {
+            $this->video = $parent->video;
+            $this->parent = $parent;
+        }
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -66,12 +91,12 @@ class Comment
         return $this;
     }
 
-    public function getAdded(): ?\DateTimeInterface
+    public function getAdded(): ?DateTimeInterface
     {
         return $this->added;
     }
 
-    public function setAdded(\DateTimeInterface $added): self
+    public function setAdded(DateTimeInterface $added): self
     {
         $this->added = $added;
 
@@ -86,6 +111,49 @@ class Comment
     public function setVideo(?Video $video): self
     {
         $this->video = $video;
+
+        return $this;
+    }
+
+    public function getParent(): ?self
+    {
+        return $this->parent;
+    }
+
+    public function setParent(?self $parent): self
+    {
+        $this->parent = $parent;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|self[]
+     */
+    public function getSubComments(): Collection
+    {
+        return $this->subComments;
+    }
+
+    public function addSubcomment(self $subcomment): self
+    {
+        if (!$this->subComments->contains($subcomment)) {
+            $this->subComments[] = $subcomment;
+            $subcomment->setParent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSubcomment(self $subcomment): self
+    {
+        if ($this->subComments->contains($subcomment)) {
+            $this->subComments->removeElement($subcomment);
+            // set the owning side to null (unless already changed)
+            if ($subcomment->getParent() === $this) {
+                $subcomment->setParent(null);
+            }
+        }
 
         return $this;
     }
