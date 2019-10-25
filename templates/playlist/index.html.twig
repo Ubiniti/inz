@@ -6,7 +6,7 @@
     <div class="container">>
         <div class="row">
             <div class="col text-center">
-                <h1 style="display:inline-block">{{ playlist.title}}</h1>
+                <h1 style="display:inline-block">{{ playlist.title }}</h1>
                 {% if playlist.channel.id is same as(app.user.channel.id) %}
                     <a style="float:right" href="{{ path('app_playlist_remove', {'id':playlist.id}) }}">
                         <i class="fas fa-times text-danger"></i>
@@ -19,22 +19,36 @@
             </div>
         </div>
         <div class="row">
-            <div class="col text-center">
-                <h3 style="display:inline-block">Filmy</h3>
-                <div class="row text-center">
-                    {% if playlist.videos is empty %}
-                        <div class="col text-center">
-                            Playlista nie zawiera nie ma żadnych filmów. Aby dodać film przejdź na jego podstronę.
-                        </div>
-                    {% else %}
-                        {% for video in playlist.videos %}
-                            <div class="row mt-3 text-center">
-                                <div class="col-12">
-                                    {{ include('video/_video_card.html.twig', {'video':video}) }}
-                                </div>
-                            </div>
+            <div class="col">
+                <div class="row mb-2">
+                    <div class="col text-center">
+                        {% for category in playlist.category %}
+                            <h5 style="display:inline-block"><a
+                                        href="{{ path('app_category_show',{'id':category.id}) }}">#{{ category.name }}</a></h5>
                         {% endfor %}
-                    {% endif %}
+                        <hr>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col text-center">
+                        <h3 style="display:inline-block">Filmy</h3>
+                        <div class="row text-center">
+                            {% if playlist.videos is empty %}
+                                <div class="col text-center">
+                                    Playlista nie zawiera nie ma żadnych filmów. Aby dodać film przejdź na jego
+                                    podstronę.
+                                </div>
+                            {% else %}
+                                {% for video in playlist.videos %}
+                                    <div class="row mt-3 text-center">
+                                        <div class="col-12">
+                                            {{ include('video/_video_card.html.twig', {'video':video}) }}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
