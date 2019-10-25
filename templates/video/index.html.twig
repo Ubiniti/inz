@@ -75,19 +75,21 @@
                 <div class="col-12">
                     <div class="h3 my-3 w-100">
                         {{ video.title }}
-                        {% if app.user.username == video.authorUsername %}
-                            <a style="float:right" href="{{ path('app_video_edit', {'video_hash':video.hash}) }}">
-                                <i class="fas fa-edit text-primary"
-                                   data-toggle="tooltip"
-                                   data-placement="top"
-                                   title="Edytuj film"></i>
-                            </a>
+                        {% if app.user is not null %}
+                            {% if app.user.username == video.authorUsername %}
+                                <a style="float:right" href="{{ path('app_video_edit', {'video_hash':video.hash}) }}">
+                                    <i class="fas fa-edit text-primary"
+                                       data-toggle="tooltip"
+                                       data-placement="top"
+                                       title="Edytuj film"></i>
+                                </a>
+                            {% endif %}
                         {% endif %}
                     </div>
                 </div>
                 <div class="col text-right">
                     {% if video.categories is not empty %}
-                        <div >
+                        <div>
                             {% for category in video.categories %}
                                 <a href="{{ path('app_category_show',{'id':category.id}) }}">#{{ category.name }},</a>
                             {% endfor %}
