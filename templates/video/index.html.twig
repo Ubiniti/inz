@@ -76,7 +76,7 @@
                     <div class="h3 my-3 w-100">
                         {{ video.title }}
                         {% if app.user is not null %}
-                            {% if app.user.username == video.authorUsername %}
+                            {% if app.user == video.channel.user %}
                                 <a style="float:right" href="{{ path('app_video_edit', {'video_hash':video.hash}) }}">
                                     <i class="fas fa-edit text-primary"
                                        data-toggle="tooltip"
