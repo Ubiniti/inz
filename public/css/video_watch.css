@@ -1,0 +1,17 @@
+.bg-comment {
+    background-color: #eff1f4;
+}
+
+.bg-subcomment {
+    background-color: #eceef1;
+}
+
+.btn-reply {
+    color: #3965a7;
+    cursor: pointer;
+}
+
+.textarea-reply {
+    resize: none;
+    background-color: rgba(255, 255, 255, 0.4);
+}

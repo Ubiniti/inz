@@ -2,10 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Comment;
 use App\Repository\VideoRepository;
 use App\Services\VideoManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
@@ -44,6 +46,9 @@ class CommentController extends AbstractController
 
     /**
      * @Route("/video/{video_hash}/comment", methods={"POST"}, name="add_comment")
+     * @param string $video_hash
+     * @param Request $request
+     * @return RedirectResponse
      */
     public function add(string $video_hash, Request $request)
     {
@@ -56,7 +61,30 @@ class CommentController extends AbstractController
         $this->em->persist($video);
         $this->em->flush();
 
-        return $this->redirectToRoute('video_watch',
-            ['video_hash' => $video_hash]);
+        return $this->redirectToRoute('app_video_watch', [
+            'video_hash' => $video_hash
+        ]);
+    }
+
+    /**
+     * @Route("/comment/{id}", name="comment_reply")
+     * @param Comment $comment
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function reply(Comment $comment, Request $request)
+    {
+        $message = $request->request->get('message');
+
+        $reply = new Comment($comment);
+        $reply->setAuthorUsername($this->getUser()->getUsername());
+        $reply->setContents($message);
+
+        $this->em->persist($reply);
+        $this->em->flush();
+
+        return $this->redirectToRoute('app_video_watch', [
+            'video_hash' => $comment->getVideo()->getHash()
+        ]);
     }
 }

@@ -89,7 +89,7 @@ class VideoController extends AbstractController
             return $this->redirectToRoute('app_video_watch_paid', ['video_hash' => $video_hash]);
         }
 
-        $comments = $this->commentRepository->findBy(['video' => $video]);
+        $comments = $this->commentRepository->findBy(['video' => $video, 'parent' => null]);
 
         $this->videoManager->incrementViews($video);
 
