@@ -31,9 +31,11 @@
                     </div>
                     <div class="row">
                         {% for video in category.video %}
-                            <div class="col">
-                                {{ include('video/_video_card.html.twig', {'video':video}) }}
-                            </div>
+                            {% if not video.isPublic is same as(false) %}
+                                <div class="col">
+                                    {{ include('video/_video_card.html.twig', {'video':video}) }}
+                                </div>
+                            {% endif %}
                         {% endfor %}
                     </div>
                     <hr>

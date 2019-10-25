@@ -57,11 +57,6 @@ class Video
     private $duration;
 
     /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $category;
-
-    /**
      * @ORM\OneToMany(targetEntity="App\Entity\VideoRate", mappedBy="video", orphanRemoval=true)
      */
     private $rates;
@@ -88,7 +83,7 @@ class Video
     private $channel;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Category", mappedBy="video")
+     * @ORM\ManyToMany(targetEntity="App\Entity\Category", inversedBy="video")
      */
     private $categories;
 
@@ -112,7 +107,6 @@ class Video
         $this->uploaded = new DateTimeImmutable();
         $this->views = 0;
         $this->description = '';
-        $this->category = '';
         $this->rates = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->categories = new ArrayCollection();
@@ -209,18 +203,6 @@ class Video
         return $this;
     }
 
-    public function getCategory(): ?string
-    {
-        return $this->category;
-    }
-
-    public function setCategory(string $category): self
-    {
-        $this->category = $category;
-
-        return $this;
-    }
-
     public function toEncryptableArray()
     {
         return [
@@ -228,7 +210,6 @@ class Video
             'author_username' => $this->getAuthorUsername(),
             'uploaded' => $this->getUploaded(),
             'duration' => $this->getDuration(),
-            'category' => $this->getCategory(),
         ];
     }
 
@@ -360,12 +341,12 @@ class Video
         return $this;
     }
 
-    public function setCategories(Collection $categories)
-    {
-        $this->categories = $categories;
-
-        return $this;
-    }
+//    public function setCategories(Collection $categories)
+//    {
+//        $this->categories = $categories;
+//
+//        return $this;
+//    }
 
     public function removeCategory(Category $category): self
     {
