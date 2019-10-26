@@ -36,4 +36,47 @@ class AdvertisementController extends AbstractController
             'form' => $form->createView()
         ]);
     }
+
+    /**
+     * @Route("/{id}/pay", name="_pay")
+     * @param Advertisement $advertisement
+     */
+    public function payForAd(Advertisement $advertisement, EntityManagerInterface $entityManager)
+    {
+        $user = $this->getUser();
+
+        if ($advertisement->getUser() != $user) {
+            $this->addFlash('error', 'Nie jesteś właścicielem tej reklamy i nie możesz za nią zapłacić.');
+
+            return $this->redirectToRoute('app_user_channel', ['channel_name' => $this->getUser()->getChannel()->getName()]);
+        }
+
+        $wallet = $user->getWallet();
+        $price = (int)getenv('ADVERTISEMENT_FIXED_PRICE');
+        if ($wallet->getFunds() >= $price) {
+            $wallet->setFunds($wallet->getFunds() - $price);
+            $this->addFlash('sucess', 'Pobrano środki z Twojego portfela.');
+            $advertisement->setIsPaidOff(true);
+            $entityManager->flush();
+        } else {
+            $this->addFlash('error', 'Nie masz wystarczających środków w swoim portfelu.');
+
+            return $this->redirectToRoute('app_user_wallet');
+        }
+
+        return $this->redirectToRoute('app_user_ads');
+    }
+
+    /**
+     * @Route("/", name="_ads")
+     * @return Response
+     */
+    public function advertisements()
+    {
+       $ads = $this->getUser()->getAdvertisements();
+
+        return $this->render('advertisement/add.html.twig', [
+            'ads' => $ads
+        ]);
+    }
 }
