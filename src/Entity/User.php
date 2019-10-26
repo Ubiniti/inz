@@ -109,10 +109,16 @@ class User implements UserInterface
      */
     private $commentRates;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Advertisement", mappedBy="user", orphanRemoval=true)
+     */
+    private $advertisements;
+
     public function __construct()
     {
         $this->paidForVideos = new ArrayCollection();
         $this->commentRates = new ArrayCollection();
+        $this->advertisements = new ArrayCollection();
     }
 
     public static function createFromDto(
@@ -354,6 +360,37 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($commentRate->getAuthor() === $this) {
                 $commentRate->setAuthor(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Advertisement[]
+     */
+    public function getAdvertisements(): Collection
+    {
+        return $this->advertisements;
+    }
+
+    public function addAdvertisement(Advertisement $advertisement): self
+    {
+        if (!$this->advertisements->contains($advertisement)) {
+            $this->advertisements[] = $advertisement;
+            $advertisement->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAdvertisement(Advertisement $advertisement): self
+    {
+        if ($this->advertisements->contains($advertisement)) {
+            $this->advertisements->removeElement($advertisement);
+            // set the owning side to null (unless already changed)
+            if ($advertisement->getUser() === $this) {
+                $advertisement->setUser(null);
             }
         }
 

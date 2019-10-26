@@ -4,12 +4,12 @@
 
 {% block body %}
     <div class="container">
-            <a class="btn btn-success" href="{{ path('app_category_new') }}">Dodaj kategorię</a>
-            {{ form_start(form) }}
-            {{ form_row(form.title) }}
-            {{ form_row(form.category) }}
-            {{ form_row(form.isPublic) }}
-            <button class="btn btn-success" type="submit">Zapisz</button>
-            {{ form_end(form) }}
-        </div>
+        <a class="btn btn-success" href="{{ path('app_category_new') }}">Dodaj kategorię</a>
+        {{ form_start(form) }}
+        {{ form_row(form.title) }}
+        {{ form_row(form.category) }}
+        {{ form_row(form.isPublic) }}
+        <button class="btn btn-success" type="submit">Zapisz</button>
+        {{ form_end(form) }}
+    </div>
 {% endblock %}
