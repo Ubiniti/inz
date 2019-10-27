@@ -8,10 +8,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
+/**
+ * Class UserController
+ * @package App\Controller
+ * @Route("/user", name="app_user")
+ */
 class UserController extends AbstractController {
 
     /**
-     * @Route("/user", name="user")
+     * @Route("/", name="")
      */
     public function index() {
 
@@ -25,7 +30,7 @@ class UserController extends AbstractController {
     }
 
     /**
-     * @Route("/edit", name="user_edit")
+     * @Route("/edit", name="_edit")
      */
     public function editUser() {
 
@@ -39,7 +44,7 @@ class UserController extends AbstractController {
     }
 
     /**
-     * @Route("/update", name="user_update")
+     * @Route("/update", name="_update")
      */
     public function updateUser(Request $request, ValidatorInterface $validator, UserPasswordEncoderInterface $encoder) {
 
@@ -92,7 +97,7 @@ class UserController extends AbstractController {
     }
 
     /**
-     * @Route("/remove", name="user_remove")
+     * @Route("/remove", name="_remove")
      */
     public function removeUser() {
 
@@ -106,7 +111,7 @@ class UserController extends AbstractController {
     }
 
     /**
-     * @Route("/delete", name="user_delete")
+     * @Route("/delete", name="_delete")
      */
     public function deleteUser(Request $request, UserPasswordEncoderInterface $encoder) {
 

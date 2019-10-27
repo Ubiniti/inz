@@ -4,6 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Channel;
 use App\Form\ChannelFormType;
+use App\Services\Uploader\ChannelBannerUploader;
+use App\Services\Uploader\Exception\FileFormatException;
+use App\Services\Uploader\Exception\PathsJoinException;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use App\Repository\ChannelRepository;
@@ -21,11 +24,27 @@ use Symfony\Component\Routing\Annotation\Route;
 class ChannelController extends AbstractController
 {
     /**
+     * @var ChannelBannerUploader
+     */
+    private $channelBannerUploader;
+
+    /**
+     * ChannelController constructor.
+     * @param ChannelBannerUploader $channelBannerUploader
+     */
+    public function __construct(ChannelBannerUploader $channelBannerUploader)
+    {
+        $this->channelBannerUploader = $channelBannerUploader;
+    }
+
+    /**
      * @Route("/edit", name="_edit")
      * @IsGranted("IS_AUTHENTICATED_FULLY", message="Brak dostępu.")
      * @param Request $request
      * @param EntityManagerInterface $entityManager
      * @return Response
+     * @throws FileFormatException
+     * @throws PathsJoinException
      */
     public function editChannel(Request $request, EntityManagerInterface $entityManager)
     {
@@ -39,6 +58,7 @@ class ChannelController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $channel->setImage($this->channelBannerUploader->saveContent($form->get('image')->getData()));
             $entityManager->flush();
 
             $this->addFlash('success', 'Edytowano kanał!');

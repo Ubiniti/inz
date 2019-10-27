@@ -10,14 +10,11 @@
     <div class="container">
         <div class="row">
             <div class="col">
-                <div class="channel-background"
+                <div class="channel-background mt-1">
                         {% if channel.image is not null %}
-                            style="background-image:url({{ channel.image }})"
-                        {% else %}
-                            style="background-image:url('stock_images/channel.png');
-                            width:100%; height:100%;"
+                            <img width="100%" src="{{ asset( [uploads_dir, '/channel/', channel.image, '.jpg']|join ) }}" alt="ad-content"> <br>
                         {% endif %}
-                ></div>
+                </div>
             </div>
         </div>
         <div class="row">

@@ -29,27 +29,39 @@ class BinaryFileUploader
     }
 
     /**
-     * @param string $destination Subdirectory in uploads
+     * @param string $extension
+     * @param UploadedFile $file
+     * @param string $directory
      * @return string Name of uploaded file excluding extension
+     * @throws PathsJoinException
      */
-    public function saveFile(UploadedFile $file, string $directory = ''): string {
+    public function saveFile( UploadedFile $file, string $directory = '', string $extension = null): string {
         $tmpPath = $file->getPathname();
-        $ext = $file->getClientOriginalExtension();
-        $hash = md5(uniqid());
 
-        if (!is_dir($directory)) {
-            mkdir($directory);
+        if ($extension === null) {
+            $extension = $file->getClientOriginalExtension();
         }
+
+        $hash = md5(uniqid());
 
         $uploadDirectory = $this->getUploadsPath($directory);
 
-        $destination = $uploadDirectory . $hash . $ext;
+        if (!is_dir($uploadDirectory)) {
+            mkdir($uploadDirectory);
+        }
+
+        $destination = $uploadDirectory . $hash . '.' . $extension;
 
         copy($tmpPath, $destination);
 
         return $hash;
     }
 
+    /**
+     * @param string $subDirectory
+     * @return string
+     * @throws PathsJoinException
+     */
     private function getUploadsPath(string $subDirectory = ''): string
     {
         $uploadsPath = isset($_ENV['UPLOADS_DIR'])
@@ -61,6 +73,12 @@ class BinaryFileUploader
         return $this->joinPaths([$projectDir, $uploadsPath, $subDirectory]);
     }
 
+    /**
+     * @param array $paths
+     * @param bool $followingSlash
+     * @return string
+     * @throws PathsJoinException
+     */
     private function joinPaths(array $paths, bool $followingSlash = true): string
     {
         $slash = $followingSlash ? DIRECTORY_SEPARATOR : '';
@@ -69,16 +87,18 @@ class BinaryFileUploader
             throw new PathsJoinException();
         }
 
-        $output = rtrim($paths[0], ['\\', '/']);
+        $output = rtrim($paths[0], '\\/');
 
-        foreach ($paths as $path) {
-            if ($path === '') {
+//        $output = rtrim($paths[0]);
+
+
+        foreach ($paths as $key => $path) {
+            if ($path === '' || $key === 0) {
                 continue;
             }
 
-            $output .= DIRECTORY_SEPARATOR . trim($path, ['\\', '/']);
+            $output .= DIRECTORY_SEPARATOR . trim($path, '\\/');
         }
-
         $output .= $slash;
 
         return $output;
