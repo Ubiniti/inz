@@ -115,15 +115,17 @@ class User implements UserInterface
     private $advertisements;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\UserPreferences", mappedBy="user", cascade={"persist", "remove"})
+     * @ORM\ManyToMany(targetEntity="App\Entity\Category", inversedBy="users")
      */
-    private $userPreferences;
+    private $preferredCategories;
+
 
     public function __construct()
     {
         $this->paidForVideos = new ArrayCollection();
         $this->commentRates = new ArrayCollection();
         $this->advertisements = new ArrayCollection();
+        $this->preferredCategories = new ArrayCollection();
     }
 
     public static function createFromDto(
@@ -402,18 +404,27 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getUserPreferences(): ?UserPreferences
+    /**
+     * @return Collection|Category[]
+     */
+    public function getPreferredCategories(): Collection
     {
-        return $this->userPreferences;
+        return $this->preferredCategories;
     }
 
-    public function setUserPreferences(UserPreferences $userPreferences): self
+    public function addPreferredCategory(Category $preferredCategory): self
     {
-        $this->userPreferences = $userPreferences;
+        if (!$this->preferredCategories->contains($preferredCategory)) {
+            $this->preferredCategories[] = $preferredCategory;
+        }
 
-        // set the owning side of the relation if necessary
-        if ($this !== $userPreferences->getUser()) {
-            $userPreferences->setUser($this);
+        return $this;
+    }
+
+    public function removePreferredCategory(Category $preferredCategory): self
+    {
+        if ($this->preferredCategories->contains($preferredCategory)) {
+            $this->preferredCategories->removeElement($preferredCategory);
         }
 
         return $this;

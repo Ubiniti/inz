@@ -20,27 +20,67 @@
     </style>
 
     <div class="container mt-3">
-        {% if categories is defined %}
-            {% for category in categories %}
-                {% if category.video is not empty %}
-                    <div class="row">
-                        <div class="col">
-                            <h4><a href="{{ path('app_category_show',{'id':category.id}) }}">#{{ category.name }}</a>
-                            </h4>
+        {% if preferredCategories is defined %}
+            {% if preferredCategories is not empty %}
+                <h2>Polecane dla ciebie</h2>
+                {% for preferredCategory in preferredCategories %}
+                    {% if preferredCategory.video is not empty %}
+                        <div class="row">
+                            <div class="col">
+                                <h4>
+                                    <a href="{{ path('app_category_show',{'id':preferredCategory.id}) }}">#{{ preferredCategory.name }}</a>
+                                </h4>
+                            </div>
                         </div>
+                        <div class="row">
+                            {% for video in preferredCategory.video %}
+                                {% if not video.isPublic is same as(false) %}
+                                    <div class="col">
+                                        {{ include('video/_video_card.html.twig', {'video':video}) }}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <hr>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% else %}
+            <div class="row">
+                {% for video in videos %}
+                    <div class="col">
+                        {{ include('video/_video_card.html.twig', {'video':video}) }}
                     </div>
-                    <div class="row">
-                        {% for video in category.video %}
-                            {% if not video.isPublic is same as(false) %}
-                                <div class="col">
-                                    {{ include('video/_video_card.html.twig', {'video':video}) }}
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                    <hr>
-                {% endif %}
-            {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if categories is defined %}
+            {% if categories is not empty %}
+                <h2>Popularne kategorie</h2>
+                {% for category in categories %}
+
+                    {% if category.video is not empty %}
+                        <div class="row">
+                            <div class="col">
+                                <h4>
+                                    <a href="{{ path('app_category_show',{'id':category.id}) }}">#{{ category.name }}</a>
+                                </h4>
+                            </div>
+                        </div>
+                        <div class="row">
+                            {% for video in category.video %}
+                                {% if not video.isPublic is same as(false) %}
+                                    <div class="col">
+                                        {{ include('video/_video_card.html.twig', {'video':video}) }}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <hr>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
         {% else %}
             <div class="row">
                 {% for video in videos %}

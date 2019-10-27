@@ -33,10 +33,16 @@ class Category
      */
     private $playlists;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\User", mappedBy="preferredCategories")
+     */
+    private $users;
+
     public function __construct()
     {
         $this->video = new ArrayCollection();
         $this->playlists = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -105,6 +111,34 @@ class Category
         if ($this->playlists->contains($playlist)) {
             $this->playlists->removeElement($playlist);
             $playlist->removeCategory($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): self
+    {
+        if (!$this->users->contains($user)) {
+            $this->users[] = $user;
+            $user->addPreferredCategory($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): self
+    {
+        if ($this->users->contains($user)) {
+            $this->users->removeElement($user);
+            $user->removePreferredCategory($this);
         }
 
         return $this;

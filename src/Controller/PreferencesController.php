@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\UserPreferences;
 use App\Form\PreferencesFormType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,15 +20,12 @@ class PreferencesController extends AbstractController
     public function index(Request $request, EntityManagerInterface $entityManager)
     {
         $user = $this->getUser();
-        $preferences = $user->getUserPreferences();
-        if ($preferences === null) {
-            $preferences = new UserPreferences($user);
-        }
-        $form = $this->createForm(PreferencesFormType::class, $preferences);
+
+        $form = $this->createForm(PreferencesFormType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($preferences);
+
             $entityManager->flush();
 
             $this->addFlash('success', 'Zaktualizowano preferencje!');
