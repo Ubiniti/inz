@@ -73,6 +73,12 @@
         <div class="container text-dark">
             <div class="row">
                 <div class="col-12">
+                    {% if video.allowsAds is same as(true) and ad is not null %}
+                        Reklama:<br>
+                        <div class="video-ad">
+                            <img width="200px" src="{{ asset( [uploads_dir, '/advertisements/', ad.content, '.jpg']|join ) }}" alt="ad-content"> <br>
+                        </div>
+                    {% endif %}
                     <div class="h3 my-3 w-100">
                         {{ video.title }}
                         {% if app.user is not null %}

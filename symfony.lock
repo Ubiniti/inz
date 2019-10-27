@@ -2,6 +2,9 @@
     "alchemy/binary-driver": {
         "version": "5.1.0"
     },
+    "beberlei/doctrineextensions": {
+        "version": "v1.2.3"
+    },
     "doctrine/annotations": {
         "version": "1.0",
         "recipe": {

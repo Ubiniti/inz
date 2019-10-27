@@ -56,9 +56,9 @@ class Wallet
         return $this->funds;
     }
 
-    public function getFundsAsCurrency(): ?int
+    public function getFundsAsCurrency(): float
     {
-        return $this->funds/100;
+        return ((float)$this->funds)/100;
     }
 
     public function setFunds(?int $funds): self

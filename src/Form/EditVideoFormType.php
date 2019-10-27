@@ -33,6 +33,9 @@ class EditVideoFormType extends AbstractType
             ->add('isPublic', CheckboxType::class, [
                 'label' => 'Publiczny',
                 'required' => false,
+            ]) ->add('allowsAds', CheckboxType::class, [
+                'label' => 'Zezwól na wyświetlanie reklam',
+                'required' => false,
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'Zapisz',

@@ -1,5 +1,5 @@
 <div class="video-thumb mb-3">
-    <img width="200px" src="{{ asset( [uploads_dir, '/advertisements/', ad.content, '.jpg']|join ) }}"> <br>
+    <img width="200px" src="{{ asset( [uploads_dir, '/advertisements/', ad.content, '.jpg']|join ) }}" alt="ad-content"> <br>
     {% if app.user is same as(ad.user) %}
         {% if ad.isPaidOff is not same as(true) %}
             <a class="text-dark bootbox-confirm-button"

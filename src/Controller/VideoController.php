@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Dto\VideoUploadFormDto;
+use App\Entity\Advertisement;
 use App\Entity\Playlist;
 use App\Entity\User;
 use App\Entity\VideoRate;
@@ -93,6 +94,30 @@ class VideoController extends AbstractController
 
         $this->videoManager->incrementViews($video);
 
+        $ad = null;
+
+        if ($video->getAllowsAds() === true) {
+            $ads = $this->getDoctrine()->getRepository(Advertisement::class)->findAll();
+            shuffle($ads);
+
+            foreach ($ads as $a) {
+                if ($a->getIsPaidOff()) {
+                    $ad = $a;
+                }
+            }
+
+            if ($ad !== null) {
+                $ad->setViews($ad->getViews() + 1);
+                $wallet = $ad->getUser()->getWallet();
+                if ($wallet->getFunds() >= getenv('ADVERTISEMENT_PRICE_PER_VIEW')) {
+                    $wallet->setFunds($wallet->getFunds() - getenv('ADVERTISEMENT_PRICE_PER_VIEW'));
+                } else {
+                    $ad->setIsPaidOff(false);
+                }
+                $this->entityManager->flush();
+            }
+        }
+
         $thumbs_up = $this->videoRateRepository->countRate($video, VideoRate::UP);
         $thumbs_down = $this->videoRateRepository->countRate($video, VideoRate::DOWN);
 
@@ -111,7 +136,8 @@ class VideoController extends AbstractController
             'thumbs_up' => $thumbs_up,
             'thumbs_down' => $thumbs_down,
             'user_rate' => $rate,
-            'comments' => $comments
+            'comments' => $comments,
+            'ad' => $ad
         ]);
     }
 
