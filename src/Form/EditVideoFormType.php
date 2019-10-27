@@ -31,7 +31,7 @@ class EditVideoFormType extends AbstractType
                 'expanded' => true,
                 'choice_label' => 'name'])
             ->add('isPublic', CheckboxType::class, [
-                'label' => 'Widoczny na stronie głównej',
+                'label' => 'Publiczny',
                 'required' => false,
             ])
             ->add('submit', SubmitType::class, [

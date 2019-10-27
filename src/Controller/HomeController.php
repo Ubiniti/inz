@@ -15,7 +15,7 @@ class HomeController extends AbstractController
     public function index()
     {
         $categories = $this->getDoctrine()->getRepository(Category::class)->findAllSortedByVideoCount();
-        
+//        dd($categories);
         return $this->render('home/index.html.twig', [
             'categories' => $categories
         ]);

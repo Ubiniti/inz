@@ -117,6 +117,7 @@ class Video
         $this->categories = new ArrayCollection();
         $this->playlists = new ArrayCollection();
         $this->usersWithAccess = new ArrayCollection();
+        $this->isPublic = true;
     }
 
     public function getId(): ?int
