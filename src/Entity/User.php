@@ -114,6 +114,11 @@ class User implements UserInterface
      */
     private $advertisements;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\UserPreferences", mappedBy="user", cascade={"persist", "remove"})
+     */
+    private $userPreferences;
+
     public function __construct()
     {
         $this->paidForVideos = new ArrayCollection();
@@ -392,6 +397,23 @@ class User implements UserInterface
             if ($advertisement->getUser() === $this) {
                 $advertisement->setUser(null);
             }
+        }
+
+        return $this;
+    }
+
+    public function getUserPreferences(): ?UserPreferences
+    {
+        return $this->userPreferences;
+    }
+
+    public function setUserPreferences(UserPreferences $userPreferences): self
+    {
+        $this->userPreferences = $userPreferences;
+
+        // set the owning side of the relation if necessary
+        if ($this !== $userPreferences->getUser()) {
+            $userPreferences->setUser($this);
         }
 
         return $this;
