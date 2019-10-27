@@ -2,7 +2,10 @@
     <div class="comment d-flex container p-0">
         <div class="user-card m-0 mt-3 container text-center">
             <div class="avatar container rounded-circle bg-dark"></div>
-            <a href="{{ path('app_user_channel', {'channel_name': getChannelName(comment.authorUsername)}) }}"
+            <a href="{% if  getChannelName(comment.authorUsername) is not null %}
+                    {{ path('app_user_channel', {'channel_name': getChannelName(comment.authorUsername)}) }}
+                    {% else %}#
+                    {% endif %}"
                class="com-author text-dark">{{ comment.authorusername }}</a>
         </div>
         <div class="container p-0 m-0">
@@ -29,11 +32,21 @@
                                 {{ comment.commentRatesDown.count }}
                             </a>
                         </div>
+                        <div class="float-right">
+                            {% if comment.authorUsername is same as(app.user.username) %}
+                                <a href="{{ path('app_comment_remove', {'id':comment.id}) }}">
+                                    <i class="fas fa-times text-danger"
+                                       data-toggle="tooltip"
+                                       data-placement="top"
+                                       title="Usuń komentarz"></i>
+                                </a>
+                            {% endif %}
+                        </div>
                         <div class="btn btn-reply float-right m-2 p-0"
-                           data-comment-id="{{ comment.id }}"
-                        >
+                             data-comment-id="{{ comment.id }}">
                             Odpowiedz
                         </div>
+
                     </div>
                 </div>
                 {{ include('video/comment/_subcomment_reply.html.twig') }}
