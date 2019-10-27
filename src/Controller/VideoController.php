@@ -111,6 +111,8 @@ class VideoController extends AbstractController
                 $wallet = $ad->getUser()->getWallet();
                 if ($wallet->getFunds() >= getenv('ADVERTISEMENT_PRICE_PER_VIEW')) {
                     $wallet->setFunds($wallet->getFunds() - getenv('ADVERTISEMENT_PRICE_PER_VIEW'));
+                    $videoOwnerWallet = $video->getChannel()->getUser()->getWallet();
+                    $videoOwnerWallet->setFunds($videoOwnerWallet->getFunds() + (getenv('ADVERTISEMENT_PRICE_PER_VIEW')/2));
                 } else {
                     $ad->setIsPaidOff(false);
                 }
