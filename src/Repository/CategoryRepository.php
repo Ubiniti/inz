@@ -23,6 +23,7 @@ class CategoryRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('c')
             ->join('c.video', 'v')
+            ->where('v.isPublic = TRUE')
             ->groupBy('c.id')
             ->orderBy('COUNT(v)', 'DESC')
             ->getQuery()

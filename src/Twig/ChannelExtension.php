@@ -29,7 +29,12 @@ class ChannelExtension extends AbstractExtension
     public function getChannelName(string $username)
     {
         $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
-        $channelName = $user->getChannel()->getName();
+       $channel = $user->getChannel();
+        if ($channel != null) {
+            $channelName = $channel->getName();
+        } else {
+            return null;
+        }
 
         return $channelName;
     }

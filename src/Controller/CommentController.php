@@ -117,4 +117,27 @@ class CommentController extends AbstractController
 
         return $this->redirectToRoute('app_video_watch', ['video_hash' => $comment->getVideo()->getHash()]);
     }
+
+    /**
+     * @Route("/comment/{id}/remove", name="app_comment_remove")
+     * @param Comment $comment
+     * @return RedirectResponse
+     */
+    public function remove(Comment $comment)
+    {
+        if ($comment->getAuthorUsername() !== $this->getUser()->getUsername()) {
+            $this->addFlash('error', 'Nie jesteś autorem tego komentarza i nie możesz go usunąć.');
+
+            return $this->redirectToRoute('app_video_watch', ['video_hash' => $comment->getVideo()->getHash()]);
+        }
+
+        $this->em->remove($comment);
+        $this->em->flush();
+
+        $this->addFlash('success', 'Usunięto komentarz!');
+
+        return $this->redirectToRoute('app_video_watch', [
+            'video_hash' => $comment->getVideo()->getHash()
+        ]);
+    }
 }

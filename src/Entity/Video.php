@@ -102,6 +102,11 @@ class Video
      */
     private $usersWithAccess;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $allowsAds;
+
     public function __construct()
     {
         $this->uploaded = new DateTimeImmutable();
@@ -112,6 +117,7 @@ class Video
         $this->categories = new ArrayCollection();
         $this->playlists = new ArrayCollection();
         $this->usersWithAccess = new ArrayCollection();
+        $this->isPublic = true;
     }
 
     public function getId(): ?int
@@ -430,6 +436,18 @@ class Video
         if ($this->usersWithAccess->contains($usersWithAccess)) {
             $this->usersWithAccess->removeElement($usersWithAccess);
         }
+
+        return $this;
+    }
+
+    public function getAllowsAds(): ?bool
+    {
+        return $this->allowsAds;
+    }
+
+    public function setAllowsAds(?bool $allowsAds): self
+    {
+        $this->allowsAds = $allowsAds;
 
         return $this;
     }
