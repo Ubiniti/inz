@@ -14,7 +14,7 @@ class AdFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('ad', FileType::class, [
+            ->add('content', FileType::class, [
                 'label' => 'Obraz reklamy',
                 'required' => true,
             ])
