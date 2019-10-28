@@ -35,7 +35,7 @@
                     }
                     window.location.replace(successRoute);
                 },
-                eroor: function(error) {
+                error: function(error) {
                     console.log('Error:');
                     console.log(error);
                 }

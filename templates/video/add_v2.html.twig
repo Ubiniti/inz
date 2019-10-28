@@ -8,7 +8,7 @@
             <a class="btn btn-success" href="{{ path('app_category_new') }}">Dodaj kategorię</a>
             {{ form_start(form, {'attr': {
                 'id': 'uploadForm',
-                'data-success': path(success_route)
+                'data-success': path(success_route, {'channel_name':app.user.channel.name})
             }}) }}
                 {{ form_row(form.title) }}
                 {{ form_row(form.description) }}

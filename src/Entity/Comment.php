@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Interfaces\NormalizableInterface;
 use DateTime;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -11,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CommentRepository")
  */
-class Comment
+class Comment implements NormalizableInterface
 {
     /**
      * @ORM\Id()
@@ -228,5 +229,18 @@ class Comment
         });
 
         return $ratesDown;
+    }
+
+    public function normalize()
+    {
+        $array = [];
+        $array['id'] = $this->id;
+        $array['contents'] = $this->contents;
+        $array['author_username'] = $this->author_username;
+        $array['added'] = $this->added;
+        $array['video'] = $this->getVideo()->getHash();
+        $array['parent'] = $this->getParent()->getId();
+
+        return $array;
     }
 }

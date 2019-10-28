@@ -17,3 +17,9 @@
     </div>
 
 {% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/fileUpload.js') }}"></script>
+{% endblock %}
+

@@ -8,11 +8,16 @@ use App\Repository\VideoRepository;
 use App\Services\UserGetter;
 use App\Services\VideoManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Serializer\Serializer;
 
 class CommentController extends AbstractController
 {
@@ -139,5 +144,23 @@ class CommentController extends AbstractController
         return $this->redirectToRoute('app_video_watch', [
             'video_hash' => $comment->getVideo()->getHash()
         ]);
+    }
+
+    /**
+     * @Route("/comment/{id}/edit", name="app_comment_edit", methods={"POST"})
+     */
+    public function edit(Comment $comment, Request $request): JsonResponse
+    {
+//        if ($comment->getAuthorUsername() !== $this->getUser()->getUsername()) {
+//            throw new AccessDeniedException();
+//        }
+
+        $requestBody = json_decode($request->getContent());
+        $message = $requestBody->message;
+        $comment->setContents($message);
+        $this->em->persist($comment);
+        $this->em->flush();
+
+        return new JsonResponse($comment->normalize());
     }
 }

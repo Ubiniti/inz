@@ -11,9 +11,29 @@
         <div class="container p-0 m-0">
             <div class="com-date m-0 p-0 text-right">{{ comment.added|date("d-m-Y") }}</div>
             <div class="content">
-                <div>
-                    <div class="contents">
-                        {{ comment.contents }}
+                <div class="comment-content-wrapper">
+                    <div class="d-none comment-edit contents jumbotron bg-comment">
+                        <textarea class="textarea-reply form-control w-100 p-2" name="message"
+                                  rows="2">{{ comment.contents }}</textarea>
+                        <div class="pl-2">
+                            <i class="btn-accept fas fa-check text-dark"
+                               data-toggle="tooltip"
+                               data-placement="top"
+                               data-comment-id="{{ comment.id }}"
+                               title="Zapisz"></i>
+                        </div>
+                    </div>
+                    <div class="comment-view contents jumbotron bg-comment">
+                        <div class="w-100">
+                            {{ comment.contents }}
+                        </div>
+                        <div class="pl-2">
+                            <i class="btn-edit fas fa-edit text-dark"
+                               data-toggle="tooltip"
+                               data-placement="top"
+                               data-comment-id="{{ comment.id }}"
+                               title="Edytuj komentarz"></i>
+                        </div>
                     </div>
                     <div class="m-2 p-0 float-right">
                         <div class="float-left">
@@ -33,13 +53,15 @@
                             </a>
                         </div>
                         <div class="float-right">
-                            {% if comment.authorUsername is same as(app.user.username) %}
-                                <a href="{{ path('app_comment_remove', {'id':comment.id}) }}">
-                                    <i class="fas fa-times text-danger"
-                                       data-toggle="tooltip"
-                                       data-placement="top"
-                                       title="Usuń komentarz"></i>
-                                </a>
+                            {% if app.user is not null %}
+                                {% if comment.authorUsername is same as(app.user.username) %}
+                                    <a href="{{ path('app_comment_remove', {'id':comment.id}) }}">
+                                        <i class="fas fa-times text-danger"
+                                           data-toggle="tooltip"
+                                           data-placement="top"
+                                           title="Usuń komentarz"></i>
+                                    </a>
+                                {% endif %}
                             {% endif %}
                         </div>
                         <div class="btn btn-reply float-right m-2 p-0"

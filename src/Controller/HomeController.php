@@ -15,7 +15,12 @@ class HomeController extends AbstractController
     public function index()
     {
         $categories = $this->getDoctrine()->getRepository(Category::class)->findAllSortedByVideoCount();
-        $preferredCategories = $this->getUser()->getPreferredCategories();
+        $preferredCategories = null;
+        $user = $this->getUser();
+
+        if ($user !== null) {
+            $preferredCategories = $this->getUser()->getPreferredCategories();
+        }
 
         return $this->render('home/index.html.twig', [
             'categories' => $categories,

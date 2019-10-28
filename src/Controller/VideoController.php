@@ -18,6 +18,7 @@ use App\Services\VideoManager;
 use App\Services\Uploader\VideoUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -177,8 +178,8 @@ class VideoController extends AbstractController
         $comments = $this->commentRepository->findBy(['video' => $video]);
         $this->videoManager->incrementViews($video);
 
-        $thumbs_up = $this->videoRateRepository->countRate($video, VideoRate::UP);
-        $thumbs_down = $this->videoRateRepository->countRate($video, VideoRate::DOWN);
+        $thumbsUp = $this->videoRateRepository->countRate($video, VideoRate::UP);
+        $thumbsDown = $this->videoRateRepository->countRate($video, VideoRate::DOWN);
 
         $rate = null;
 
@@ -192,8 +193,8 @@ class VideoController extends AbstractController
 
         return $this->render('video/index.html.twig', [
             'video' => $video,
-            'thumbs_up' => $thumbs_up,
-            'thumbs_down' => $thumbs_down,
+            'thumbs_up' => $thumbsUp,
+            'thumbs_down' => $thumbsDown,
             'user_rate' => $rate,
             'comments' => $comments
         ]);
@@ -241,7 +242,7 @@ class VideoController extends AbstractController
     }
 
     /**
-     * @Route("/add", name="add")
+     * @Route("/add", name="add", methods={"POST", "GET"})
      * @IsGranted("IS_AUTHENTICATED_FULLY", message="Brak dostępu.")
      * @param VideoUploader $uploader
      * @param Request $request
@@ -260,7 +261,7 @@ class VideoController extends AbstractController
         }
 
         return $this->render('video/add_v2.html.twig', [
-            'success_route' => 'home',
+            'success_route' => 'app_user_channel',
             'form' => $form->createView()
         ]);
     }

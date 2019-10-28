@@ -347,12 +347,22 @@ class Video
         return $this;
     }
 
-//    public function setCategories(Collection $categories)
+//    /**
+//     * @param Collection $categories
+//     */
+//    public function setCategories(Collection $categories): self
 //    {
 //        $this->categories = $categories;
 //
 //        return $this;
 //    }
+
+    public function setCategories(Collection $categories)
+    {
+        $this->categories = $categories;
+
+        return $this;
+    }
 
     public function removeCategory(Category $category): self
     {
