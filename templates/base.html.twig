@@ -43,7 +43,10 @@
                 </div>
             </form>
             {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-            <ul class="navbar-nav">
+                <a href="{{ path('app_user_edit') }}">
+                    <img src="{{ avatar(app.user.avatar) }}" class="home-avatar rounded-circle" />
+                </a>
+                <ul class="navbar-nav">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         {{ app.user.username }}
