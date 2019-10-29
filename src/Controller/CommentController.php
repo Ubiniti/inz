@@ -8,13 +8,18 @@ use App\Repository\VideoRepository;
 use App\Services\UserGetter;
 use App\Services\VideoManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Security;
 
+/**
+ * @IsGranted("IS_AUTHENTICATED_FULLY", message="Brak dostępu.")
+ */
 class CommentController extends AbstractController
 {
     /**
@@ -148,9 +153,9 @@ class CommentController extends AbstractController
      */
     public function edit(Comment $comment, Request $request): JsonResponse
     {
-//        if ($comment->getAuthorUsername() !== $this->getUser()->getUsername()) {
-//            throw new AccessDeniedException();
-//        }
+        if ($comment->getAuthorUsername() !== $this->getUser()->getUsername()) {
+            throw new AccessDeniedException();
+        }
 
         $message = $request->request->get('message');
         $comment->setContents($message);

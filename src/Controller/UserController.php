@@ -16,6 +16,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 /**
  * Class UserController
  * @package App\Controller
+ * @IsGranted("IS_AUTHENTICATED_FULLY", message="Brak dostępu.")
  * @Route("/user", name="app_user")
  */
 class UserController extends AbstractController
