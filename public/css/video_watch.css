@@ -11,6 +11,14 @@
     border: none;
 }
 
+.bg-subcomment .contents {
+    background-color: #eceef1 !important;
+}
+
+.bg-subcomment .contents:hover {
+    background-color: #e0e2e5 !important;
+}
+
 .btn-reply {
     color: #3965a7;
     cursor: pointer;
@@ -36,4 +44,12 @@
 
 .btn-edit, .btn-accept {
     cursor: pointer;
+}
+
+.comment .btns-panel {
+    display: block;
+}
+
+.subcomment-btns-panel {
+    font-size: 15px;
 }

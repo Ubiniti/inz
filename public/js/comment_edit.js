@@ -1,9 +1,7 @@
 $(document).ready(function () {
     function toggleCommentViewEdit(target) {
-        let commentId = $(target).data('comment-id');
-
-        $(target).closest('.comment-content-wrapper').children('.comment-edit').toggle();
-        $(target).closest('.comment-content-wrapper').children('.comment-view').toggle();
+        $(target).closest('.comment-content-wrapper').children('.comment-edit').toggleClass('d-none');
+        $(target).closest('.comment-content-wrapper').children('.comment-view').toggleClass('d-none');
     }
 
     $('.btn-edit').on('click', function (e) {
@@ -11,24 +9,21 @@ $(document).ready(function () {
     });
 
     $('.btn-accept').on('click', function (e) {
-        let commentView = $('.comment-view');
-        let commentEdit = $(e.currentTarget).closest('.contents').children('.textarea-reply');
-        let editUrl = $(e.currentTarget).data('comment-edit-url');
+        let commentText = $(e.currentTarget).closest('.comment-content-wrapper').find('.comment-view .comment-text');
+        let editUrl = $(e.currentTarget).data('edit-url');
         let message = $(e.currentTarget).closest('.comment-edit').children('.textarea-reply').first().val();
 
-        console.log(message);
         toggleCommentViewEdit(e.currentTarget);
-        // request
+
+        $.ajax({
+            url: editUrl,
+            method : 'post',
+            data : {
+                message: message
+            }
+        })
+        .done(function (comment) {
+            commentText.html(comment.contents.replace('\n', '<br>'));
+        });
     });
 });
-
-// toggleCommentViewEdit(e.currentTarget);
-// $.ajax({
-//     url: editUrl,
-//     method : 'post',
-//     data : {
-//         message: message
-//     }
-// })
-// .done(function (res) {
-// });

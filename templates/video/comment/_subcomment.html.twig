@@ -8,9 +8,43 @@
            class="sub-com-author text-dark">{{ subcomment.authorUsername }}</a>
     </div>
     <div class="container p-0 m-0">
-        <div>
+        <div class="comment-content-wrapper">
             <div class="sub-com-date m-0 p-0 text-right">{{ subcomment.added|date("d-m-Y") }}</div>
-            <div class="sub-content">{{ subcomment.contents }}</div>
+            <div class="comment-edit contents jumbotron bg-comment d-none highlight-bg">
+                <textarea class="textarea-reply form-control w-100 p-2" name="message" rows="2">
+                    {{ subcomment.contents }}
+                </textarea>
+                <div class="pl-2">
+                    <i class="btn-accept fas fa-check text-dark"
+                       data-toggle="tooltip"
+                       data-placement="top"
+                       data-comment-id="{{ subcomment.id }}"
+                       data-edit-url="{{ path('app_comment_edit', {'id': subcomment.id}) }}"
+                       title="Zapisz"></i>
+                </div>
+            </div>
+            <div class="comment-view">
+                <div class="w-100 d-flex">
+                    <div class="comment-text sub-content w-100">{{ subcomment.contents|nl2br }}</div>
+                    <div class="subcomment-btns-panel d-block text-center pl-2">
+                        <i class="btn-edit fas fa-edit text-dark"
+                           data-toggle="tooltip"
+                           data-placement="top"
+                           data-comment-id="{{ subcomment.id }}"
+                           title="Edytuj komentarz"></i>
+                        {% if app.user is not null %}
+                            {% if subcomment.authorUsername is same as(app.user.username) %}
+                                <a href="{{ path('app_comment_remove', {'id':subcomment.id}) }}">
+                                    <i class="fas fa-times text-dark"
+                                       data-toggle="tooltip"
+                                       data-placement="top"
+                                       title="Usuń komentarz"></i>
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="float-right">
             <a class="btn btn-light btn-sub-rate bg-subcomment" href="{{ path('app_comment_rate', {
@@ -27,14 +61,6 @@
                 <i class="fas fa-thumbs-down text-dark"></i>
                 {{ subcomment.commentRatesDown.count }}
             </a>
-            {% if subcomment.authorUsername is same as(app.user.username) %}
-                <a href="{{ path('app_comment_remove', {'id':subcomment.id}) }}">
-                    <i class="fas fa-times text-danger"
-                       data-toggle="tooltip"
-                       data-placement="top"
-                       title="Usuń komentarz"></i>
-                </a>
-            {% endif %}
         </div>
     </div>
 </div>

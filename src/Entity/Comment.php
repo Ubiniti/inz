@@ -48,7 +48,7 @@ class Comment implements NormalizableInterface
     private $parent;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="parent")
+     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="parent", cascade={"remove"})
      */
     private $subComments;
 
@@ -239,7 +239,7 @@ class Comment implements NormalizableInterface
         $array['author_username'] = $this->author_username;
         $array['added'] = $this->added;
         $array['video'] = $this->getVideo()->getHash();
-        $array['parent'] = $this->getParent()->getId();
+        $array['parent'] = $this->getParent() ? $this->getParent()->getId() : null;
 
         return $array;
     }
