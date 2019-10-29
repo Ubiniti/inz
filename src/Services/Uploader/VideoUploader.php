@@ -4,7 +4,6 @@ namespace App\Services\Uploader;
 
 use App\Dto\VideoUploadFormDto;
 use App\Entity\User;
-use App\Entity\Video;
 use App\Services\UserGetter;
 use Doctrine\ORM\EntityManagerInterface;
 use FFMpeg\Coordinate\TimeCode;
@@ -47,7 +46,6 @@ class VideoUploader
 
     public function saveVideo(VideoUploadFormDto $dto)
     {
-        $title = $dto->getTitle();
         $tmpPath = $dto->getFile()->getPathname();
         $ext = $dto->getFile()->getClientOriginalExtension();
         $hash = md5(uniqid());

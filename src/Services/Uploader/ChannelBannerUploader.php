@@ -9,6 +9,7 @@ class ChannelBannerUploader
 {
     const ADS_DIR = 'channel';
     const ALLOWED_FORMATS = ['jpg', 'png', 'gif', 'jpeg'];
+
     /**
      * @var BinaryFileUploader
      */
@@ -17,6 +18,7 @@ class ChannelBannerUploader
     public function __construct(BinaryFileUploader $binaryUploader)
     {
         $this->binaryUploader = $binaryUploader;
+        $this->binaryUploader->setAllowedFormats(self::ALLOWED_FORMATS);
     }
 
     /**
@@ -26,12 +28,6 @@ class ChannelBannerUploader
      * @throws FileFormatException
      */
     public function saveContent(UploadedFile $file): string {
-        $ext = $file->getClientOriginalExtension();
-
-        if (!in_array($ext, self::ALLOWED_FORMATS)) {
-            throw new FileFormatException();
-        }
-
-        return $this->binaryUploader->saveFile($file, self::ADS_DIR, 'jpg');
+        return $this->binaryUploader->saveFile($file, self::ADS_DIR);
     }
 }

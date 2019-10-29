@@ -57,6 +57,12 @@ class Comment implements NormalizableInterface
      */
     private $commentRates;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="comments")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $author;
+
     public function __construct(?Comment $parent = null)
     {
         $this->subComments = new ArrayCollection();
@@ -242,5 +248,17 @@ class Comment implements NormalizableInterface
         $array['parent'] = $this->getParent() ? $this->getParent()->getId() : null;
 
         return $array;
+    }
+
+    public function getAuthor(): ?User
+    {
+        return $this->author;
+    }
+
+    public function setAuthor(?User $author): self
+    {
+        $this->author = $author;
+
+        return $this;
     }
 }

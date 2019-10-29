@@ -1,7 +1,7 @@
 <div class="jumbotron bg-comment overflow-hidden pr-3 py-2 px-0 m-0 mb-2">
     <div class="comment d-flex container p-0">
         <div class="user-card m-0 mt-3 container text-center">
-            <div class="avatar container rounded-circle bg-dark"></div>
+            <img src="{{ avatar(comment.author.avatar) }}" class="avatar rounded-circle" />
             <a href="{% if  getChannelName(comment.authorUsername) is not null %}
                     {{ path('app_user_channel', {'channel_name': getChannelName(comment.authorUsername)}) }}
                     {% else %}#
@@ -13,9 +13,8 @@
             <div class="content">
                 <div class="comment-content-wrapper">
                     <div class="d-none comment-edit contents jumbotron bg-comment">
-                        <textarea class="textarea-reply form-control w-100 p-2" name="message" rows="2">
-                            {{ comment.contents }}
-                        </textarea>
+                        <textarea class="textarea-reply form-control w-100 p-2" name="message" rows="2"
+                        >{{ comment.contents|trim }}</textarea>
                         <div class="pl-2">
                             <i class="btn-accept fas fa-check text-dark"
                                data-toggle="tooltip"
@@ -27,7 +26,7 @@
                     </div>
                     <div class="comment-view contents jumbotron bg-comment">
                         <div class="comment-text w-100">
-                            {{ comment.contents }}
+                            {{ comment.contents|nl2br }}
                         </div>
                         <div class="d-block text-center pl-2">
                             <i class="btn-edit fas fa-edit text-dark"

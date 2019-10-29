@@ -276,11 +276,12 @@ class Video
         return $this;
     }
 
-    public function comment(string $message, UserInterface $user): self
+    public function comment(string $message, User $user): self
     {
         $comment = (new Comment())
             ->setContents($message)
-            ->setAuthorUsername($user->getUsername());
+            ->setAuthorUsername($user->getUsername())
+            ->setAuthor($user);
 
         $this->addComment($comment);
 

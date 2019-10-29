@@ -20,7 +20,7 @@
                 {% endfor %}
             {% endif %}
         <br>
-        <form method="post" action="{{ path('user_update') }}">
+        <form method="post" action="{{ path('app_user_update') }}">
 
             <label for="username" class="sr-only">Username</label>
             <input type="text" value="{{ user.username }}" name="username" id="inputLogin" class="form-control" placeholder="Username" required autofocus pattern="[0-9A-Za-z_-]{4,30}">
@@ -279,7 +279,7 @@
             </select>
             <br>
             <label for="birthdate" class="sr-only" >Birthdate</label>
-            <input type="date" name="birthdate" value="{{ user.birthDate|date("Y-m-d") }}" required>
+            <input type="date" name="birthdate" value="{{ user.birthday|date("Y-m-d") }}" required>
             <label for="currentPassword" class="sr-only">Current password</label>
             <input type="password" name="currentPassword" id="currentPassword" class="form-control" placeholder="Current password" required>
             <label for="newPassword" class="sr-only">New password</label>

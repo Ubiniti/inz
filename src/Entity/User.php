@@ -119,6 +119,11 @@ class User implements UserInterface
      */
     private $preferredCategories;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="author", orphanRemoval=true)
+     */
+    private $comments;
+
 
     public function __construct()
     {
@@ -126,6 +131,7 @@ class User implements UserInterface
         $this->commentRates = new ArrayCollection();
         $this->advertisements = new ArrayCollection();
         $this->preferredCategories = new ArrayCollection();
+        $this->comments = new ArrayCollection();
     }
 
     public static function createFromDto(
@@ -140,7 +146,7 @@ class User implements UserInterface
         $self->country = $dto->getCountry();
         $self->birthday = $dto->getBirthday();
         $self->joinDate = new \DateTimeImmutable();
-        if ($self->avatar) {
+        if ($dto->getAvatar()) {
             $self->avatar = $uploader->saveAvatar($dto->getAvatar());
         }
 
@@ -268,12 +274,12 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getAvatar(): string
+    public function getAvatar(): ?string
     {
         return $this->avatar;
     }
 
-    public function setAvatar(string $avatar): self
+    public function setAvatar(?string $avatar): self
     {
         $this->avatar = $avatar;
 
@@ -425,6 +431,37 @@ class User implements UserInterface
     {
         if ($this->preferredCategories->contains($preferredCategory)) {
             $this->preferredCategories->removeElement($preferredCategory);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Comment[]
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comment $comment): self
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments[] = $comment;
+            $comment->setAuthor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comment $comment): self
+    {
+        if ($this->comments->contains($comment)) {
+            $this->comments->removeElement($comment);
+            // set the owning side to null (unless already changed)
+            if ($comment->getAuthor() === $this) {
+                $comment->setAuthor(null);
+            }
         }
 
         return $this;

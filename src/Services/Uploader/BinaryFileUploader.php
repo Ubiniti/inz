@@ -2,6 +2,7 @@
 
 namespace App\Services\Uploader;
 
+use App\Services\Uploader\Exception\FileFormatException;
 use App\Services\Uploader\Exception\PathsJoinException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -11,6 +12,11 @@ class BinaryFileUploader
 {
     const PUBLIC_DIR = '/public';
     const DEFAULT_UPLOAD_DIR = '/uploads';
+
+    /**
+     * @var array
+     */
+    private $allowedFormats;
 
     /**
      * @var EntityManagerInterface
@@ -35,11 +41,13 @@ class BinaryFileUploader
      * @return string Name of uploaded file excluding extension
      * @throws PathsJoinException
      */
-    public function saveFile( UploadedFile $file, string $directory = '', string $extension = null): string {
+    public function saveFile(UploadedFile $file, string $directory = ''): string {
         $tmpPath = $file->getPathname();
 
-        if ($extension === null) {
-            $extension = $file->getClientOriginalExtension();
+        $extension = $file->getClientOriginalExtension();
+
+        if (!$this->isFormatAllowed($extension)) {
+            throw new FileFormatException();
         }
 
         $hash = md5(uniqid());
@@ -47,7 +55,7 @@ class BinaryFileUploader
         $uploadDirectory = $this->getUploadsPath($directory);
 
         if (!is_dir($uploadDirectory)) {
-            mkdir($uploadDirectory);
+            mkdir($uploadDirectory, 0777, true);
         }
 
         $destination = $uploadDirectory . $hash . '.' . $extension;
@@ -73,13 +81,22 @@ class BinaryFileUploader
         return $this->joinPaths([$projectDir, $uploadsPath, $subDirectory]);
     }
 
+    public static function getUploadsRelativePath(string $subDirectory = '')
+    {
+        $uploadsPath = isset($_ENV['UPLOADS_DIR'])
+            ? $_ENV['UPLOADS_DIR']
+            : self::DEFAULT_UPLOAD_DIR;
+
+        return self::joinPaths([$uploadsPath, $subDirectory]);
+    }
+
     /**
      * @param array $paths
      * @param bool $followingSlash
      * @return string
      * @throws PathsJoinException
      */
-    private function joinPaths(array $paths, bool $followingSlash = true): string
+    private static function joinPaths(array $paths, bool $followingSlash = true): string
     {
         $slash = $followingSlash ? DIRECTORY_SEPARATOR : '';
 
@@ -88,9 +105,6 @@ class BinaryFileUploader
         }
 
         $output = rtrim($paths[0], '\\/');
-
-//        $output = rtrim($paths[0]);
-
 
         foreach ($paths as $key => $path) {
             if ($path === '' || $key === 0) {
@@ -102,5 +116,22 @@ class BinaryFileUploader
         $output .= $slash;
 
         return $output;
+    }
+
+    public function getAllowedFormats(): array
+    {
+        return $this->allowedFormats;
+    }
+
+    public function setAllowedFormats(array $allowedFormats): self
+    {
+        $this->allowedFormats = $allowedFormats;
+
+        return $this;
+    }
+
+    private function isFormatAllowed(string $extension)
+    {
+        return empty($this->allowedFormats) || in_array($extension, $this->allowedFormats);
     }
 }

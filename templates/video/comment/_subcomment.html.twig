@@ -1,6 +1,6 @@
 <div class="jumbotron comment d-flex container px-3 py-1 mx-0 mb-0 mt-2 bg-subcomment">
     <div class="sub-user-card m-0 mt-3 container text-center pl-0 pr-2 mr-2">
-        <div class="sub-avatar container rounded-circle bg-dark"></div>
+        <img src="{{ avatar(comment.author.avatar) }}" class="sub-avatar rounded-circle" />
         <a href="{% if  getChannelName(subcomment.authorUsername) is not null %}
                     {{ path('app_user_channel', {'channel_name': getChannelName(subcomment.authorUsername)}) }}
                     {% else %}#
@@ -11,9 +11,8 @@
         <div class="comment-content-wrapper">
             <div class="sub-com-date m-0 p-0 text-right">{{ subcomment.added|date("d-m-Y") }}</div>
             <div class="comment-edit contents jumbotron bg-comment d-none highlight-bg">
-                <textarea class="textarea-reply form-control w-100 p-2" name="message" rows="2">
-                    {{ subcomment.contents }}
-                </textarea>
+                <textarea class="textarea-reply form-control w-100 p-2" name="message" rows="2"
+                >{{ subcomment.contents|trim }}</textarea>
                 <div class="pl-2">
                     <i class="btn-accept fas fa-check text-dark"
                        data-toggle="tooltip"
