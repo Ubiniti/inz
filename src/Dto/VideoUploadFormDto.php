@@ -4,6 +4,7 @@ namespace App\Dto;
 
 use App\Entity\Category;
 use App\Entity\Video;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -41,6 +42,18 @@ class VideoUploadFormDto
      * @var bool
      */
     private $isPublic;
+
+    /**
+     * @var bool
+     */
+    private $watermark;
+
+    public function __construct()
+    {
+        $this->categories = new ArrayCollection();
+        $this->isPublic = false;
+        $this->watermark = false;
+    }
 
     public function createVideoSkeleton(): Video
     {
@@ -102,7 +115,7 @@ class VideoUploadFormDto
     /**
      * @return Category[]|Collection
      */
-    public function getCategories(): ?Collection
+    public function getCategories(): Collection
     {
         return $this->categories;
     }
@@ -110,7 +123,7 @@ class VideoUploadFormDto
     /**
      * @param Category[]|Collection $categories
      */
-    public function setCategories(?Collection $categories): void
+    public function setCategories(Collection $categories): void
     {
         $this->categories = $categories;
     }
@@ -123,5 +136,15 @@ class VideoUploadFormDto
     public function setIsPublic(?bool $isPublic): void
     {
         $this->isPublic = $isPublic;
+    }
+
+    public function hasWatermark(): bool
+    {
+        return $this->watermark;
+    }
+
+    public function setWatermark(bool $watermark): void
+    {
+        $this->watermark = $watermark;
     }
 }

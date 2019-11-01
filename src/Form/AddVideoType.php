@@ -42,6 +42,10 @@ class AddVideoType extends AbstractType
                 'label' => 'Widoczny na stronie głównej',
                 'required' => false,
             ])
+            ->add('watermark', CheckboxType::class, [
+                'label' => 'Dodaj znak wodny do filmu',
+                'required' => false,
+            ])
             ->add('submit', SubmitType::class, [
                 'label' => 'Zapisz',
             ]);

@@ -72,6 +72,16 @@ class VideoUploader
         }
 
         copy($tmpPath, $uploadsPath . $hash . '.' .$ext);
+        $convertedVideoPath = null;
+
+        if ($dto->hasWatermark()) {
+            $convertedVideoPath = $this->addWatermark($uploadsPath . $hash . '.' .$ext);
+        }
+
+        if ($convertedVideoPath) {
+            unlink($uploadsPath . $hash . '.' .$ext);
+            copy($convertedVideoPath, $uploadsPath . $hash . '.' .$ext);
+        }
 
         $duration = $this->getVideoFileProperty('duration', $tmpPath);
 
@@ -124,5 +134,46 @@ class VideoUploader
     private function getThumbnailsPath()
     {
         return $this->getUploadsPath() . self::THUMBS_DIR . '/';
+    }
+
+    private function addWatermark(string $path): ?string
+    {
+        if (empty($_ENV['WATERMARK'])) {
+            return null;
+        }
+
+        $watermarkPath = $this->kernel->getProjectDir() . '/public' . $_ENV['WATERMARK'];
+
+        dump($path, $_ENV['WATERMARK'], file_exists($watermarkPath), $watermarkPath);
+
+        $x = 0;
+        $y = 0;
+
+        if (!empty($_ENV['WATERMARK_X'])) {
+            $x = $_ENV['WATERMARK_X'];
+        }
+
+        if (!empty($_ENV['WATERMARK_Y'])) {
+            $y = $_ENV['WATERMARK_Y'];
+        }
+
+        $ffmpeg = FFMpeg::create();
+        dump(file_exists($path), $path);
+        $video = $ffmpeg->open($path);
+        $video
+            ->filters()
+            ->watermark($watermarkPath, array(
+                'position' => 'absolute',
+                'bottom' => $y,
+                'right' => $x,
+            ))
+            ->synchronize();
+
+        $fileName = md5(uniqid()).'.mp4';
+        $tmpNewPath = sys_get_temp_dir().'/'.$fileName;
+        $video
+            ->save(new \FFMpeg\Format\Video\X264('libmp3lame'), $tmpNewPath);
+
+        return $tmpNewPath;
     }
 }
