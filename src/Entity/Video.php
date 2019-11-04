@@ -107,6 +107,11 @@ class Video
      */
     private $allowsAds;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $hasDemo;
+
     public function __construct()
     {
         $this->uploaded = new DateTimeImmutable();
@@ -118,6 +123,7 @@ class Video
         $this->playlists = new ArrayCollection();
         $this->usersWithAccess = new ArrayCollection();
         $this->isPublic = true;
+        $this->hasDemo = false;
     }
 
     public function getId(): ?int
@@ -459,6 +465,18 @@ class Video
     public function setAllowsAds(?bool $allowsAds): self
     {
         $this->allowsAds = $allowsAds;
+
+        return $this;
+    }
+
+    public function getHasDemo()
+    {
+        return $this->hasDemo;
+    }
+
+    public function setHasDemo($hasDemo): self
+    {
+        $this->hasDemo = $hasDemo;
 
         return $this;
     }

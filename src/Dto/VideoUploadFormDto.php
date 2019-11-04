@@ -39,6 +39,21 @@ class VideoUploadFormDto
     private $categories;
 
     /**
+     * @var float
+     */
+    private $price;
+
+    /**
+     * @var bool
+     */
+    private $allowsAds;
+
+    /**
+     * @var bool
+     */
+    private $hasDemo;
+
+    /**
      * @var bool
      */
     private $isPublic;
@@ -51,8 +66,11 @@ class VideoUploadFormDto
     public function __construct()
     {
         $this->categories = new ArrayCollection();
+        $this->allowsAds = false;
+        $this->hasDemo = false;
         $this->isPublic = false;
         $this->watermark = false;
+        $this->price = 0;
     }
 
     public function createVideoSkeleton(): Video
@@ -61,7 +79,9 @@ class VideoUploadFormDto
             ->setTitle($this->title)
             ->setDescription($this->description)
             ->setCategories($this->categories)
-            ->setIsPublic($this->isPublic);
+            ->setIsPublic($this->isPublic)
+            ->setPrice($this->getPriceInGr())
+            ->setHasDemo($this->hasDemo);
     }
 
     public function getTitle(): ?string
@@ -128,12 +148,22 @@ class VideoUploadFormDto
         $this->categories = $categories;
     }
 
-    public function isPublic(): ?bool
+    public function isAllowsAds(): bool
+    {
+        return $this->allowsAds;
+    }
+
+    public function setAllowsAds(bool $allowsAds): void
+    {
+        $this->allowsAds = $allowsAds;
+    }
+
+    public function isPublic(): bool
     {
         return $this->isPublic;
     }
 
-    public function setIsPublic(?bool $isPublic): void
+    public function setIsPublic(bool $isPublic): void
     {
         $this->isPublic = $isPublic;
     }
@@ -146,5 +176,30 @@ class VideoUploadFormDto
     public function setWatermark(bool $watermark): void
     {
         $this->watermark = $watermark;
+    }
+
+    public function getPrice(): float
+    {
+        return $this->price;
+    }
+
+    public function setPrice(float $price): void
+    {
+        $this->price = $price;
+    }
+
+    public function getPriceInGr(): int
+    {
+        return $this->price * 100;
+    }
+
+    public function hasDemo(): bool
+    {
+        return $this->hasDemo;
+    }
+
+    public function setHasDemo(bool $hasDemo): void
+    {
+        $this->hasDemo = $hasDemo;
     }
 }

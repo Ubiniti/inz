@@ -13,6 +13,14 @@
            data-placement="top"
            title="Materiał płatny - {{ video.priceAsCurrency }} PLN"></i>
     {% endif %}
+    {% if video.hasDemo %}
+        <a style="float:right" href="{{ path('app_video_watch_demo', {'video_hash':video.hash}) }}">
+            <i class="fas fa-caret-square-up text-info"
+               data-toggle="tooltip"
+               data-placement="top"
+               title="Obejrzyj demo"></i>
+        </a>
+    {% endif %}
     {% if app.user is not null %}
         {% if video.channel.id is same as(app.user.channel.id) %}
             <a style="float:right" href="{{ path('app_video_remove', {'video_hash':video.hash}) }}">

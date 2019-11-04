@@ -5,19 +5,19 @@ namespace App\Services\Uploader;
 use App\Dto\VideoUploadFormDto;
 use App\Entity\User;
 use App\Services\UserGetter;
+use App\Services\VideoEditor;
 use Doctrine\ORM\EntityManagerInterface;
-use FFMpeg\Coordinate\TimeCode;
-use FFMpeg\FFMpeg;
-use FFMpeg\FFProbe;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 class VideoUploader
 {
     const DEFAULT_UPLOAD_DIR = '/uploads';
     const THUMBS_DIR = '/thumbs';
+    const DEMO_DIR = 'demos';
     const PUBLIC_DIR = '/public';
     const THUMB_FORMAT = 'jpg';
     const THUMB_FRAME_TIME = 10.0;
+    const DEMO_DURATION = 60;
 
     private $uploadsPath;
 
@@ -35,13 +35,18 @@ class VideoUploader
      * @var KernelInterface
      */
     private $kernel;
+    /**
+     * @var VideoEditor
+     */
+    private $videoEditor;
 
-    public function __construct(UserGetter $userGetter, EntityManagerInterface $em, KernelInterface $kernel)
+    public function __construct(VideoEditor $videoEditor, UserGetter $userGetter, EntityManagerInterface $em, KernelInterface $kernel)
     {
         $this->uploadsPath = self::PUBLIC_DIR.$_ENV['UPLOADS_DIR'];
         $this->userGetter = $userGetter;
         $this->em = $em;
         $this->kernel = $kernel;
+        $this->videoEditor = $videoEditor;
     }
 
     public function saveVideo(VideoUploadFormDto $dto)
@@ -50,7 +55,8 @@ class VideoUploader
         $ext = $dto->getFile()->getClientOriginalExtension();
         $hash = md5(uniqid());
         $uploadsPath = $this->getUploadsPath();
-        $thumbnailsPath = $this->getThumbnailsPath();
+        $thumbnailsPath = $this->getThumbnailsDirPath();
+        $demosPath = $this->getDemosDirectory();
 
         if (!is_dir($uploadsPath)) {
             mkdir($uploadsPath, 0777, true);
@@ -60,30 +66,35 @@ class VideoUploader
             mkdir($thumbnailsPath, 0777, true);
         }
 
-        $thumbnailFilePath = $thumbnailsPath . $hash . '.' . self::THUMB_FORMAT;
+        if (!is_dir($demosPath)) {
+            mkdir($demosPath, 0777, true);
+        }
+
+        $thumbnailFilePath = $this->getThumbnailPath($hash);
         $thumbnailFile = $dto->getThumbnail();
 
         if ($thumbnailFile) {
             $thumbnailTmpPath = $thumbnailFile->getPathname();
-            $thumbnailExt = $thumbnailFile->getClientOriginalExtension();
-            copy($thumbnailTmpPath, $thumbnailsPath . $hash . '.' .$thumbnailExt);
+            copy($thumbnailTmpPath, $thumbnailFilePath);
         } else {
-            $this->saveFrameFromVideo($tmpPath, $thumbnailFilePath, self::THUMB_FRAME_TIME);
+            $this->videoEditor->saveFrame($tmpPath, $thumbnailFilePath, self::THUMB_FRAME_TIME);
         }
 
-        copy($tmpPath, $uploadsPath . $hash . '.' .$ext);
+        $finalVideoPath = $this->getUploadedVideoPath($hash);
+        copy($tmpPath, $finalVideoPath);
         $convertedVideoPath = null;
 
-        if ($dto->hasWatermark()) {
-            $convertedVideoPath = $this->addWatermark($uploadsPath . $hash . '.' .$ext);
+        if ($dto->hasDemo()) {
+            $this->videoEditor->createDemo($tmpPath, self::DEMO_DURATION, $this->getDemoPath($hash));
         }
 
-        if ($convertedVideoPath) {
-            unlink($uploadsPath . $hash . '.' .$ext);
-            copy($convertedVideoPath, $uploadsPath . $hash . '.' .$ext);
+        $watermark = $this->getWatermarkPath();
+
+        if ($dto->hasWatermark() && $watermark) {
+            $this->videoEditor->addWatermark($finalVideoPath, $watermark, $finalVideoPath);
         }
 
-        $duration = $this->getVideoFileProperty('duration', $tmpPath);
+        $duration = $this->videoEditor->getDuration($tmpPath);
 
         /** @var User $author */
         $author = $this->em->getRepository(User::class)->findOneBy([
@@ -100,28 +111,10 @@ class VideoUploader
         $this->em->flush();
     }
 
-    private function getVideoFileProperty(string $name, string $path)
-    {
-        $ffprobe = FFProbe::create();
-        $format = $ffprobe
-            ->format($path);
-
-        $value = $format->get($name);
-
-        return $value;
-    }
-
-    private function saveFrameFromVideo(string $sourcePath, string $targetPath, float $time)
-    {
-        $ffmpeg = FFMpeg::create();
-        $videoFile = $ffmpeg->open($sourcePath);
-
-        $videoFile
-            ->frame(TimeCode::fromSeconds($time))
-            ->save($targetPath);
-    }
-
-    private function getUploadsPath()
+    /**
+     * @return string Uploads directory path with trailing slash
+     */
+    private function getUploadsPath(): string
     {
         $projectDir = $this->kernel->getProjectDir();
         $slash = substr($this->uploadsPath, -1) === '/' ? '' : '/';
@@ -131,49 +124,37 @@ class VideoUploader
             : self::DEFAULT_UPLOAD_DIR;
     }
 
-    private function getThumbnailsPath()
+    private function getUploadedVideoPath(string $hash)
+    {
+        return $this->getUploadsPath() . $hash . '.mp4';
+    }
+
+    private function getThumbnailPath(string $hash)
+    {
+        return $this->getThumbnailsDirPath() . $hash . '.' . self::THUMB_FORMAT;
+    }
+
+    private function getThumbnailsDirPath()
     {
         return $this->getUploadsPath() . self::THUMBS_DIR . '/';
     }
 
-    private function addWatermark(string $path): ?string
+    private function getDemoPath(string $videoHash): string
+    {
+        return $this->getDemosDirectory() . $videoHash . '.mp4';
+    }
+
+    private function getDemosDirectory()
+    {
+        return $this->getUploadsPath() . self::DEMO_DIR . '/';
+    }
+
+    private function getWatermarkPath(): ?string
     {
         if (empty($_ENV['WATERMARK'])) {
             return null;
         }
 
-        $watermarkPath = $this->kernel->getProjectDir() . '/public' . $_ENV['WATERMARK'];
-
-        dump($path, $_ENV['WATERMARK'], file_exists($watermarkPath), $watermarkPath);
-
-        $x = 0;
-        $y = 0;
-
-        if (!empty($_ENV['WATERMARK_X'])) {
-            $x = $_ENV['WATERMARK_X'];
-        }
-
-        if (!empty($_ENV['WATERMARK_Y'])) {
-            $y = $_ENV['WATERMARK_Y'];
-        }
-
-        $ffmpeg = FFMpeg::create();
-        dump(file_exists($path), $path);
-        $video = $ffmpeg->open($path);
-        $video
-            ->filters()
-            ->watermark($watermarkPath, array(
-                'position' => 'absolute',
-                'bottom' => $y,
-                'right' => $x,
-            ))
-            ->synchronize();
-
-        $fileName = md5(uniqid()).'.mp4';
-        $tmpNewPath = sys_get_temp_dir().'/'.$fileName;
-        $video
-            ->save(new \FFMpeg\Format\Video\X264('libmp3lame'), $tmpNewPath);
-
-        return $tmpNewPath;
+        return $this->kernel->getProjectDir() . '/public' . $_ENV['WATERMARK'];
     }
 }

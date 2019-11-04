@@ -14,6 +14,8 @@ use App\Form\EditVideoFormType;
 use App\Repository\CommentRepository;
 use App\Repository\VideoRateRepository;
 use App\Repository\VideoRepository;
+use App\Services\UserGetter;
+use App\Services\VideoEditor;
 use App\Services\VideoManager;
 use App\Services\Uploader\VideoUploader;
 use Doctrine\ORM\EntityManagerInterface;
@@ -145,6 +147,50 @@ class VideoController extends AbstractController
     }
 
     /**
+     * @Route("/{video_hash}/demo", name="watch_demo")
+     * @param string $video_hash
+     * @return RedirectResponse|Response
+     */
+    public function watchDemo(string $video_hash)
+    {
+        $user = $this->security->getUser();
+        $video = $this->videoRepository->findOneBy(['hash' => $video_hash]);
+        $comments = $this->commentRepository->findBy(['video' => $video, 'parent' => null]);
+
+        $ad = null;
+
+        if ($video->getAllowsAds() === true) {
+            $ads = $this->getDoctrine()->getRepository(Advertisement::class)->findAll();
+            shuffle($ads);
+
+            foreach ($ads as $a) {
+                if ($a->getIsPaidOff()) {
+                    $ad = $a;
+                }
+            }
+
+            if ($ad !== null) {
+                $ad->setViews($ad->getViews() + 1);
+                $wallet = $ad->getUser()->getWallet();
+                if ($wallet->getFunds() >= getenv('ADVERTISEMENT_PRICE_PER_VIEW')) {
+                    $wallet->setFunds($wallet->getFunds() - getenv('ADVERTISEMENT_PRICE_PER_VIEW'));
+                    $videoOwnerWallet = $video->getChannel()->getUser()->getWallet();
+                    $videoOwnerWallet->setFunds($videoOwnerWallet->getFunds() + (getenv('ADVERTISEMENT_PRICE_PER_VIEW')/2));
+                } else {
+                    $ad->setIsPaidOff(false);
+                }
+                $this->entityManager->flush();
+            }
+        }
+
+        return $this->render('video/demo.html.twig', [
+            'video' => $video,
+            'comments' => $comments,
+            'ad' => $ad
+        ]);
+    }
+
+    /**
      * @Route("/{video_hash}/paid", name="watch_paid")
      * @param string $video_hash
      * @return RedirectResponse|Response
@@ -264,6 +310,22 @@ class VideoController extends AbstractController
             'success_route' => 'app_user_channel',
             'form' => $form->createView()
         ]);
+    }
+
+    /**
+     * @Route("/add/watermark-status", name="upload_conversion_status", methods={"POST", "GET"})
+     * @IsGranted("IS_AUTHENTICATED_FULLY", message="Brak dostępu.")
+     * @param VideoUploader $uploader
+     * @param Request $request
+     * @return Response
+     */
+    public function watermarkStatus(VideoUploader $uploader, UserGetter $userGetter, Request $request)
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        $progress = VideoEditor::getConversionProgress($userGetter->getUsername());
+
+        return $this->json($progress);
     }
 
     /**
