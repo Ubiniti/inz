@@ -5,6 +5,9 @@ $(document).ready(function () {
         e.preventDefault();
         Bootbox.confirm($(this).data('title'), this);
     });
-
+    $('.bootbox-dialog-button').click(function (e) {
+        e.preventDefault();
+        Bootbox.dialog($(this).data('title'), this);
+    });
 });
 

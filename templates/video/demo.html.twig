@@ -122,7 +122,13 @@
                 <div class="demo-buy d-none">
                     <h1>To jest wersja demonstracyjna filmu</h1>
                     <h2>Aby uzyskać dostęp do pełnej wersji zakup film</h2>
-                    <input class="btn btn-info" type="button" value="Kup film">
+                    <a href="{{ path('app_video_watch', {video_hash: video.hash}) }}"
+                       class="text-dark{% if video.price > 0 %} bootbox-confirm-button{% endif %}"
+                            {% if video.price > 0 %}
+                        data-title="Film jest płatny ({{ video.priceAsCurrency }}zł). Jeżeli nie masz obecnie do niego dostępu - środki zostaną pobrane z Twojego portfela. Kontynuować?"
+                            {% endif %}>
+                        <input class="btn btn-info" type="button" value="Kup film">
+                    </a>
                 </div>
             </div>
         </div>
