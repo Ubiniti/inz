@@ -11,7 +11,6 @@
         .video-thumb {
             font-family: 'Roboto', sans-serif;
             font-size: 14px;
-            width: 200px;
         }
 
         .video-thumb a:link {
@@ -19,24 +18,24 @@
         }
     </style>
 
-    <div class="container mt-3">
+    <div class="container mt-3 w-100">
         {% if preferredCategories is defined %}
             {% if preferredCategories is not null %}
                 {% if preferredCategories is not empty %}
                     <h2>Polecane dla ciebie</h2>
                     {% for preferredCategory in preferredCategories %}
                         {% if preferredCategory.video is not empty %}
-                            <div class="row">
+                            <div class="row justify-content-start">
                                 <div class="col">
                                     <h4>
                                         <a href="{{ path('app_category_show',{'id':preferredCategory.id}) }}">#{{ preferredCategory.name }}</a>
                                     </h4>
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row justify-content-start">
                                 {% for video in preferredCategory.video %}
                                     {% if not video.isPublic is same as(false) %}
-                                        <div class="col">
+                                        <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
                                             {{ include('video/_video_card.html.twig', {'video':video}) }}
                                         </div>
                                     {% endif %}
@@ -48,9 +47,9 @@
                 {% endif %}
             {% endif %}
         {% else %}
-            <div class="row">
+            <div class="row justify-content-start">
                 {% for video in videos %}
-                    <div class="col">
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
                         {{ include('video/_video_card.html.twig', {'video':video}) }}
                     </div>
                 {% endfor %}
@@ -63,17 +62,17 @@
                 {% for category in categories %}
 
                     {% if category.video is not empty %}
-                        <div class="row">
-                            <div class="col">
+                        <div class="row justify-content-start">
+                            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
                                 <h4>
                                     <a href="{{ path('app_category_show',{'id':category.id}) }}">#{{ category.name }}</a>
                                 </h4>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row justify-content-start">
                             {% for video in category.video %}
                                 {% if not video.isPublic is same as(false) %}
-                                    <div class="col">
+                                    <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
                                         {{ include('video/_video_card.html.twig', {'video':video}) }}
                                     </div>
                                 {% endif %}
@@ -84,9 +83,9 @@
                 {% endfor %}
             {% endif %}
         {% else %}
-            <div class="row">
+            <div class="row justify-content-start">
                 {% for video in videos %}
-                    <div class="col">
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
                         {{ include('video/_video_card.html.twig', {'video':video}) }}
                     </div>
                 {% endfor %}
