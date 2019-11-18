@@ -2,16 +2,27 @@
 
 namespace App\Controller;
 
+use App\Form\UserEditFormType;
+use App\Services\Uploader\AvatarUploader;
+use App\Services\UserGetter;
+use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class UserController extends AbstractController {
-
+/**
+ * Class UserController
+ * @package App\Controller
+ * @IsGranted("IS_AUTHENTICATED_FULLY", message="Brak dostępu.")
+ * @Route("/user", name="app_user")
+ */
+class UserController extends AbstractController
+{
     /**
-     * @Route("/user", name="user")
+     * @Route("/", name="")
      */
     public function index() {
 
@@ -19,27 +30,43 @@ class UserController extends AbstractController {
         $user = $this->getUser();
 
         return $this->render('user/index.html.twig', [
-                    'controller_name' => 'UserController',
                     'user' => $user,
         ]);
     }
 
     /**
-     * @Route("/edit", name="user_edit")
+     * @Route("/edit", name="_edit")
      */
-    public function editUser() {
+    public function edit(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        UserGetter $userGetter,
+        AvatarUploader $avatarUploader
+    ) {
+        $user = $userGetter->get();
 
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-        $user = $this->getUser();
+        $form = $this->createForm(UserEditFormType::class, $user);
+        $form->handleRequest($request);
 
-        return $this->render('user/editUser.html.twig', [
-                    'controller_name' => 'UserController',
-                    'user' => $user,
+        if ($form->isSubmitted() && $form->isValid()) {
+            if ($form->get('avatar')->getData()) {
+                $user->setAvatar(
+                    $avatarUploader->saveAvatar($form->get('avatar')->getData())
+                );
+            }
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Zaktualizowano dane w profilu!');
+        }
+
+        return $this->render('user/edit_user.html.twig', [
+            'form' => $form->createView()
         ]);
     }
 
     /**
-     * @Route("/update", name="user_update")
+     * @Route("/update", name="_update")
      */
     public function updateUser(Request $request, ValidatorInterface $validator, UserPasswordEncoderInterface $encoder) {
 
@@ -77,7 +104,6 @@ class UserController extends AbstractController {
 
             return $this->render
                             ('user/editUser.html.twig', [
-                        'controller_name' => 'UserController',
                         'user' => $user,
                         'errors' => $errors,
                         'passMatch' => 'Provided password does not match the current password'
@@ -92,7 +118,7 @@ class UserController extends AbstractController {
     }
 
     /**
-     * @Route("/remove", name="user_remove")
+     * @Route("/remove", name="_remove")
      */
     public function removeUser() {
 
@@ -100,13 +126,12 @@ class UserController extends AbstractController {
         $user = $this->getUser();
 
         return $this->render('user/removeUser.html.twig', [
-                    'controller_name' => 'UserController',
                     'user' => $user,
         ]);
     }
 
     /**
-     * @Route("/delete", name="user_delete")
+     * @Route("/delete", name="_delete")
      */
     public function deleteUser(Request $request, UserPasswordEncoderInterface $encoder) {
 
@@ -126,7 +151,6 @@ class UserController extends AbstractController {
         else
         {
             return $this->render('user/removeUser.html.twig', [
-                        'controller_name' => 'UserController',
                         'user' => $user,
                         'passMatch' => 'Provided password does not match the current password'
             ]);

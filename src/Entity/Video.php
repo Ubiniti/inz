@@ -2,7 +2,12 @@
 
 namespace App\Entity;
 
+use DateTimeImmutable;
+use DateTimeInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\VideoRepository")
@@ -47,14 +52,79 @@ class Video
     private $description;
 
     /**
-     * @ORM\Column(type="time")
+     * @ORM\Column(type="integer")
      */
     private $duration;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\OneToMany(targetEntity="App\Entity\VideoRate", mappedBy="video", orphanRemoval=true)
      */
-    private $category;
+    private $rates;
+
+    /**
+     * @ORM\OneToMany(
+     *     targetEntity="App\Entity\Comment",
+     *     mappedBy="video",
+     *     orphanRemoval=true,
+     *     cascade={"persist","remove"}
+     *     )
+     */
+    private $comments;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true, options={"default" : "0"})
+     */
+    private $price = 0;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Channel", inversedBy="videos")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $channel;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Category", inversedBy="video")
+     */
+    private $categories;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Playlist", mappedBy="videos")
+     */
+    private $playlists;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $isPublic = true;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\User", inversedBy="paidForVideos")
+     */
+    private $usersWithAccess;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $allowsAds;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $hasDemo;
+
+    public function __construct()
+    {
+        $this->uploaded = new DateTimeImmutable();
+        $this->views = 0;
+        $this->description = '';
+        $this->rates = new ArrayCollection();
+        $this->comments = new ArrayCollection();
+        $this->categories = new ArrayCollection();
+        $this->playlists = new ArrayCollection();
+        $this->usersWithAccess = new ArrayCollection();
+        $this->isPublic = true;
+        $this->hasDemo = false;
+    }
 
     public function getId(): ?int
     {
@@ -97,12 +167,12 @@ class Video
         return $this;
     }
 
-    public function getUploaded(): ?\DateTimeInterface
+    public function getUploaded(): ?DateTimeInterface
     {
         return $this->uploaded;
     }
 
-    public function setUploaded(\DateTimeInterface $uploaded): self
+    public function setUploaded(DateTimeInterface $uploaded): self
     {
         $this->uploaded = $uploaded;
 
@@ -133,26 +203,14 @@ class Video
         return $this;
     }
 
-    public function getDuration(): ?\DateTimeInterface
+    public function getDuration(): ?int
     {
         return $this->duration;
     }
 
-    public function setDuration(\DateTimeInterface $duration): self
+    public function setDuration(int $duration): self
     {
         $this->duration = $duration;
-
-        return $this;
-    }
-
-    public function getCategory(): ?string
-    {
-        return $this->category;
-    }
-
-    public function setCategory(string $category): self
-    {
-        $this->category = $category;
 
         return $this;
     }
@@ -164,7 +222,6 @@ class Video
             'author_username' => $this->getAuthorUsername(),
             'uploaded' => $this->getUploaded(),
             'duration' => $this->getDuration(),
-            'category' => $this->getCategory(),
         ];
     }
 
@@ -175,5 +232,252 @@ class Video
         $this->setHash($hash);
 
         return $hash;
+    }
+
+    /**
+     * @return Collection|VideoRate[]
+     */
+    public function getRates(): Collection
+    {
+        return $this->rates;
+    }
+
+    public function addRate(VideoRate $rate): self
+    {
+        if (!$this->rates->contains($rate)) {
+            $rate->setVideo($this);
+            $this->rates[] = $rate;
+        }
+
+        return $this;
+    }
+
+    public function removeRate(VideoRate $rate): self
+    {
+        if ($this->rates->contains($rate)) {
+            $this->rates->removeElement($rate);
+            if ($rate->getVideo() === $this) {
+                $rate->setVideo(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Comment[]
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comment $comment): self
+    {
+        if (!$this->comments->contains($comment)) {
+            $comment->setVideo($this);
+            $this->comments[] = $comment;
+        }
+
+        return $this;
+    }
+
+    public function comment(string $message, User $user): self
+    {
+        $comment = (new Comment())
+            ->setContents($message)
+            ->setAuthorUsername($user->getUsername())
+            ->setAuthor($user);
+
+        $this->addComment($comment);
+
+        return $this;
+    }
+
+    public function removeComment(Comment $comment): self
+    {
+        if ($this->comments->contains($comment)) {
+            $this->comments->removeElement($comment);
+            // set the owning side to null (unless already changed)
+            if ($comment->getVideo() === $this) {
+                $comment->setVideo(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getPrice(): ?int
+    {
+        return $this->price;
+    }
+
+    public function getPriceAsCurrency(): ?float
+    {
+        return $this->price/100;
+    }
+
+    public function setPrice(?int $price): self
+    {
+        $this->price = $price;
+
+        return $this;
+    }
+
+    public function getChannel(): ?Channel
+    {
+        return $this->channel;
+    }
+
+    public function setChannel(?Channel $channel): self
+    {
+        $this->channel = $channel;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Category[]
+     */
+    public function getCategories(): Collection
+    {
+        return $this->categories;
+    }
+
+    public function addCategory(Category $category): self
+    {
+        if (!$this->categories->contains($category)) {
+            $this->categories[] = $category;
+            $category->addVideo($this);
+        }
+
+        return $this;
+    }
+
+//    /**
+//     * @param Collection $categories
+//     */
+//    public function setCategories(Collection $categories): self
+//    {
+//        $this->categories = $categories;
+//
+//        return $this;
+//    }
+
+    public function setCategories(Collection $categories)
+    {
+        $this->categories = $categories;
+
+        return $this;
+    }
+
+    public function removeCategory(Category $category): self
+    {
+        if ($this->categories->contains($category)) {
+            $this->categories->removeElement($category);
+            $category->removeVideo($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Playlist[]
+     */
+    public function getPlaylists(): Collection
+    {
+        return $this->playlists;
+    }
+
+    public function addPlaylist(Playlist $playlist): self
+    {
+        if (!$this->playlists->contains($playlist)) {
+            $this->playlists[] = $playlist;
+            $playlist->addVideo($this);
+        }
+
+        return $this;
+    }
+
+    public function removePlaylist(Playlist $playlist): self
+    {
+        if ($this->playlists->contains($playlist)) {
+            $this->playlists->removeElement($playlist);
+            $playlist->removeVideo($this);
+        }
+
+        return $this;
+    }
+
+    public function getDurationInReadableFormat(): string
+    {
+        if (!$this->duration) {
+            return '';
+        }
+        $format = $this->duration >= 60*60 ? 'h:i:s' : 'i:s';
+
+        return date($format, $this->duration);
+    }
+
+    public function getIsPublic(): ?bool
+    {
+        return $this->isPublic;
+    }
+
+    public function setIsPublic(?bool $isPublic): self
+    {
+        $this->isPublic = $isPublic;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getUsersWithAccess(): Collection
+    {
+        return $this->usersWithAccess;
+    }
+
+    public function addUsersWithAccess(User $usersWithAccess): self
+    {
+        if (!$this->usersWithAccess->contains($usersWithAccess)) {
+            $this->usersWithAccess[] = $usersWithAccess;
+        }
+
+        return $this;
+    }
+
+    public function removeUsersWithAccess(User $usersWithAccess): self
+    {
+        if ($this->usersWithAccess->contains($usersWithAccess)) {
+            $this->usersWithAccess->removeElement($usersWithAccess);
+        }
+
+        return $this;
+    }
+
+    public function getAllowsAds(): ?bool
+    {
+        return $this->allowsAds;
+    }
+
+    public function setAllowsAds(?bool $allowsAds): self
+    {
+        $this->allowsAds = $allowsAds;
+
+        return $this;
+    }
+
+    public function getHasDemo()
+    {
+        return $this->hasDemo;
+    }
+
+    public function setHasDemo($hasDemo): self
+    {
+        $this->hasDemo = $hasDemo;
+
+        return $this;
     }
 }

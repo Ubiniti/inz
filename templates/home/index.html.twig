@@ -11,7 +11,6 @@
         .video-thumb {
             font-family: 'Roboto', sans-serif;
             font-size: 14px;
-            width: 200px;
         }
 
         .video-thumb a:link {
@@ -19,23 +18,78 @@
         }
     </style>
 
-    <div class="container mt-3">
-        <div class="row">
-            {% for video in videos %}
-                <div class="col">
-                    <div class="video-thumb mb-3">
-                        <a href="{{ path('watch', {video_hash: video.hash}) }}" class="text-dark">
-                        <img width="200px" src="{{ asset( ['video/thumbs/', video.hash, '.jpg']|join ) }}"> <br>
-                        {{ video.title|slice(0, 55) }}{% if video.title|length > 55 %}...{% endif %}
-                        </a>
+    <div class="container mt-3 w-100">
+        {% if preferredCategories is defined %}
+            {% if preferredCategories is not null %}
+                {% if preferredCategories is not empty %}
+                    <h2>Polecane dla ciebie</h2>
+                    {% for preferredCategory in preferredCategories %}
+                        {% if preferredCategory.video is not empty %}
+                            <div class="row justify-content-start">
+                                <div class="col">
+                                    <h4>
+                                        <a href="{{ path('app_category_show',{'id':preferredCategory.id}) }}">#{{ preferredCategory.name }}</a>
+                                    </h4>
+                                </div>
+                            </div>
+                            <div class="row justify-content-start">
+                                {% for video in preferredCategory.video %}
+                                    {% if not video.isPublic is same as(false) %}
+                                        <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                                            {{ include('video/_video_card.html.twig', {'video':video}) }}
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <hr>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% endif %}
+        {% else %}
+            <div class="row justify-content-start">
+                {% for video in videos %}
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                        {{ include('video/_video_card.html.twig', {'video':video}) }}
                     </div>
-                </div>
-                {# {{ video.author_id }} <br>
-                {{ video.uploaded|date("m/d/Y") }} <br>
-                {{ video.views }} <br>
-                {{ video.description }} <br>
-                {{ video.duration|date('H:i:s') }} <br> #}
-            {% endfor %}
-        </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if categories is defined %}
+            {% if categories is not empty %}
+                <h2>Popularne kategorie</h2>
+                {% for category in categories %}
+
+                    {% if category.video is not empty %}
+                        <div class="row justify-content-start">
+                            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                                <h4>
+                                    <a href="{{ path('app_category_show',{'id':category.id}) }}">#{{ category.name }}</a>
+                                </h4>
+                            </div>
+                        </div>
+                        <div class="row justify-content-start">
+                            {% for video in category.video %}
+                                {% if not video.isPublic is same as(false) %}
+                                    <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                                        {{ include('video/_video_card.html.twig', {'video':video}) }}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <hr>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% else %}
+            <div class="row justify-content-start">
+                {% for video in videos %}
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                        {{ include('video/_video_card.html.twig', {'video':video}) }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
     </div>
 {% endblock %}

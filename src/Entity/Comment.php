@@ -2,12 +2,17 @@
 
 namespace App\Entity;
 
+use App\Entity\Interfaces\NormalizableInterface;
+use DateTime;
+use DateTimeInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CommentRepository")
  */
-class Comment
+class Comment implements NormalizableInterface
 {
     /**
      * @ORM\Id()
@@ -32,29 +37,53 @@ class Comment
     private $added;
 
     /**
-     * @ORM\Column(type="integer", options={"default" : 0})
+     * @ORM\ManyToOne(targetEntity="App\Entity\Video", inversedBy="comments")
+     * @ORM\JoinColumn(nullable=false)
      */
-    private $likes = 0;
+    private $video;
 
     /**
-     * @ORM\Column(type="integer", options={"default" : 0})
+     * @ORM\ManyToOne(targetEntity="App\Entity\Comment", inversedBy="subComments")
      */
-    private $dislikes = 0;
+    private $parent;
 
     /**
-     * @ORM\Column(type="string", length=32, nullable=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="parent", cascade={"remove"})
      */
-    private $parrent_hash;
+    private $subComments;
 
     /**
-     * @ORM\Column(type="string", length=32, unique=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\CommentRate", mappedBy="comment", orphanRemoval=true, cascade={"persist"})
      */
-    private $hash;
+    private $commentRates;
 
     /**
-     * @ORM\Column(type="string", length=32)
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="comments")
+     * @ORM\JoinColumn(nullable=false)
      */
-    private $video_hash;
+    private $author;
+
+    public function __construct(?Comment $parent = null)
+    {
+        $this->subComments = new ArrayCollection();
+        $this->added = new DateTime();
+
+        if ($parent !== null) {
+            $this->video = $parent->video;
+            $this->parent = $parent;
+        }
+        $this->commentRates = new ArrayCollection();
+    }
+
+    public function rate(bool $rate, User $author)
+    {
+        $commentRate = (new CommentRate())
+            ->setRate($rate)
+            ->setComment($this)
+            ->setAuthor($author);
+
+        $this->addCommentRate($commentRate);
+    }
 
     public function getId(): ?int
     {
@@ -85,93 +114,150 @@ class Comment
         return $this;
     }
 
-    public function getAdded(): ?\DateTimeInterface
+    public function getAdded(): ?DateTimeInterface
     {
         return $this->added;
     }
 
-    public function setAdded(\DateTimeInterface $added): self
+    public function setAdded(DateTimeInterface $added): self
     {
         $this->added = $added;
 
         return $this;
     }
 
-    public function getLikes(): ?int
+    public function getVideo(): ?Video
     {
-        return $this->likes;
+        return $this->video;
     }
 
-    public function setLikes(int $likes): self
+    public function setVideo(?Video $video): self
     {
-        $this->likes = $likes;
+        $this->video = $video;
 
         return $this;
     }
 
-    public function getDislikes(): ?int
+    public function getParent(): ?self
     {
-        return $this->dislikes;
+        return $this->parent;
     }
 
-    public function setDislikes(int $dislikes): self
+    public function setParent(?self $parent): self
     {
-        $this->dislikes = $dislikes;
+        $this->parent = $parent;
 
         return $this;
     }
 
-    public function getParrentHash(): ?string
+    /**
+     * @return Collection|self[]
+     */
+    public function getSubComments(): Collection
     {
-        return $this->parrent_hash;
+        return $this->subComments;
     }
 
-    public function setParrentHash(?string $parrent_hash): self
+    public function addSubcomment(self $subcomment): self
     {
-        $this->parrent_hash = $parrent_hash;
+        if (!$this->subComments->contains($subcomment)) {
+            $this->subComments[] = $subcomment;
+            $subcomment->setParent($this);
+        }
 
         return $this;
     }
 
-    public function getHash(): ?string
+    public function removeSubcomment(self $subcomment): self
     {
-        return $this->hash;
-    }
-
-    public function setHash(string $hash): self
-    {
-        $this->hash = $hash;
+        if ($this->subComments->contains($subcomment)) {
+            $this->subComments->removeElement($subcomment);
+            // set the owning side to null (unless already changed)
+            if ($subcomment->getParent() === $this) {
+                $subcomment->setParent(null);
+            }
+        }
 
         return $this;
     }
 
-    public function toEncryptableArray()
+    /**
+     * @return Collection|CommentRate[]
+     */
+    public function getCommentRates(): Collection
     {
-        return [
-            'author_username' => $this->getAuthorUsername(),
-            'added' => $this->getAdded(),
-            'parrent_hash' => $this->getParrentHash(),
-            'video_hash' => $this->getVideoHash()
-        ];
+        return $this->commentRates;
     }
 
-    public function generateHash()
+    public function addCommentRate(CommentRate $commentRate): self
     {
-        $serialized = json_encode($this->toEncryptableArray());
-        $hash = md5($serialized);
-        $this->setHash($hash);
+        if (!$this->commentRates->contains($commentRate)) {
+            $this->commentRates[] = $commentRate;
+            $commentRate->setComment($this);
+        }
 
-        return $hash;
+        return $this;
     }
 
-    public function getVideoHash(): ?string
+    public function removeCommentRate(CommentRate $commentRate): self
     {
-        return $this->video_hash;
+        if ($this->commentRates->contains($commentRate)) {
+            $this->commentRates->removeElement($commentRate);
+            // set the owning side to null (unless already changed)
+            if ($commentRate->getComment() === $this) {
+                $commentRate->setComment(null);
+            }
+        }
+
+        return $this;
     }
 
-    public function setVideoHash(string $video_hash): self
+    /**
+     * @return Collection|CommentRate[]
+     */
+    public function getCommentRatesUp(): Collection
     {
-        $this->video_hash = $video_hash;
+        $ratesUp = $this->commentRates->filter(function (CommentRate $commentRate) {
+            dump($commentRate->getRate(), CommentRate::UP, $commentRate->getRate() === CommentRate::UP);
+            return $commentRate->getRate() === CommentRate::UP;
+        });
+
+        return $ratesUp;
+    }
+
+    /**
+     * @return Collection|CommentRate[]
+     */
+    public function getCommentRatesDown(): Collection
+    {
+        $ratesDown = $this->commentRates->filter(function (CommentRate $commentRate) {
+            return $commentRate->getRate() === CommentRate::DOWN;
+        });
+
+        return $ratesDown;
+    }
+
+    public function normalize()
+    {
+        $array = [];
+        $array['id'] = $this->id;
+        $array['contents'] = $this->contents;
+        $array['author_username'] = $this->author_username;
+        $array['added'] = $this->added;
+        $array['video'] = $this->getVideo()->getHash();
+        $array['parent'] = $this->getParent() ? $this->getParent()->getId() : null;
+
+        return $array;
+    }
+
+    public function getAuthor(): ?User
+    {
+        return $this->author;
+    }
+
+    public function setAuthor(?User $author): self
+    {
+        $this->author = $author;
 
         return $this;
     }

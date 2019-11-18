@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Category index{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col text-center">
+                <h1 style="display:inline-block">#{{ category.name }}</h1>
+                <a style="font-size:30px" class="ml-2" href="{{ path('app_category_new') }}"><i
+                            class="fas fa-plus text-success"></i></a>
+            </div>
+        </div>
+
+        {% if category.video is empty %}
+            W kategorii nie ma żadnych filmów.
+        {% else %}
+            <div class="row">
+                {% for video in category.video %}
+                    {% if not video.isPublic is same as(false) %}
+                        <div class="col">
+                            {{ include('video/_video_card.html.twig', {'video':video}) }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

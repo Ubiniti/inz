@@ -1,0 +1,30 @@
+<div class="card border-0">
+    <div class="card-img-top">
+        {% for video in playlist.videos %}
+            {{ include('video/_video_card.html.twig', {'video':video}) }}
+        {% endfor %}
+    </div>
+    <div class="card-body">
+        <p class="card-text">
+            <a href="{{ path('app_playlist',{'id':playlist.id}) }}">
+                {{ playlist.title }}
+            </a>
+            {% if app.user is not null and playlist.channel.id is same as(app.user.channel.id) %}
+                <a style="float:right" class="mr-1 ml-1" href="{{ path('app_playlist_remove', {'id':playlist.id}) }}">
+                    <i class="fas fa-times text-danger"
+                       data-toggle="tooltip"
+                       data-placement="top"
+                       title="Usuń playlistę"
+                    ></i>
+                </a>
+                <a style="float:right" class="mr-1 ml-1" href="{{ path('app_playlist_edit', {'id':playlist.id}) }}">
+                    <i class="fas fa-edit text-primary"
+                       data-toggle="tooltip"
+                       data-placement="top"
+                       title="Edytuj playlistę"
+                    ></i>
+                </a>
+            {% endif %}
+        </p>
+    </div>
+</div>

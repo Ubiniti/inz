@@ -1,0 +1,62 @@
+<div class="video-thumb mb-3">
+    <a href="{{ path('app_video_watch', {video_hash: video.hash}) }}"
+       class="w-100 text-dark{% if video.price > 0 %} bootbox-dialog-button{% endif %}"
+            {% if video.price > 0 %}
+        data-title="Film jest płatny ({{ video.priceAsCurrency }}zł). Jeżeli nie masz obecnie do niego dostępu - środki zostaną pobrane z Twojego portfela. Kontynuować?"
+        data-secondaryurl="{{ path('app_video_watch_demo', {video_hash: video.hash}) }}"
+            {% endif %}>
+        <img class="w-100" src="{{ asset( [uploads_dir, '/thumbs/', video.hash, '.jpg']|join ) }}"> <br>
+        <div class="video-card-title">{{ video.title|slice(0, 55) }}{% if video.title|length > 55 %}...{% endif %}</div>
+    </a>
+    {% if video.price > 0 %}
+        <i class="fas fa-dollar-sign text-success"
+           data-toggle="tooltip"
+           data-placement="top"
+           title="Materiał płatny - {{ video.priceAsCurrency }} PLN"></i>
+    {% endif %}
+    {% if video.hasDemo %}
+        <a style="float:right" href="{{ path('app_video_watch_demo', {'video_hash':video.hash}) }}">
+            <i class="fas fa-caret-square-up text-info"
+               data-toggle="tooltip"
+               data-placement="top"
+               title="Obejrzyj demo"></i>
+        </a>
+    {% endif %}
+    {% if app.user is not null %}
+        {% if video.channel.id is same as(app.user.channel.id) %}
+            <a style="float:right" href="{{ path('app_video_remove', {'video_hash':video.hash}) }}">
+                <i class="fas fa-times text-danger"
+                   data-toggle="tooltip"
+                   data-placement="top"
+                   title="Usuń film"></i>
+            </a>
+            <a style="float:right" href="{{ path('app_video_edit', {'video_hash':video.hash}) }}">
+                <i class="fas fa-edit text-primary"
+                   data-toggle="tooltip"
+                   data-placement="top"
+                   title="Edytuj film"></i>
+            </a>
+        {% endif %}
+        {% set playlist = isVideoInUserPlaylists(video, app.user) %}
+        {% if playlist is not null %}
+            <a class="ml-1 mr-1"
+               style="float:right"
+               href="{{ path('app_video_remove_from_playlist', {'video_hash':video.hash, 'playlist':playlist.id}) }}">
+                <i class="fas fa-times text-warning"
+                   data-toggle="tooltip"
+                   data-placement="top"
+                   title="Usuń film z playlisty"></i>
+            </a>
+        {% endif %}
+        {% if app.user is not null and playlist is null %}
+            <a class="ml-1 mr-1"
+               style="float:right"
+               href="{{ path('app_video_add_to_playlist', {'video_hash':video.hash}) }}">
+                <i class="fas fa-plus text-success"
+                   data-toggle="tooltip"
+                   data-placement="top"
+                   title="Dodaj do playlisty"></i>
+            </a>
+        {% endif %}
+    {% endif %}
+</div>

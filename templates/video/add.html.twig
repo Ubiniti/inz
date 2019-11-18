@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="form-container row pt-5">
+
+            <form id="uploadForm" class="w-100" action="{{ path('app_video_add') }}" method="post" enctype="multipart/form-data" data-success="{{ path(success_route) }}">
+                <div class="input-group pb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Tytuł filmu</span>
+                    </div>
+                    <input class="form-control" type="text" id="videoTitle" name="add_video[title]">
+                </div>
+                <div class="form-group">
+                    <label for="exampleFormControlTextarea1">Opis</label>
+                    <textarea class="form-control" id="videoDescription" name="add_video[description]" rows="3"></textarea>
+                </div>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Plik wideo</span>
+                    </div>
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="videoFile" name="add_video[file]">
+                        <label class="custom-file-label" for="file">Wybierz plik</label>
+                    </div>
+                </div>
+                <div class="input-group mt-2 pb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Miniatura</span>
+                    </div>
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="videoThumbnail" name="add_video[thumbnail]">
+                        <label class="custom-file-label" for="thumbnail">Wybierz plik</label>
+                    </div>
+                </div>
+                <div class="progress mt-2">
+                    <div
+                            id="upload-progress"
+                            class="progress-bar progress-bar-striped progress-bar-animated bg-info"
+                            role="progressbar"
+                            style="width: 0%"
+                            aria-valuenow="50"
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                            data-progress="0"
+                    ></div>
+                </div>
+                <div class="row pt-3">
+                    <input class="btn btn-primary w-100" type="submit" name="add_video[submit]" value="Wyślij">
+                </div>
+                <input type="hidden" name="add_video[_token]" id="csrfToken" value="{{ csrf_token('add_video') }}">
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('js/video_upload.js') }}"></script>
+{% endblock %}

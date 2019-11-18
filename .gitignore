@@ -16,10 +16,14 @@
 ###> symfony/web-server-bundle ###
 /.web-server-pid
 ###< symfony/web-server-bundle ###
-/nbproject/private/
+
+/nbproject/
 
 # phpstorm config files
 /.idea/
 
 # video files
-/public/video/
+/public/assets/uploads/
+
+# test controller
+/src/Controller/TestController.php

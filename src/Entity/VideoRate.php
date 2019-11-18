@@ -11,6 +11,7 @@ class VideoRate
 {
     public const UP = 1;
     public const DOWN = 0;
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -19,45 +20,34 @@ class VideoRate
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=32)
-     */
-    private $video_hash;
-
-    /**
      * @ORM\Column(type="string", length=180)
      */
-    private $viewer_username;
+    private $author;
 
     /**
      * @ORM\Column(type="boolean")
      */
     private $rate;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Video", inversedBy="rates")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $video;
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getVideoHash(): ?string
+    public function getAuthor(): ?string
     {
-        return $this->video_hash;
+        return $this->author;
     }
 
-    public function setVideoHash(string $video_hash): self
+    public function setAuthor(string $author): self
     {
-        $this->video_hash = $video_hash;
-
-        return $this;
-    }
-
-    public function getViewerUsername(): ?string
-    {
-        return $this->viewer_username;
-    }
-
-    public function setViewerUsername(string $viewer_username): self
-    {
-        $this->viewer_username = $viewer_username;
+        $this->author = $author;
 
         return $this;
     }
@@ -70,6 +60,18 @@ class VideoRate
     public function setRate(bool $rate): self
     {
         $this->rate = $rate;
+
+        return $this;
+    }
+
+    public function getVideo(): ?Video
+    {
+        return $this->video;
+    }
+
+    public function setVideo(?Video $video): self
+    {
+        $this->video = $video;
 
         return $this;
     }

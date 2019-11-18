@@ -19,32 +19,23 @@ class VideoRepository extends ServiceEntityRepository
         parent::__construct($registry, Video::class);
     }
 
-    // /**
-    //  * @return Video[] Returns an array of Video objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function findByFilter(string $filter)
     {
-        return $this->createQueryBuilder('v')
-            ->andWhere('v.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('v.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+        $qb = $this->createQueryBuilder('v')
+            ->join('v.categories', 'c')
+            ->where("v.title LIKE '%" . $filter . "%'")
+            ->orWhere("c.name LIKE '%" . $filter . "%'")
+            ->orderBy('v.title');
 
-    /*
-    public function findOneBySomeField($value): ?Video
-    {
-        return $this->createQueryBuilder('v')
-            ->andWhere('v.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        return $qb->getQuery()->getResult();
     }
-    */
+
+    public function getTitles()
+    {
+        $qb = $this->createQueryBuilder('v')
+            ->select('v.title')
+            ->orderBy('v.title');
+
+        return $qb->getQuery()->getResult();
+    }
 }

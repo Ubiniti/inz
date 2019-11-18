@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/channel.css') }}">
+{% endblock %}
+
+{% block title %}Hello ChannelController!{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="channel-background mt-1">
+                        {% if channel.image is not null %}
+                            <img width="100%" src="{{ asset( [uploads_dir, '/channel/', channel.image, '.jpg']|join ) }}" alt="ad-content"> <br>
+                        {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col text-center">
+                <h1 style="display:inline-block">{{ channel.name }}</h1>
+                {% if app.user is not null and channel.id is same as(app.user.channel.id) %}
+                    <a style="float:right" href="{{ path('app_user_channel_edit') }}">
+                        <i class="fas fa-edit text-primary"></i>
+                    </a>
+                {% endif %}
+                <hr>
+            </div>
+        </div>
+        <div class="row justify-content-between">
+            <div class="col-6 col-md-8 col-lg-8 col-xl-9">
+                <h3 style="display:inline-block">Filmy</h3>
+                {% if app.user is not null %}
+                    <a href="{{ path('app_video_add') }}">
+                        <i class="fas fa-plus text-success"></i>
+                    </a>
+                {% endif %}
+                <div class="row mr-5">
+                    {% if channel.videos is empty %}
+                        Na kanale nie ma żadnych filmów.
+                    {% else %}
+                        {% for video in channel.videos %}
+                                <div class="col-12 col-md-6 col-lg-6 col-xl-4">
+                                    {{ include('video/_video_card.html.twig', {'video':video}) }}
+                                </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-4 col-xl-3">
+                <h3 style="display:inline-block">Playlisty</h3>
+                {% if app.user is not null %}
+                    <a href="{{ path('app_playlist_add') }}">
+                        <i class="fas fa-plus text-success"></i>
+                    </a>
+                {% endif %}
+                <div class="row m-0">
+                    {% if channel.playlists is empty %}
+                        Na kanale nie ma żadnych playlist.
+                    {% else %}
+                        {% for playlist in channel.playlists %}
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    {{ include('playlist/_playlist_card.html.twig', {'playlist':playlist}) }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

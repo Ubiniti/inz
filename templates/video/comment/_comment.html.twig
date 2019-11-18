@@ -1,0 +1,82 @@
+<div class="jumbotron bg-comment overflow-hidden pr-3 py-2 px-0 m-0 mb-2">
+    <div class="comment d-flex container p-0">
+        <div class="user-card m-0 mt-3 container text-center">
+            <img src="{{ avatar(comment.author.avatar) }}" class="avatar rounded-circle" />
+            <a href="{% if  getChannelName(comment.authorUsername) is not null %}
+                    {{ path('app_user_channel', {'channel_name': getChannelName(comment.authorUsername)}) }}
+                    {% else %}#
+                    {% endif %}"
+               class="com-author text-dark">{{ comment.authorusername }}</a>
+        </div>
+        <div class="container p-0 m-0">
+            <div class="com-date m-0 p-0 text-right">{{ comment.added|date("d-m-Y") }}</div>
+            <div class="content">
+                <div class="comment-content-wrapper">
+                    <div class="d-none comment-edit contents jumbotron bg-comment">
+                        <textarea class="textarea-reply form-control w-100 p-2" name="message" rows="2"
+                        >{{ comment.contents|trim }}</textarea>
+                        <div class="pl-2">
+                            <i class="btn-accept fas fa-check text-dark"
+                               data-toggle="tooltip"
+                               data-placement="top"
+                               data-comment-id="{{ comment.id }}"
+                               data-edit-url="{{ path('app_comment_edit', {'id': comment.id}) }}"
+                               title="Zapisz"></i>
+                        </div>
+                    </div>
+                    <div class="comment-view contents jumbotron bg-comment">
+                        <div class="comment-text w-100">
+                            {{ comment.contents|nl2br }}
+                        </div>
+                        <div class="d-block text-center pl-2">
+                            <i class="btn-edit fas fa-edit text-dark"
+                               data-toggle="tooltip"
+                               data-placement="top"
+                               data-comment-id="{{ comment.id }}"
+                               title="Edytuj komentarz"></i>
+                            {% if app.user is not null %}
+                                {% if comment.authorUsername is same as(app.user.username) %}
+                                    <a href="{{ path('app_comment_remove', {'id':comment.id}) }}">
+                                        <i class="fas fa-times text-dark"
+                                           data-toggle="tooltip"
+                                           data-placement="top"
+                                           title="Usuń komentarz"></i>
+                                    </a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="m-2 p-0 float-right">
+                        <div class="float-left">
+                            <a class="btn btn-light" href="{{ path('app_comment_rate', {
+                                'grade': 1,
+                                'id': comment.id
+                            }) }}">
+                                <i class="fas fa-thumbs-up text-dark"></i>
+                                {{ comment.commentRatesUp.count }}
+                            </a>
+                            <a class="btn btn-light" href="{{ path('app_comment_rate', {
+                                'grade': 0,
+                                'id': comment.id
+                            }) }}">
+                                <i class="fas fa-thumbs-down text-dark"></i>
+                                {{ comment.commentRatesDown.count }}
+                            </a>
+                        </div>
+                        <div class="float-right">
+                        </div>
+                        <div class="btn btn-reply float-right m-2 p-0"
+                             data-comment-id="{{ comment.id }}">
+                            Odpowiedz
+                        </div>
+
+                    </div>
+                </div>
+                {{ include('video/comment/_subcomment_reply.html.twig') }}
+                {% for subcomment in comment.subComments %}
+                    {{ include('video/comment/_subcomment.html.twig') }}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>

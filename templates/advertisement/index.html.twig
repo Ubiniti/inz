@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/channel.css') }}">
+{% endblock %}
+
+{% block title %}Hello ChannelController!{% endblock %}
+
+{% block body %}
+    <div class="container">
+
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h1 style="display:inline-block">Dodaj reklamę</h1>
+                    <a style="float:right" href="{{ path('app_advertisement_add') }}">
+                        <i class="fas fa-plus text-success"></i>
+                    </a>
+                    <hr>
+                </div>
+            </div>
+            <div class="row">
+                {% if ads is defined %}
+                    {% if ads is empty %}
+                        Nie masz żadnych reklam.
+                    {% else %}
+                        {% for ad in ads %}
+                            <div class="col">
+                                {{ include('advertisement/_ad.html.twig', {'ad':ad}) }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+{% endblock %}

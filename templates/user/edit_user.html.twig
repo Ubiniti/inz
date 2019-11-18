@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% form_theme form 'layout/bootstrap_4_layout.html.twig' %}
+
+{% block title %}Edycja danych profilu{% endblock %}
+
+{% block body %}
+    <div class="container">
+        {{ form_start(form) }}
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
